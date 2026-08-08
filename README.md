@@ -1,1 +1,7 @@
-Herzlich willkommen auf meinen GITHUB-Seiten zum Projekt "MBCAN"
+
+![MBCAN](https://github.com/TommyGermanyRetro/MBCAN/Bilder/mbc_header_960.png")
+
+# MBCAN
+<i>Fernsteuerung einer Märklin-Modelleisenbahn über den CAN-Bus</i>
+
+Herzlich willkommen auf meinen GITHUB-Seiten zum Projekt "MBCAN".

@@ -12,11 +12,11 @@ Damit der letzte Stand des Unterlagen nicht verloren gehen, habe ich:
 
 2) Ein eigenes GIt erstellt, auf dem die Downloads der ehemaligen Website abgelegt sind (<a href="https://github.com/TommyGermanyRetro/MBCAN/tree/main/Generation_3">Generation_3 hier im Git</a>)
 
-Durch die Beschäftigung mit moderneren Prozessoren wie ESP32 und RP2040 habe ich neue Motivation für das Projekt gefunden und portiere gerade die 3. Generation Arduino IDE tauglich auf die Prozessoren ATMEGA644P (wie bei der 3. Generation), den ESP32-C3, den Waveshare RP2040 Zero und den RP RP2040 Pi Pico. Diese Versionen bezeichne ich als 4. Geneartion.
+Durch die Beschäftigung mit moderneren Prozessoren wie ESP32 und RP2040 habe ich neue Motivation für das Projekt gefunden und portiere gerade die 3. Generation Arduino IDE tauglich auf die Prozessoren ATMEGA644P (wie bei der 3. Generation), den ESP32-C3, den Waveshare RP2040 Zero und den RP RP2040 Pi Pico. Diese Versionen bezeichne ich als 4. Generation.
 
 Passend dazu wird es ein erweitertes Parametriercenter geben, welches auch das Firmwareupdate der neuen Prozessoren über den CAN-Bus ermöglicht. Dazu wird die OTA-Funktionalität genutzt. Die Sketche werden hier im Git Stück für Stück veröffentlicht. Reale Umsetzungen werde ich für den ESP32-C3 in Eagle erstellen und gleichfalls hier posten. Nur die Bedienungsanleitungen und Warenkörbe, die ich früher mal geschrieben habe, wird es nicht mehr geben.
 
 Solltet ihr Spaß an der Weiterentwicklung auf Basis dieser Sketche haben seid ihr gerne eingeladen, den Sourcecode fleißig zu nutzen und zu experimentieren.
 
-Bleibt gesund,
+Bleibt gesund,<br>
 Thomas

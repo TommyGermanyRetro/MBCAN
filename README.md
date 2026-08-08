@@ -10,5 +10,5 @@ Damit der letzte Stand des Unterlagen nicht verloren gehen, habe ich:
 
 1) Alle Unterlagen inkl. Quellcodes an Jörg Seitz übergeben (https://www.https://jss-elektronik.de)
 
-2) Ein eigenes GIt erstellt, auf dem die Downloads der ehemaligen Website abgelegt sind (Generation_3 hier im Git)
+2) Ein eigenes GIt erstellt, auf dem die Downloads der ehemaligen Website abgelegt sind (<a href="https://github.com/TommyGermanyRetro/MBCAN/tree/main/Generation_3">Generation_3 hier im Git</a>)
 

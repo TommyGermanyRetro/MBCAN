@@ -5,7 +5,7 @@
 
 Herzlich willkommen auf meinen GITHUB-Seiten zum Projekt "MBCAN". Bis Ende 2025 hatte ich noch eine Website mit allen Infos rund um das Projekt. Die Pflege war aber mehr als aufwändig, und so habe ich sie geschlossen. Außerdem war das Projekt zu diesem Zeitpunkt bereits 18 Jahre alt. Also Zeit, es abzuschließen und Neues auszuprobieren.
 
-Damit der letzte Stand des Unterlagen nicht verloren gehen, habe ich:
+Damit der letzte Stand der Unterlagen nicht verloren geht, habe ich:
 
 1) Alle Unterlagen inkl. Quellcodes an Jörg Seitz übergeben (https://www.jss-elektronik.de)
 

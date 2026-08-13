@@ -19,3 +19,29 @@ Solltet ihr Spaß an der Weiterentwicklung auf Basis dieser Sketche haben seid i
 
 Bleibt gesund,<br>
 Thomas
+
+# Systemarchitekur
+
+Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargestellt. Nach und nach wird es dazu auch die passende 4. Generation geben.
+
+![MBCAN](https://github.com/TommyGermanyRetro/MBCAN/blob/main/Bilder/img_mbc_systemarchitektur.png)
+
+# Portierungshistorie
+
+Hier wird demnächst die Portierungshistorie als Tabelle gelistet.
+
+# Tagebuch
+
+-----------------------------------------------------
+
+# 13.08.2026
+
+Systemarchitekur ergänzt, Parametriercenter-ZIP unter 3. Generation ergänzt
+
+-----------------------------------------------------
+
+# 09.08.2026
+
+Neuanlage des Gits zum MBCAN-Projekts
+
+-----------------------------------------------------

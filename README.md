@@ -30,11 +30,11 @@ Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargest
 
 | Modultyp            | ATMEGA644P          | ESP32C3             | RP2040 PI PICO      | WS RP2040 ZERO      |
 | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
-| mbc-80 (HW:21-10-01)|          x          |                     |                     |                     |
-| mbc-88 (HW:24-01-06)|          x          |                     |                     |                     | 
-| mbc-90 (HW:23-11-25)|          x          |                     |                     |                     | 
-| mbc-91 (HW:24-04-01)|          x          |                     |                     |                     | 
-| mbc-92 (HW:24-07-20)|          x          |                     |                     |                     | 
+| mbc-80              | x (HW:21-10-01)     |                     |                     |                     |
+| mbc-88              | x (HW:24-01-06)     |                     |                     |                     | 
+| mbc-90              | x (HW:23-11-25)     |                     |                     |                     | 
+| mbc-91              | x (HW:24-04-01)     |                     |                     |                     | 
+| mbc-92              | x (HW:24-07-20)     |                     |                     |                     | 
 	
 # Tagebuch
 

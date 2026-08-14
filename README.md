@@ -28,7 +28,22 @@ Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargest
 
 # Portierungshistorie
 
-Hier wird demnächst die Portierungshistorie als Tabelle gelistet.
+	<table text-align="center" style="width:100%" >
+  <tr>
+    <th>Modultyp</th>
+    <th>ATMEGA644P</th>
+    <th>ESP32C3</th>	
+		<th>RP2040 PI PICO</th>	
+		<th>RP2040 ZERO</th>	
+  </tr>
+  <tr>
+    <td>mbc-80</td>
+    <td>x</td>
+    <th></td>	
+		<td></td>	
+		<td></td>	
+  </tr>
+	</table>
 
 # Tagebuch
 

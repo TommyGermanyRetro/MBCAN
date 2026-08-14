@@ -28,20 +28,20 @@ Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargest
 
 ## 2.  Portierungshistorie
 
-| Modultyp       | ATMEGA644P     | ESP32C3        | RP2040 PI PICO | RP2040 ZERO    |
-| -------------- | -------------- | -------------- | -------------- | -------------- |
-| mbc-80         |       x        |                |                |                |
-| mbc-88         |       x        |                |                |                | 
-| mbc-90         |       x        |                |                |                | 
-| mbc-91         |       x        |                |                |                | 
-| mbc-92         |       x        |                |                |                | 
+| Modultyp            | ATMEGA644P          | ESP32C3             | RP2040 PI PICO      | WS RP2040 ZERO      |
+| ------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
+| mbc-80 (HW:21-10-01)|          x          |                     |                     |                     |
+| mbc-88 (HW:24-01-06)|          x          |                     |                     |                     | 
+| mbc-90 (HW:23-11-25)|          x          |                     |                     |                     | 
+| mbc-91 (HW:24-04-01)|          x          |                     |                     |                     | 
+| mbc-92 (HW:24-07-20)|          x          |                     |                     |                     | 
 	
 # Tagebuch
 
-# 13.08.2026
+## 13.08.2026
 
 Systemarchitekur ergänzt, Parametriercenter-ZIP unter 3. Generation ergänzt
 
-# 09.08.2026
+## 09.08.2026
 
 Neuanlage des Gits zum MBCAN-Projekts

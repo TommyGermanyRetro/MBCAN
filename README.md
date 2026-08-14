@@ -28,7 +28,7 @@ Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargest
 
 # Portierungshistorie
 
-	<table style="width:100%" >
+	<table style="width:100%">
   <tr>
     <th style="text-align: center">Modultyp</th>
     <th style="text-align: center">ATMEGA644P</th>

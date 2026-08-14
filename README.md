@@ -44,6 +44,21 @@ Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargest
 		<td style="text-align: center"></td>	
   </tr>
 	</table>
+	
+		<table style="width:100%">
+  <tr>
+    <th></th>
+    <th>Definition</th>
+    <th>BASIC</th>
+    <th>UNAPI</th>		
+  </tr>
+  <tr>
+    <td>Syntax</td>
+    <td>XIO ?</td>
+    <td>_XIO ?</td>
+		<td>1</td>
+  </tr>
+	</table>
 
 # Tagebuch
 

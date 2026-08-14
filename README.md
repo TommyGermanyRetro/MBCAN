@@ -20,58 +20,28 @@ Solltet ihr Spaß an der Weiterentwicklung auf Basis dieser Sketche haben seid i
 Bleibt gesund,<br>
 Thomas
 
-# Systemarchitekur
+## 1.  Systemarchitekur
 
 Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargestellt. Nach und nach wird es dazu auch die passende 4. Generation geben.
 
 ![MBCAN](https://github.com/TommyGermanyRetro/MBCAN/blob/main/Bilder/img_mbc_systemarchitektur.png)
 
-# Portierungshistorie
+## 2.  Portierungshistorie
 
-	<table style="width:100%">
-  <tr>
-    <th style="text-align: center">Modultyp</th>
-    <th style="text-align: center">ATMEGA644P</th>
-    <th style="text-align: center">ESP32C3</th>	
-		<th style="text-align: center">RP2040 PI PICO</th>	
-		<th style="text-align: center">RP2040 ZERO</th>	
-  </tr>
-  <tr>
-    <td style="text-align: center">mbc-80</td>
-    <td style="text-align: center">x</td>
-    <td style="text-align: center"></td>	
-		<td style="text-align: center"></td>	
-		<td style="text-align: center"></td>	
-  </tr>
-	</table>
+| Modultyp       | ATMEGA644P     | ESP32C3        | RP2040 PI PICO | RP2040 ZERO    |
+| -------------- | -------------- | -------------- | -------------- | -------------- |
+| mbc-80         |       x        |                |                |                |
+| mbc-88         |       x        |                |                |                | 
+| mbc-90         |       x        |                |                |                | 
+| mbc-91         |       x        |                |                |                | 
+| mbc-92         |       x        |                |                |                | 
 	
-		<table style="width:100%">
-  <tr>
-    <th></th>
-    <th>Definition</th>
-    <th>BASIC</th>
-    <th>UNAPI</th>		
-  </tr>
-  <tr>
-    <td>Syntax</td>
-    <td>XIO ?</td>
-    <td>_XIO ?</td>
-		<td>1</td>
-  </tr>
-	</table>
-
 # Tagebuch
-
------------------------------------------------------
 
 # 13.08.2026
 
 Systemarchitekur ergänzt, Parametriercenter-ZIP unter 3. Generation ergänzt
 
------------------------------------------------------
-
 # 09.08.2026
 
 Neuanlage des Gits zum MBCAN-Projekts
-
------------------------------------------------------

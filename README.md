@@ -22,7 +22,7 @@ Thomas
 
 ## 1.  Systemarchitekur
 
-Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargestellt. Nach und nach wird es dazu auch die passende 4. Generation geben.
+Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus erfordert eine strikte Linienstruktur. Für Verzweigungen ist ein Hub notwendig zur Sicherstellung der Terminierung des Busses zur Vermeidung von ungewolltem Verhalten.
 
 ![MBCAN](https://github.com/TommyGermanyRetro/MBCAN/blob/main/Bilder/img_mbc_systemarchitektur.png)
 

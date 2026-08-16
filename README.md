@@ -40,7 +40,7 @@ Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus er
 
 ## 16.08.2026
 
-Erste Bedienungsanleitungen zum neuen Parametriercenter und der portierten Module hochgeladen unter 4_Generation/Dokumente
+Erste Bedienungsanleitungen zum neuen Parametriercenter und der portierten Module hochgeladen unter Generation_4/Dokumente
 
 ## 13.08.2026
 

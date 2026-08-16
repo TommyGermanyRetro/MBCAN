@@ -22,7 +22,7 @@ Thomas
 
 ## 1.  Systemarchitekur
 
-Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargestellt. Nach und nach wird es dazu auch die passende 4. Generation geben.
+Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus erfordert eine strikte Linienstruktur. Für Verzweigungen ist ein Hub notwendig zur Sicherstellung der Terminierung des Busses zur Vermeidung von ungewolltem Verhalten.
 
 ![MBCAN](https://github.com/TommyGermanyRetro/MBCAN/blob/main/Bilder/img_mbc_systemarchitektur.png)
 
@@ -30,11 +30,11 @@ Im folgenden Bild ist die Systemarchitektur der Module der 3. Generation dargest
 
 | Modultyp            | ATMEGA644P          | ESP32C3             | RP2040 PI PICO      | WS RP2040 ZERO      |
 | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
-| mbc-80              | x (HW:21-10-01)     |                     |                     |                     |
-| mbc-88              | x (HW:24-01-06)     |                     |                     |                     | 
-| mbc-90              | x (HW:23-11-25)     |                     |                     |                     | 
-| mbc-91              | x (HW:24-04-01)     |                     |                     |                     | 
-| mbc-92              | x (HW:24-07-20)     |                     |                     |                     | 
+| mbc-80              | HW:21-10-01         |                     |                     |                     |
+| mbc-88              | HW:24-01-06         |                     |                     |                     | 
+| mbc-90              | HW:23-11-25         |                     |                     |                     | 
+| mbc-91              | HW:24-04-01         |                     |                     |                     | 
+| mbc-92              | HW:24-07-20         |                     |                     |                     | 
 	
 # Tagebuch
 
@@ -44,4 +44,4 @@ Systemarchitekur ergänzt, Parametriercenter-ZIP unter 3. Generation ergänzt
 
 ## 09.08.2026
 
-Neuanlage des Gits zum MBCAN-Projekts
+Neuanlage des Gits zum MBCAN-Projekt

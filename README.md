@@ -31,6 +31,7 @@ Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus er
 | Modultyp            | ATMEGA644P          | ESP32C3             | RP2040 PI PICO      | WS RP2040 ZERO      |
 | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
 | mbc-80              | HW:21-10-01         |                     |                     |                     |
+| mbc-83              | HW:18-02-10<br>HW:24-03-23         |                     |                     |                     |
 | mbc-84              | HW:18-02-03<br>HW:24-01-06         |                     |                     |                     |
 | mbc-88              | HW:18-03-29<br>HW:24-01-06         |                     |                     |                     | 
 | mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |                     |                     | 

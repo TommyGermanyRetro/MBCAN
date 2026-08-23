@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PublishUrlHistory>D:\OneDrive\Eisenbahn\20 - Elektronik\03 - VisualBasic\MBCAN_2_X_0_0\MBCAN_2_2_7_0\|D:\OneDrive\Eisenbahn\20 - Elektronik\03 - VisualBasic\MBCAN_2_X_0_0\MBCAN_2_2_6_0\|D:\OneDrive\Eisenbahn\20 - Elektronik\03 - VisualBasic\MBCAN_2_X_0_0\MBCAN_2_2_5_0\|D:\OneDrive\Eisenbahn\20 - Elektronik\03 - VisualBasic\MBCAN_2_X_0_0\MBCAN_2_2_3_0\|D:\OneDrive\Eisenbahn\20 - Elektronik\03 - VisualBasic\MBCAN_2_X_0_0\MBCAN_2_2_2_0\</PublishUrlHistory>
+    <InstallUrlHistory />
+    <SupportUrlHistory>https://www.wiesnertec.de|http://www.wiesnertec.de</SupportUrlHistory>
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory>https://www.wiesnertec.de|http://www.wiesnertec.de</ErrorReportUrlHistory>
+    <FallbackCulture>de-DE</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableSecurityDebugging>false</EnableSecurityDebugging>
+  </PropertyGroup>
+</Project>

@@ -28,17 +28,32 @@ Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus er
 
 ## 2.  Portierungshistorie
 
+In der nachfolgenden Tabelle sind die bereits portierten (Generation_4/Module) UND getesteten Hardwareversionen und Sketches gelistet. D.h. die für die anderen Prozessoren erstellten Sketches sind Vorschläge ohne echte Überprüfung an einer Hardware.
+
 | Modultyp            | ATMEGA644P          | ESP32C3             | RP2040 PI PICO      | WS RP2040 ZERO      |
 | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
 | mbc-80              | HW:21-10-01         |                     |                     |                     |
+| mbc-81              | HW:18-02-12<br>HW:24-01-06         |                     |                     |                     |
 | mbc-83              | HW:18-02-10<br>HW:24-03-23         |                     |                     |                     |
 | mbc-84              | HW:18-02-03<br>HW:24-01-06         |                     |                     |                     |
 | mbc-88              | HW:18-03-29<br>HW:24-01-06         |                     |                     |                     | 
 | mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |                     |                     | 
 | mbc-91              | HW:16-10-02<br>HW:24-04-01         |                     |                     |                     | 
 | mbc-92              | HW:24-07-20         |                     |                     |                     | 
+
+## 3.  Parametrierungscenter und Tools
+
+Die Module müssen grundsätzlich durch das <b>Parametriercenter</b> basisparametriert werden. Dies bezieht sich auf die GUiD und den Kenner (Abweichungen sind in den Libs beschrieben). Danach ist eine Parametrierung über eine CSx möglich.
+
+Als weiteres Tool steht ein TCP/CAN-Monitor zum Mitlesen auf dem CAN-Bus zur Verfügung.
+
+Beide Tools liegen als Projektmappen in Generation_4/Tools zum Download bereit.
 	
 # Tagebuch
+
+## 23.08.2026
+
+Unterstützte Hardwareversionen, Bedienungsanleitungen, Informations-MD und portierte Software unter Generation_4 hochgeladen
 
 ## 16.08.2026
 

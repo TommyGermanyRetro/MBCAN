@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="R1C1" xml:space="preserve"><value>MBCAN - Parametriercenter für mbc-Module</value></data>
+  <data name="R1C2" xml:space="preserve"><value>None</value></data>
+  <data name="R1C3" xml:space="preserve"><value>Connecting ...</value></data>
+  <data name="R1C4" xml:space="preserve"><value>Disconnecting ...</value></data>
+  <data name="R1C5" xml:space="preserve"><value>Refresh: -/-</value></data>
+  <data name="R1C6" xml:space="preserve"><value>Update: Ready</value></data>
+  <data name="R1C7" xml:space="preserve"><value>Refresh: Ready</value></data>
+  <data name="R1C8" xml:space="preserve"><value>Update: Start</value></data>
+  <data name="R1C9" xml:space="preserve"><value>Update: Stop</value></data>
+  <data name="R1C10" xml:space="preserve"><value>Upgrade: Start</value></data>
+  <data name="R1C11" xml:space="preserve"><value>Ugrade: Ready</value></data>
+  <data name="R1C12" xml:space="preserve"><value>Refresh: Start</value></data>
+  <data name="R1C13" xml:space="preserve"><value>Refresh: Stop</value></data>
+  <data name="R1C14" xml:space="preserve"><value>Searching: -/-</value></data>
+  <data name="R1C15" xml:space="preserve"><value>Searching: </value></data>
+  <data name="R1C16" xml:space="preserve"><value>-/-</value></data>
+  <data name="R1C17" xml:space="preserve"><value>BOOT-Pages: </value></data>
+  <data name="R1C18" xml:space="preserve"><value>System</value></data>
+  <data name="R1C19" xml:space="preserve"><value>Datenbank erneuern ...</value></data>
+  <data name="R1C20" xml:space="preserve"><value>Datenbank speichern ...</value></data>
+  <data name="R1C21" xml:space="preserve"><value>Beenden</value></data>
+  <data name="R1C22" xml:space="preserve"><value>Verbindung</value></data>
+  <data name="R1C23" xml:space="preserve"><value>Einstellen</value></data>
+  <data name="R1C24" xml:space="preserve"><value>Verbinden</value></data>
+  <data name="R1C25" xml:space="preserve"><value>Trennen</value></data>
+  <data name="R1C26" xml:space="preserve"><value>Info</value></data>
+  <data name="R1C27" xml:space="preserve"><value>Über MBCAN ...</value></data>
+  <data name="R1C28" xml:space="preserve"><value>Bedienungsanleitung</value></data>
+  <data name="R1C29" xml:space="preserve"><value>Copyright</value></data>
+  <data name="R1C30" xml:space="preserve"><value>Modul</value></data>
+  <data name="R1C31" xml:space="preserve"><value>Refresh</value></data>
+  <data name="R1C32" xml:space="preserve"><value>Verwerfen</value></data>
+  <data name="R1C33" xml:space="preserve"><value>Stopp</value></data>
+  <data name="R1C34" xml:space="preserve"><value>Update</value></data>
+  <data name="R1C35" xml:space="preserve"><value>Upgrade</value></data>
+  <data name="R1C36" xml:space="preserve"><value>Reset</value></data>
+  <data name="R1C37" xml:space="preserve"><value>Löschen</value></data>
+  <data name="R1C38" xml:space="preserve"><value>Parameter</value></data>
+  <data name="R1C39" xml:space="preserve"><value>Name</value></data>
+  <data name="R1C40" xml:space="preserve"><value>Typ</value></data>
+  <data name="R1C41" xml:space="preserve"><value>Artikelnummer</value></data>
+  <data name="R1C42" xml:space="preserve"><value>Seriennummer</value></data>
+  <data name="R1C43" xml:space="preserve"><value>GUiD</value></data>
+  <data name="R1C44" xml:space="preserve"><value>SW-Version</value></data>
+  <data name="R1C45" xml:space="preserve"><value>HW-Version</value></data>
+  <data name="R1C46" xml:space="preserve"><value>Plugged</value></data>
+  <data name="R1C47" xml:space="preserve"><value>Temperatur</value></data>
+  <data name="R1C48" xml:space="preserve"><value>Spannung</value></data>
+  <data name="R1C49" xml:space="preserve"><value>Status</value></data>
+  <data name="R1C50" xml:space="preserve"><value>Stellpult</value></data>
+  <data name="R1C51" xml:space="preserve"><value>R</value></data>
+  <data name="R1C52" xml:space="preserve"><value>G</value></data>
+  <data name="R1C53" xml:space="preserve"><value>Monitor</value></data>
+  <data name="R1C54" xml:space="preserve"><value>None</value></data>
+  <data name="R1C55" xml:space="preserve"><value>CAN-Telegramme auf dem Märklin- und MBCAN-Bus via RS232</value></data>
+  <data name="R1C56" xml:space="preserve"><value>CAN-Telegramme auf dem Märklin- und MBCAN-Bus via Bluetooth</value></data>
+  <data name="R1C57" xml:space="preserve"><value>CAN-Telegramme auf dem Märklin- und MBCAN-Bus via TCP</value></data>
+  <data name="R1C58" xml:space="preserve"><value>Nachrichteninhalt</value></data>
+  <data name="R1C59" xml:space="preserve"><value>Adressen</value></data>
+  <data name="R1C60" xml:space="preserve"><value>Zuordnung Module zu Loc-ID</value></data>
+  <data name="R1C61" xml:space="preserve"><value>Übersicht generieren</value></data>
+  <data name="R1C62" xml:space="preserve"><value>Loc-ID</value></data>
+  <data name="R1C63" xml:space="preserve"><value>Typ</value></data>
+  <data name="R1C64" xml:space="preserve"><value>Name</value></data>
+  <data name="R1C65" xml:space="preserve"><value>Index</value></data>
+  <data name="R1C66" xml:space="preserve"><value>Zuordnung Module zu S88-Rückmelder</value></data>
+  <data name="R1C67" xml:space="preserve"><value>ModNr</value></data>
+  <data name="R1C68" xml:space="preserve"><value>MBC-Bus-Versorgung</value></data>
+  <data name="R1C69" xml:space="preserve"><value>Steckernetzteil</value></data>
+  <data name="R1C70" xml:space="preserve"><value>Sprache</value></data>
+  <data name="R1C71" xml:space="preserve"><value>Deutsch</value></data>
+  <data name="R1C72" xml:space="preserve"><value>Französisch</value></data>
+  <data name="R1C73" xml:space="preserve"><value>Englisch</value></data>
+  <data name="R2C1" xml:space="preserve"><value>Die Länge des Modulnamens ist mit fünf Buchstaben fest vorgegeben.</value></data>
+  <data name="R2C2" xml:space="preserve"><value>Name</value></data>
+  <data name="R2C3" xml:space="preserve"><value>Das Passwort ist numerisch im Bereich 0000 ... 9999 einstellbar.</value></data>
+  <data name="R2C4" xml:space="preserve"><value>Passwort</value></data>
+  <data name="R2C5" xml:space="preserve"><value>s88-Automatikgerät</value></data>
+  <data name="R2C6" xml:space="preserve"><value>Durch CSx zugewiesener Automatik-Kenner</value></data>
+  <data name="R2C7" xml:space="preserve"><value>L88-Softwareversion</value></data>
+  <data name="R2C8" xml:space="preserve"><value>Die aktuelle Softwareversion des L88 von Märklin, um die Update-Aufforderung von der CSx zu umgehen.</value></data>
+  <data name="R2C9" xml:space="preserve"><value>L88-SW-Version</value></data>
+  <data name="R3C1" xml:space="preserve"><value>Loc-ID in HEX</value></data>
+  <data name="R3C2" xml:space="preserve"><value>Nutzung des Moduls</value></data>
+  <data name="R3C3" xml:space="preserve"><value>bis</value></data>
+  <data name="R3C4" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R3C5" xml:space="preserve"><value>Über die Combo-Box kann ausgewählt werden, ob das Modul als MM2-Switchboard genutzt wird (Ersatz für 6040) oder als Halbmodul für den BUS 0 des mbc-80 (L88-Bus-0). Bei den Halbmodulen können von den 64 möglichen Tastern der Matrix entweder die Tasten 1-32 oder 33-64 ausgewählt werden.</value></data>
+  <data name="R3C6" xml:space="preserve"><value>CS2: Die Tasten 1-32 entsprechen den Kontakten 101-132, die Tasten 33-64 den Kontakte 133-164. </value></data>
+  <data name="R3C7" xml:space="preserve"><value>CS3: Bei der Einstellung &lt;Tastenmatrix&gt; entsprechen die Kontakte 1-32 und 33-64 den jeweiligen Tasten.</value></data>
+  <data name="R3C8" xml:space="preserve"><value>Switchboard</value></data>
+  <data name="R3C9" xml:space="preserve"><value>Bus 0 Matrix  1...32</value></data>
+  <data name="R3C10" xml:space="preserve"><value>Bus 0 Matrix 33...64</value></data>
+  <data name="R4C1" xml:space="preserve"><value>GFP-SW-Version</value></data>
+  <data name="R4C2" xml:space="preserve"><value>Die aktuelle Softwareversion des GFP/Booster von Märklin, um die Update-Aufforderung von der CSx zu umgehen.</value></data>
+  <data name="R4C3" xml:space="preserve"><value>Nach dem &lt;Update&gt; das Modul bitte per &lt;Reset&gt; neu starten. Die neue Softwareversion wird dann in der CSx angezeigt.</value></data>
+  <data name="R4C4" xml:space="preserve"><value>GFP-SW-Version</value></data>
+  <data name="R4C5" xml:space="preserve"><value>Latenz Kurzschlusserkennung</value></data>
+  <data name="R4C6" xml:space="preserve"><value>Die Latenz bis zum Ansprechen der Kurzschlusserkennung kann hier in Schritten von 50 ms eingestellt werden.</value></data>
+  <data name="R4C7" xml:space="preserve"><value>Nach dem &lt;Update&gt; des Moduls bitte dieses aus der GUI der CS3 löschen. Der neue Latenzwert wird dann in der CS3 angezeigt.</value></data>
+  <data name="R4C8" xml:space="preserve"><value>Bei einer CS2 bitte diesen Wert ausschließlich in der CS2-GUI ändern und über den &lt;Refresh&gt;-Button aktualisieren.</value></data>
+  <data name="R4C9" xml:space="preserve"><value>Latenz [ms]</value></data>
+  <data name="R5C1" xml:space="preserve"><value>Loc-ID in HEX</value></data>
+  <data name="R5C2" xml:space="preserve"><value>Dimmer StartUp</value></data>
+  <data name="R5C3" xml:space="preserve"><value>Auto-AUS</value></data>
+  <data name="R5C4" xml:space="preserve"><value>Meldezyklus</value></data>
+  <data name="R5C5" xml:space="preserve"><value>Impulsausgang</value></data>
+  <data name="R5C6" xml:space="preserve"><value>Wechselschalter</value></data>
+  <data name="R5C7" xml:space="preserve"><value>StartUp-Signal</value></data>
+  <data name="R5C8" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R5C9" xml:space="preserve"><value>Typ</value></data>
+  <data name="R5C10" xml:space="preserve"><value>Impuls</value></data>
+  <data name="R5C11" xml:space="preserve"><value>Wechsel</value></data>
+  <data name="R5C12" xml:space="preserve"><value>StartUp</value></data>
+  <data name="R5C13" xml:space="preserve"><value>ON-Time</value></data>
+  <data name="R5C14" xml:space="preserve"><value>Ausgang 1</value></data>
+  <data name="R5C15" xml:space="preserve"><value>Ausgang 2</value></data>
+  <data name="R5C16" xml:space="preserve"><value>Ausgang 3</value></data>
+  <data name="R5C17" xml:space="preserve"><value>Ausgang 4</value></data>
+  <data name="R6C1" xml:space="preserve"><value>Loc-ID in HEX</value></data>
+  <data name="R6C2" xml:space="preserve"><value>Meldezyklus</value></data>
+  <data name="R6C3" xml:space="preserve"><value>Servo 1</value></data>
+  <data name="R6C4" xml:space="preserve"><value>Servo 2</value></data>
+  <data name="R6C5" xml:space="preserve"><value>Servo 3</value></data>
+  <data name="R6C6" xml:space="preserve"><value>Servo 4</value></data>
+  <data name="R6C7" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R6C8" xml:space="preserve"><value>Grün</value></data>
+  <data name="R6C9" xml:space="preserve"><value>Rot</value></data>
+  <data name="R6C10" xml:space="preserve"><value>Wegdiagramm</value></data>
+  <data name="R6C11" xml:space="preserve"><value>Step</value></data>
+  <data name="R7C1" xml:space="preserve"><value>ModNr</value></data>
+  <data name="R7C2" xml:space="preserve"><value>BusNr</value></data>
+  <data name="R7C3" xml:space="preserve"><value>Kontakte CS2</value></data>
+  <data name="R7C4" xml:space="preserve"><value>mfx-Adresse Drehscheibe</value></data>
+  <data name="R7C5" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R7C6" xml:space="preserve"><value>Geschwindigkeit</value></data>
+  <data name="R7C7" xml:space="preserve"><value>Integrator Gleise</value></data>
+  <data name="R7C8" xml:space="preserve"><value>Integrator Bühne</value></data>
+  <data name="R7C9" xml:space="preserve"><value>Gleiswinkel</value></data>
+  <data name="R8C1" xml:space="preserve"><value>ModNr</value></data>
+  <data name="R8C2" xml:space="preserve"><value>BusNr</value></data>
+  <data name="R8C3" xml:space="preserve"><value>Kontakte CS2</value></data>
+  <data name="R8C4" xml:space="preserve"><value>DCC-Adresse Schiebebühne</value></data>
+  <data name="R8C5" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R9C1" xml:space="preserve"><value>MM2-Lok-Adresse</value></data>
+  <data name="R9C2" xml:space="preserve"><value>Drehen</value></data>
+  <data name="R9C3" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R9C4" xml:space="preserve"><value>Rechts</value></data>
+  <data name="R9C5" xml:space="preserve"><value>Stopp</value></data>
+  <data name="R9C6" xml:space="preserve"><value>Links</value></data>
+  <data name="R9C7" xml:space="preserve"><value>Heben/Senken</value></data>
+  <data name="R9C8" xml:space="preserve"><value>Heben</value></data>
+  <data name="R9C9" xml:space="preserve"><value>Senken</value></data>
+  <data name="R9C10" xml:space="preserve"><value>Magnet</value></data>
+  <data name="R9C11" xml:space="preserve"><value>Aus</value></data>
+  <data name="R9C12" xml:space="preserve"><value>An</value></data>
+  <data name="R10C1" xml:space="preserve"><value>ModNr</value></data>
+  <data name="R10C2" xml:space="preserve"><value>Halbmodul</value></data>
+  <data name="R10C3" xml:space="preserve"><value>BusNr</value></data>
+  <data name="R10C4" xml:space="preserve"><value>Kontakte CS2</value></data>
+  <data name="R10C5" xml:space="preserve"><value>Integrator</value></data>
+  <data name="R10C6" xml:space="preserve"><value>Eingänge 1 - 8</value></data>
+  <data name="R10C7" xml:space="preserve"><value>Eingänge 9 - 16</value></data>
+  <data name="R11C1" xml:space="preserve"><value>I2C-Bus-Clock</value></data>
+  <data name="R11C2" xml:space="preserve"><value>Takt</value></data>
+  <data name="R11C3" xml:space="preserve"><value>Basisadresse</value></data>
+  <data name="R11C4" xml:space="preserve"><value>Keyboard Nr. 1</value></data>
+  <data name="R11C5" xml:space="preserve"><value>Lokeigenschaften</value></data>
+  <data name="R11C6" xml:space="preserve"><value>Mapping</value></data>
+  <data name="R11C7" xml:space="preserve"><value>Mapping</value></data>
+  <data name="R11C8" xml:space="preserve"><value>Mapping &amp; Direkt</value></data>
+  <data name="R11C9" xml:space="preserve"><value>Keyboard</value></data>
+  <data name="R11C10" xml:space="preserve"><value>Connect6021-Softwareversion</value></data>
+  <data name="R11C11" xml:space="preserve"><value>Das Modul mbc-89 bietet derzeit keine Parametrierungsmöglichkeiten!</value></data>
+  <data name="R12C1" xml:space="preserve"><value>ModNr</value></data>
+  <data name="R12C2" xml:space="preserve"><value>BusNr</value></data>
+  <data name="R12C3" xml:space="preserve"><value>Kontakte CS2</value></data>
+  <data name="R12C4" xml:space="preserve"><value>Integrator</value></data>
+  <data name="R13C1" xml:space="preserve"><value>Loc-ID in HEX</value></data>
+  <data name="R13C2" xml:space="preserve"><value>Meldezyklus</value></data>
+  <data name="R13C3" xml:space="preserve"><value>Auto-AUS</value></data>
+  <data name="R13C4" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R13C5" xml:space="preserve"><value>Typ</value></data>
+  <data name="R13C6" xml:space="preserve"><value>ON-Time</value></data>
+  <data name="R13C7" xml:space="preserve"><value>Impuls</value></data>
+  <data name="R13C8" xml:space="preserve"><value>Wechsel</value></data>
+  <data name="R13C9" xml:space="preserve"><value>Ausgang 1</value></data>
+  <data name="R13C10" xml:space="preserve"><value>Ausgang 2</value></data>
+  <data name="R13C11" xml:space="preserve"><value>Ausgang 3</value></data>
+  <data name="R13C12" xml:space="preserve"><value>Ausgang 4</value></data>
+  <data name="R13C13" xml:space="preserve"><value>Wechselschalter</value></data>
+  <data name="R13C14" xml:space="preserve"><value>Impulsausgang</value></data>
+  <data name="R14C1" xml:space="preserve"><value>Loc-ID in HEX</value></data>
+  <data name="R14C2" xml:space="preserve"><value>Meldezyklus</value></data>
+  <data name="R14C3" xml:space="preserve"><value>Auto-AUS</value></data>
+  <data name="R14C4" xml:space="preserve"><value>Adresse</value></data>
+  <data name="R14C5" xml:space="preserve"><value>Typ</value></data>
+  <data name="R14C6" xml:space="preserve"><value>ON-Time</value></data>
+  <data name="R14C7" xml:space="preserve"><value>Impuls</value></data>
+  <data name="R14C8" xml:space="preserve"><value>Wechsel</value></data>
+  <data name="R14C9" xml:space="preserve"><value>Ausgang 1</value></data>
+  <data name="R14C10" xml:space="preserve"><value>Ausgang 2</value></data>
+  <data name="R14C11" xml:space="preserve"><value>Ausgang 3</value></data>
+  <data name="R14C12" xml:space="preserve"><value>Ausgang 4</value></data>
+  <data name="R14C13" xml:space="preserve"><value>Wechselschalter</value></data>
+  <data name="R14C14" xml:space="preserve"><value>Impulsausgang</value></data>
+  <data name="R15C1" xml:space="preserve"><value>GFP-SW-Version</value></data>
+  <data name="R15C2" xml:space="preserve"><value>Die aktuelle Softwareversion des GFP/Booster von Märklin, um die Update-Aufforderung von der CSx zu umgehen.</value></data>
+  <data name="R15C3" xml:space="preserve"><value>Nach dem &lt;Update&gt; das Modul bitte per &lt;Reset&gt; neu starten. Die neue Softwareversion wird dann in der CSx angezeigt.</value></data>
+  <data name="R15C4" xml:space="preserve"><value>GFP-SW-Version</value></data>
+  <data name="R15C5" xml:space="preserve"><value>Latenz Kurzschlusserkennung</value></data>
+  <data name="R15C6" xml:space="preserve"><value>Die Latenz bis zum Ansprechen der Kurzschlusserkennung kann hier in Schritten von 50 ms eingestellt werden.</value></data>
+  <data name="R15C7" xml:space="preserve"><value>Nach dem &lt;Update&gt; des Moduls bitte dieses aus der GUI der CS3 löschen. Der neue Latenzwert wird dann in der CS3 angezeigt.</value></data>
+  <data name="R15C8" xml:space="preserve"><value>Bei einer CS2 bitte diesen Wert ausschließlich in der CS2-GUI ändern und über den &lt;Refresh&gt;-Button aktualisieren.</value></data>
+  <data name="R15C9" xml:space="preserve"><value>Latenz [ms]</value></data>
+  <data name="R16C1" xml:space="preserve"><value>Sollen die Module des Typs</value></data>
+  <data name="R16C2" xml:space="preserve"><value>neu initialisiert werden?</value></data>
+  <data name="R16C3" xml:space="preserve"><value>Alle Daten der betroffenen Module werden gelöscht.</value></data>
+  <data name="R16C4" xml:space="preserve"><value>Danach melden sich die am MBCAN-Bus befindlichen Module des Typs</value></data>
+  <data name="R16C5" xml:space="preserve"><value>wieder an.</value></data>
+  <data name="R16C6" xml:space="preserve"><value>Versehentlich gelöschte, aber weiterhin aktive Module erscheinen so wieder In der Datenbank.</value></data>
+  <data name="R16C7" xml:space="preserve"><value>MBCAN - Modulsteuerung</value></data>
+  <data name="R17C1" xml:space="preserve"><value>Die Datenbank wird im Ordner 'Dokumente/MBCAN/Datenbank/' unter der Datei 'mbc_db_</value></data>
+  <data name="R17C2" xml:space="preserve"><value>.txt' abgelegt. Bitte mit 'Ja' bestätigen oder mit 'Nein' verwerfen.</value></data>
+  <data name="R17C3" xml:space="preserve"><value>MBCAN - Datenbanken</value></data>
+  <data name="R18C1" xml:space="preserve"><value>Die Bedienungsanleitung ist noch geöffnet oder wird von einem anderen Prozess verwendet!</value></data>
+  <data name="R18C2" xml:space="preserve"><value>MBCAN - System</value></data>
+  <data name="R19C1" xml:space="preserve"><value>MBCAN - RS232</value></data>
+  <data name="R19C2" xml:space="preserve"><value>Der COM-Port für die RS232-Kommunikation</value></data>
+  <data name="R19C3" xml:space="preserve"><value>wird geschlossen da das Interface nicht erreichbar ist! Bitte die Einstellungen prüfen!</value></data>
+  <data name="R19C4" xml:space="preserve"><value>konnte nicht geöffnet werden!</value></data>
+  <data name="R20C1" xml:space="preserve"><value>MBCAN - Bluetooth</value></data>
+  <data name="R20C2" xml:space="preserve"><value>Der COM-Port für die Bluetooth-Kommunikation</value></data>
+  <data name="R20C3" xml:space="preserve"><value>wird geschlossen da das Interface nicht erreichbar ist! Bitte die Einstellungen prüfen!</value></data>
+  <data name="R20C4" xml:space="preserve"><value>konnte nicht geöffnet werden!</value></data>
+  <data name="R21C1" xml:space="preserve"><value>MBCAN - TCP</value></data>
+  <data name="R21C2" xml:space="preserve"><value>Der Port für die TCP-Kommunikation wird geschlossen da das Interface nicht erreichbar ist! Bitte die Einstellungen prüfen!</value></data>
+  <data name="R21C3" xml:space="preserve"><value>Vom TCP-Port kann nicht gelesen werden!</value></data>
+  <data name="R21C4" xml:space="preserve"><value>Auf den TCP-Port kann nicht geschrieben werden!</value></data>
+  <data name="R21C5" xml:space="preserve"><value>Der TCP-Port für die Kommunikation konnte nicht geöffnet werden!</value></data>
+  <data name="R22C1" xml:space="preserve"><value>Die maximale Anzahl von</value></data>
+  <data name="R22C2" xml:space="preserve"><value>Modulen ist registriert!</value></data>
+  <data name="R22C3" xml:space="preserve"><value>MBCAN - Modulsteuerung</value></data>
+  <data name="R23C1" xml:space="preserve"><value>Diese Datei ist kein gültiges HEX-File für den Modultyp</value></data>
+  <data name="R23C2" xml:space="preserve"><value>MBCAN - Firmwareupgrade</value></data>
+  <data name="R24C1" xml:space="preserve"><value>Die neue Firmware wird nun an das Modul vom Typ</value></data>
+  <data name="R24C2" xml:space="preserve"><value>übertragen </value></data>
+  <data name="R24C3" xml:space="preserve"><value>Dieser Vorgang kann jederzeit über den &lt;Stopp&gt;-Button unterbrochen werden</value></data>
+  <data name="R24C4" xml:space="preserve"><value>MBCAN - Firmwareupgrade</value></data>
+  <data name="R25C1" xml:space="preserve"><value>Die Übertragung der neuen Firmware ist abgeschlossen.</value></data>
+  <data name="R25C2" xml:space="preserve"><value>Das Modul vom Typ</value></data>
+  <data name="R25C3" xml:space="preserve"><value>wird jetzt neu gestartet und die Firmware in den Programmspeicher geschrieben.</value></data>
+  <data name="R25C4" xml:space="preserve"><value>Währenddessen bitte das Modul nicht von der Spannungsversorgung trennen.</value></data>
+  <data name="R25C5" xml:space="preserve"><value>Soll weiter fortgefahren werden?</value></data>
+  <data name="R25C6" xml:space="preserve"><value>ACHTUNG</value></data>
+  <data name="R25C7" xml:space="preserve"><value>Sollte sich das Modul nach ca. 3 min. nicht zurückgemeldet haben, dann muss es ausgebaut und von Grund auf neu über die ISP-Schnittstelle programmiert werden!!!</value></data>
+  <data name="R25C8" xml:space="preserve"><value>MBCAN - Firmwareupgrade</value></data>
+  <data name="R26C1" xml:space="preserve"><value>MBCAN - System</value></data>
+  <data name="R26C2" xml:space="preserve"><value>Unerlaubte Namensvergabe.</value></data>
+  <data name="R26C3" xml:space="preserve"><value>Bitte nicht mehr als 18 Zeichen verwenden!</value></data>
+  <data name="R26C4" xml:space="preserve"><value>Bitte verwenden Sie keine '@','.', ',', '!'</value></data>
+  <data name="R26C5" xml:space="preserve"><value>Der Name des Moduls darf nicht leer sein!</value></data>
+  <data name="R27C1" xml:space="preserve"><value>MBCAN - Datenbanken</value></data>
+  <data name="R27C2" xml:space="preserve"><value>Soll eine neue Systemdatenbank erstellt werden? Alle Daten werden gelöscht und die Module müssen sich neu anmelden. Dies kann einige Zeit in Anspruch nehmen.</value></data>
+  <data name="R27C3" xml:space="preserve"><value>Die ausgewählte Datei hat nicht das richtige Format. Es wird eine Dateilänge von 240 Zeilen erwartet. Gelesen werden konnten nur</value></data>
+  <data name="R27C4" xml:space="preserve"><value>Zeilen!</value></data>
+  <data name="R27C5" xml:space="preserve"><value>Die ausgewählte Datei hat nicht das richtige Format. Die Nummerierung der Steps ist fehlerhaft ab Zeile</value></data>
+  <data name="R27C6" xml:space="preserve"><value>Die ausgewählte Datei hat nicht das richtige Format. Die maximale Aussteuerung der Servos beträgt 120. In Zeile</value></data>
+  <data name="R27C7" xml:space="preserve"><value>ist ein Wert von</value></data>
+  <data name="R27C8" xml:space="preserve"><value>angegeben!</value></data>
+  <data name="R28C1" xml:space="preserve"><value>MBCAN - System</value></data>
+  <data name="R28C2" xml:space="preserve"><value>IP-Adresse nicht korrekt eingegeben. Bitte anpassen!</value></data>
+  <data name="R29C1" xml:space="preserve"><value>MBCAN - System</value></data>
+  <data name="R29C2" xml:space="preserve"><value>Die Sprachen-Datei ist noch geöffnet oder wird von einem anderen Prozess verwendet!</value></data>
+  <data name="R30C1" xml:space="preserve"><value>Servodiagramm</value></data>
+  <data name="R30C2" xml:space="preserve"><value>Ok</value></data>
+  <data name="R30C3" xml:space="preserve"><value>Step</value></data>
+  <data name="R30C4" xml:space="preserve"><value>Wert</value></data>
+  <data name="R30C5" xml:space="preserve"><value>Verwerfen</value></data>
+  <data name="R30C6" xml:space="preserve"><value>ROT</value></data>
+  <data name="R30C7" xml:space="preserve"><value>Mitte</value></data>
+  <data name="R30C8" xml:space="preserve"><value>GRÜN</value></data>
+  <data name="R30C9" xml:space="preserve"><value>Drehrichtung</value></data>
+  <data name="R30C10" xml:space="preserve"><value>Servoweg laden</value></data>
+  <data name="R30C11" xml:space="preserve"><value>Servoweg speichern</value></data>
+  <data name="R30C12" xml:space="preserve"><value>Hinweis</value></data>
+  <data name="R30C13" xml:space="preserve"><value>Die Drehrichtung ist abhängig vom Servotyp.</value></data>
+  <data name="R30C14" xml:space="preserve"><value>Deshalb sind hier die Endlagen und auch der entsprechende Servoweg auf die Stellungen &lt;ROT&gt; und &lt;GRÜN&gt; bezogen.</value></data>
+  <data name="R30C15" xml:space="preserve"><value>MBCAN - Wegdiagramm des Servos</value></data>
+  <data name="R31C1" xml:space="preserve"><value>Modulindex</value></data>
+  <data name="R31C2" xml:space="preserve"><value>Dieser Index symbolisiert die erste Stelle der GUiD. Default-Wert 'm'. Erlaubt ist jeder Kleinbuchstabe.</value></data>
+  <data name="R31C3" xml:space="preserve"><value>Dieser Index symbolisiert die Gerätekennung bei der Anmeldung an die CSx. Default-Wert 'AAAA'. Vergleiche CAN-Protokoll-Defintion von Märklin.</value></data>
+  <data name="R31C4" xml:space="preserve"><value>MBCAN - Kommunikationsparameter</value></data>
+  <data name="R31C5" xml:space="preserve"><value>Gerätekennung</value></data>
+  <data name="R32C1" xml:space="preserve"><value>Alias-Adr</value></data>
+  <data name="R32C2" xml:space="preserve"><value>Speed</value></data>
+  <data name="R32C3" xml:space="preserve"><value>Ok</value></data>
+  <data name="R32C4" xml:space="preserve"><value>Refresh</value></data>
+  <data name="R32C5" xml:space="preserve"><value>Vorwärts</value></data>
+  <data name="R32C6" xml:space="preserve"><value>Rückwärts</value></data>
+  <data name="R32C7" xml:space="preserve"><value>Funktion</value></data>
+  <data name="R32C8" xml:space="preserve"><value>Übersicht Lokomotiven</value></data>
+  <data name="R33C1" xml:space="preserve"><value>MBCAN - Zielwinkel der Drehscheibe</value></data>
+  <data name="R33C2" xml:space="preserve"><value>Angaben der Winkel im Hexadezimal-System </value></data>
+  <data name="R33C3" xml:space="preserve"><value>analog zur LCD-Anzeige auf dem mbc-94</value></data>
+  <data name="R33C4" xml:space="preserve"><value>Speichern…</value></data>
+  <data name="R33C5" xml:space="preserve"><value>Verwerfen</value></data>
+  <data name="R33C6" xml:space="preserve"><value>Ok</value></data>
+  <data name="R34C1" xml:space="preserve"><value>MBCAN - Zielprozessor auswählen</value></data>
+  <data name="R34C2" xml:space="preserve"><value>Zielprozessor</value></data>
+  <data name="R34C3" xml:space="preserve"><value>OK</value></data>
+  <data name="R34C4" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="R34C5" xml:space="preserve"><value>Der aktuelle Prozessortyp gemäß Artikelnummer lautet:</value></data>
+  <data name="R35C1" xml:space="preserve"><value>Diese Datei ist zu groß für den Boot-Speicherchip-Zwischenspeicher (max.</value></data>
+  <data name="R35C2" xml:space="preserve"><value>Byte).</value></data>
+  <data name="R35C3" xml:space="preserve"><value>Datei</value></data>
+  <data name="R35C4" xml:space="preserve"><value>Modultyp</value></data>
+  <data name="R35C5" xml:space="preserve"><value>Passt diese Datei zum ausgewählten Modultyp und Zielprozessor? Firmware jetzt übertragen?</value></data>
+  <data name="R35C6" xml:space="preserve"><value>Bitte die .bin-Datei wählen (nicht die .uf2-Datei für den Bootloader-Drag&amp;Drop).</value></data>
+  <data name="R35C7" xml:space="preserve"><value>Die angezeigte Obergrenze ist die Kapazität des Boot-Speicherchips, NICHT zwingend die tatsächliche OTA-Partitionsgröße dieses Boards (abhängig von Tools/Werkzeuge -&gt; Flash Size in der Arduino-IDE) - ein zu großes Image kann trotzdem fehlschlagen.</value></data>
+  <data name="R1C74" xml:space="preserve"><value>Datenbank zeigen ...</value></data>
+  <data name="R36C1" xml:space="preserve"><value>MBCAN - Datenbank</value></data>
+  <data name="R36C2" xml:space="preserve"><value>Status</value></data>
+  <data name="R36C3" xml:space="preserve"><value>Typ</value></data>
+  <data name="R36C4" xml:space="preserve"><value>Name</value></data>
+  <data name="R36C5" xml:space="preserve"><value>Artikelnummer</value></data>
+  <data name="R36C6" xml:space="preserve"><value>Seriennummer</value></data>
+  <data name="R36C7" xml:space="preserve"><value>GUiD</value></data>
+  <data name="R36C8" xml:space="preserve"><value>SW</value></data>
+  <data name="R36C9" xml:space="preserve"><value>HW</value></data>
+  <data name="R36C10" xml:space="preserve"><value>MM-Adresse</value></data>
+  <data name="R36C11" xml:space="preserve"><value>s88-Modulnr.</value></data>
+  <data name="R36C12" xml:space="preserve"><value>Steckernetzteil</value></data>
+  <data name="R36C13" xml:space="preserve"><value>Spannung</value></data>
+  <data name="R36C14" xml:space="preserve"><value>Temperatur</value></data>
+  <data name="R36C15" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="R36C16" xml:space="preserve"><value>Schließen</value></data>
+  <data name="R36C17" xml:space="preserve"><value>Angemeldet</value></data>
+  <data name="R36C18" xml:space="preserve"><value>Aktiv</value></data>
+  <data name="R36C19" xml:space="preserve"><value>Fehlt</value></data>
+  <data name="R36C20" xml:space="preserve"><value>Gelöscht</value></data>
+  <data name="R36C21" xml:space="preserve"><value>Unbekannt</value></data>
+  <data name="R36C22" xml:space="preserve"><value>Prozessor</value></data>
+</root>

@@ -1,0 +1,423 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BE023D63-B7DE-4F1E-949E-F2A15555FCBD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>MBCAN.My.MyApplication</StartupObject>
+    <RootNamespace>MBCAN</RootNamespace>
+    <AssemblyName>MBCAN</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\OneDrive\Eisenbahn\20 - Elektronik\03 - VisualBasic\MBCAN_3_X_0_0\MBCAN_3_0_0_0\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>false</MapFileExtensions>
+    <SupportUrl>https://www.wiesnertec.de</SupportUrl>
+    <ErrorReportUrl>https://www.wiesnertec.de</ErrorReportUrl>
+    <TargetCulture>de-DE</TargetCulture>
+    <ProductName>MBCAN-Parametriercenter</ProductName>
+    <PublisherName>MBCAN</PublisherName>
+    <SuiteName>MBCAN</SuiteName>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>3.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>MBCAN.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>MBCAN.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\mbc-icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>2C8CA8F9CEF5194CF73089616CB2FF1A571DB16B</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>MBCAN_10_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationEvents.vb" />
+    <Compile Include="frmWinkel.Designer.vb">
+      <DependentUpon>frmWinkel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmWinkel.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IMbcModul.vb" />
+    <Compile Include="CommunicationThread.vb" />
+    <Compile Include="mbc_modul_80.vb" />
+    <Compile Include="mbc_modul_93.vb" />
+    <Compile Include="mbc_modul_92.vb" />
+    <Compile Include="mbc_modul_91.vb" />
+    <Compile Include="mbc_modul_90.vb" />
+    <Compile Include="mbc_modul_89.vb" />
+    <Compile Include="mbc_modul_88.vb" />
+    <Compile Include="mbc_modul_87.vb" />
+    <Compile Include="mbc_modul_86.vb" />
+    <Compile Include="mbc_modul_85.vb" />
+    <Compile Include="mbc_modul_84.vb" />
+    <Compile Include="mbc_modul_83.vb" />
+    <Compile Include="mbc_modul_82.vb" />
+    <Compile Include="mbc_modul_81.vb" />
+    <Compile Include="mbc_modul_typdaten.vb" />
+    <Compile Include="mbc_modul_typ_93.vb" />
+    <Compile Include="mbc_modul_typ_92.vb" />
+    <Compile Include="mbc_modul_typ_91.vb" />
+    <Compile Include="mbc_modul_typ_90.vb" />
+    <Compile Include="mbc_modul_typ_89.vb" />
+    <Compile Include="mbc_modul_typ_88.vb" />
+    <Compile Include="mbc_modul_typ_87.vb" />
+    <Compile Include="mbc_modul_typ_86.vb" />
+    <Compile Include="mbc_modul_typ_85.vb" />
+    <Compile Include="mbc_modul_typ_84.vb" />
+    <Compile Include="mbc_modul_typ_83.vb" />
+    <Compile Include="mbc_modul_typ_81.vb" />
+    <Compile Include="mbc_modul_typ_82.vb" />
+    <Compile Include="mbc_modul_typ_80.vb" />
+    <Compile Include="mbc_modul_stammdaten.vb" />
+    <Compile Include="mbc_system.vb" />
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="sprache.vb" />
+    <Compile Include="verticalProgressBar.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="datenbanken.vb" />
+    <Compile Include="definitionen.vb" />
+    <Compile Include="frmInfo.Designer.vb">
+      <DependentUpon>frmInfo.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmInfo.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLoks.Designer.vb">
+      <DependentUpon>frmLoks.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmLoks.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.Designer.vb">
+      <DependentUpon>frmMain.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.ComProtocol.vb">
+      <DependentUpon>frmMain.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmInit.Designer.vb">
+      <DependentUpon>frmInit.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmInit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmServo.Designer.vb">
+      <DependentUpon>frmServo.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmServo.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmProzessorAuswahl.Designer.vb">
+      <DependentUpon>frmProzessorAuswahl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmProzessorAuswahl.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmDatenbank.Designer.vb">
+      <DependentUpon>frmDatenbank.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmDatenbank.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="frmStart.Designer.vb">
+      <DependentUpon>frmStart.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmStart.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings.vb" />
+    <Compile Include="utils.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SprachenDE.resx" />
+    <EmbeddedResource Include="SprachenFR.resx" />
+    <EmbeddedResource Include="SprachenEN.resx" />
+    <EmbeddedResource Include="frmInfo.resx">
+      <DependentUpon>frmInfo.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLoks.resx">
+      <DependentUpon>frmLoks.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmInit.resx">
+      <DependentUpon>frmInit.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmServo.resx">
+      <DependentUpon>frmServo.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmWinkel.resx">
+      <DependentUpon>frmWinkel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmStart.resx">
+      <DependentUpon>frmStart.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="bin\Debug\Inifiles\sprachen.csv" />
+    <None Include="MBCAN_10_TemporaryKey.pfx" />
+    <None Include="MBCAN_2_TemporaryKey.pfx" />
+    <None Include="MBCAN_4_TemporaryKey.pfx" />
+    <None Include="MBCAN_5_TemporaryKey.pfx" />
+    <None Include="MBCAN_6_TemporaryKey.pfx" />
+    <None Include="MBCAN_7_TemporaryKey.pfx" />
+    <None Include="MBCAN_8_TemporaryKey.pfx" />
+    <None Include="MBCAN_9_TemporaryKey.pfx" />
+    <None Include="My Project\app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="Resources\mbc_verwalten_bd_parametriercenter.pdf" />
+    <None Include="Resources\sprachen.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 und x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_gelb.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_gleis.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_grau.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_gruen.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_haken.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_kreuz.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_modul.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_rot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_mbc_symbol.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_mbc_titelbild.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\img_delete.bmp" />
+    <None Include="Resources\img_mbc_93.bmp" />
+    <None Include="Resources\img_mbc_92.bmp" />
+    <None Include="Resources\img_mbc_91.bmp" />
+    <None Include="Resources\img_mbc_90.bmp" />
+    <None Include="Resources\img_mbc_89_neu.bmp" />
+    <None Include="Resources\img_mbc_89_keyboard.bmp" />
+    <None Include="Resources\img_mbc_89.bmp" />
+    <None Include="Resources\img_mbc_88.bmp" />
+    <None Include="Resources\img_mbc_87.bmp" />
+    <None Include="Resources\img_mbc_86.bmp" />
+    <None Include="Resources\img_mbc_85_drehscheibe.bmp" />
+    <None Include="Resources\img_mbc_85.bmp" />
+    <None Include="Resources\img_mbc_84_servo.bmp" />
+    <None Include="Resources\img_mbc_84.bmp" />
+    <None Include="Resources\img_mbc_83.bmp" />
+    <None Include="Resources\img_mbc_82.bmp" />
+    <None Include="Resources\img_mbc_81.bmp" />
+    <None Include="Resources\img_mbc_80_wlan.bmp" />
+    <None Include="Resources\img_mbc_80_neu.bmp" />
+    <None Include="Resources\img_mbc_80.bmp" />
+    <None Include="Resources\img_mbc_80_neu1.bmp" />
+    <None Include="Resources\img_mbc_801.bmp" />
+    <None Include="Resources\mbc-icon.ico" />
+    <None Include="Resources\img_startup.bmp" />
+    <None Include="Resources\img_punkt.bmp" />
+    <None Include="Resources\img_x_black.bmp" />
+    <None Include="Resources\img_wechsel.bmp" />
+    <None Include="Resources\img_impuls.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Servos\linear.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Servos\schranke.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Servos\schranke_links.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Servos\schranke_rechts.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Servos\schuppentor.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Servos\fluegelsignal.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Servos\weichenantrieb.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

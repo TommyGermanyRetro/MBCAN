@@ -1,0 +1,343 @@
+Forms;Hauptindex;Detailindex;Deutsch;Französisch;Englisch
+frmMain;1;1;MBCAN - Parametriercenter für mbc-Module;MBCAN Centre de paramétrage pour modules MBC;MBCAN - ParaCenter for mbc-Modules
+frmMain;1;2;None;NC;None
+frmMain;1;3;Connecting ...;Connexion...;Connecting ...
+frmMain;1;4;Disconnecting ...;Deconnexion;Disconnecting ...
+frmMain;1;5;Refresh: -/-;Rafraichir :-/-;Refresh: -/-
+frmMain;1;6;Update: Ready;Mise à jour : Prêt;Update: Ready
+frmMain;1;7;Refresh: Ready;Rafraichir : Prêt;Refresh: Ready
+frmMain;1;8;Update: Start;Mise à jour : Départ ;Update: Start
+frmMain;1;9;Update: Stop;Mise à jour : Stop;Update: Stop
+frmMain;1;10;Upgrade: Start;Mise à niveau: Départ ;Upgrade: Start
+frmMain;1;11;Ugrade: Ready;Mise à niveau : Prêt;Ugrade: Ready
+frmMain;1;12;Refresh: Start;Rafraichir:  Départ ;Refresh: Start
+frmMain;1;13;Refresh: Stop;Rafraichir: Arrêt;Refresh: Stop
+frmMain;1;14;Searching: -/-;Recherche: -/-;Searching: -/-
+frmMain;1;15;Searching: ;Recherche: ;Searching: 
+frmMain;1;16;-/-; -/-;-/-
+frmMain;1;17;BOOT-Pages: ;Pages-BOOT:;BOOT-Pages: 
+frmMain;1;18;System;Système;System
+frmMain;1;19;Datenbank erneuern ...;Actualiser la base de données...;Database Renew ...
+frmMain;1;20;Datenbank speichern ...;Enregistrer la base de données;Database Save ...
+frmMain;1;21;Beenden;Quitter;Close
+frmMain;1;22;Verbindung;Connexion;Connection
+frmMain;1;23;Einstellen;Paramètres;Settings
+frmMain;1;24;Verbinden;Connexion;Connect
+frmMain;1;25;Trennen;Quitter;Release
+frmMain;1;26;Info;Info;Info
+frmMain;1;27;Über MBCAN ...;MBCAN Web;About MBCAN
+frmMain;1;28;Bedienungsanleitung;Notice;Manual
+frmMain;1;29;Copyright;Copyright;Copyright
+frmMain;1;30;Modul;Module;Module
+frmMain;1;31;Refresh;Rafraichir;Refresh
+frmMain;1;32;Verwerfen;Ignorer;Drop
+frmMain;1;33;Stopp;Stop;Stop
+frmMain;1;34;Update;Mise à jour;Update
+frmMain;1;35;Upgrade;Mise à niveau;Upgrade
+frmMain;1;36;Reset;RAZ;Reset
+frmMain;1;37;Löschen;Effacer;Delete
+frmMain;1;38;Parameter;Paramètre;Parameter
+frmMain;1;39;Name;Nom;Name
+frmMain;1;40;Typ;Type;Type
+frmMain;1;41;Artikelnummer;Objet;Article
+frmMain;1;42;Seriennummer;N° série;SerialN°
+frmMain;1;43;GUiD;GUID;GUiD
+frmMain;1;44;SW-Version;Version-SW;SW-Version
+frmMain;1;45;HW-Version;Version-HW;HW-Version
+frmMain;1;46;Plugged;Branchement;Plugged
+frmMain;1;47;Temperatur;Température;Temperature
+frmMain;1;48;Spannung;Tension;Voltage
+frmMain;1;49;Status;Statut;Status
+frmMain;1;50;Stellpult;Clavier;Keyboard
+frmMain;1;51;R;R;R
+frmMain;1;52;G;V;G
+frmMain;1;53;Monitor;Moniteur;Monitor
+frmMain;1;54;None;NC;None
+frmMain;1;55;CAN-Telegramme auf dem Märklin- und MBCAN-Bus via RS232;Telegramme-CAN entre Märklin CS et MBCAN-Bus via RS232;CAN-Telegramme on Märklin- and MBCAN-Bus via RS232
+frmMain;1;56;CAN-Telegramme auf dem Märklin- und MBCAN-Bus via Bluetooth;Telegramme-CAN entre Märklin CS et MBCAN-Bus via Bluetooth;CAN-Telegramme on Märklin- and MBCAN-Bus via Bluetooth
+frmMain;1;57;CAN-Telegramme auf dem Märklin- und MBCAN-Bus via TCP;Telegramme-CAN entre Märklin CS et MBCAN-Bus via TCP;CAN-Telegramme on Märklin- and MBCAN-Bus via TCP
+frmMain;1;58;Nachrichteninhalt;Message;Messages
+frmMain;1;59;Adressen;Adresses;Addresses
+frmMain;1;60;Zuordnung Module zu Loc-ID;Modules à Loc-ID;Modules to Loc-ID
+frmMain;1;61;Übersicht generieren;Aperçu;Overview
+frmMain;1;62;Loc-ID;Loc-ID;Loc-ID
+frmMain;1;63;Typ;Type;Type
+frmMain;1;64;Name;Nom;Name
+frmMain;1;65;Index;Index module;Index
+frmMain;1;66;Zuordnung Module zu S88-Rückmelder;Capteurs S88 vers modules;Modules to S88-Sensors
+frmMain;1;67;ModNr;N° Mod;ModN°
+frmMain;1;68;MBC-Bus-Versorgung;Puissance 18V sur Bus;Power over Bus
+frmMain;1;69;Steckernetzteil;Puissance 18V externe;Power supply
+frmMain;1;70;Sprache;Langue;Language
+frmMain;1;71;Deutsch;Allemand;German
+frmMain;1;72;Französisch;Français;French
+frmMain;1;73;Englisch;Anglais;English
+mbc-80;2;1;Die Länge des Modulnamens ist mit fünf Buchstaben fest vorgegeben.;La longueur du nom des modules est fixée à cinq lettres.;The length of the modules' name is fixed to five letters.
+mbc-80;2;2;Name;Nom;Name
+mbc-80;2;3;Das Passwort ist numerisch im Bereich 0000 ... 9999 einstellbar.;Le mot de passe compris entre 0000 et 9999;The password can be trimmed between 0000 and 9999
+mbc-80;2;4;Passwort;Mot de passe;Password:
+mbc-80;2;5;s88-Automatikgerät;Unité d'automatisme S88;s88 automation unit
+mbc-80;2;6;Durch CSx zugewiesener Automatik-Kenner;ID automatique attribué par CSx;From CSx configured automation ID
+mbc-80;2;7;L88-Softwareversion;Version sofware L88;L88 software version
+mbc-80;2;8;Die aktuelle Softwareversion des L88 von Märklin, um die Update-Aufforderung von der CSx zu umgehen.;La version actuelle du logiciel du L88 utilisé pour éviter une demande de mise à jour;The actual software version of the real L88 to avoid an update request
+mbc-80;2;9;L88-SW-Version;Version L88 sw;L88 sw version
+mbc-81;3;1;Loc-ID in HEX;Loc-ID en HEX;Loc-ID in HEX
+mbc-81;3;2;Nutzung des Moduls;Type d'utilisation;Type of usage
+mbc-81;3;3;bis;jusqu'à;to
+mbc-81;3;4;Adresse;Adresse;Address
+mbc-81;3;5;Über die Combo-Box kann ausgewählt werden, ob das Modul als MM2-Switchboard genutzt wird (Ersatz für 6040) oder als Halbmodul für den BUS 0 des mbc-80 (L88-Bus-0). Bei den Halbmodulen können von den 64 möglichen Tastern der Matrix entweder die Tasten 1-32 oder 33-64 ausgewählt werden.;La liste déroulante permet de sélectionner si le module est utilisé comme standard MM2 (remplacement du 6040) ou comme demi-module pour le BUS 0 du mbc-80 (L88-Bus-0).Avec les demi-modules, soit les touches 1-32 soit 33-64 peuvent être sélectionnées parmi les 64 touches possibles de la matrice.;The combo box chooses the type of usage of the module as MM2 switchboard (alias 6040) or as half module from bus 0 of a L88. When used as half module, from 64 possible switches of the matrix the cluster 1 to 32 or the cluster 33 to 64 can be chosen.
+mbc-81;3;6;CS2: Die Tasten 1-32 entsprechen den Kontakten 101-132, die Tasten 33-64 den Kontakte 133-164. ;CS2 : Les interrupteurs 1 à 32 correspondent aux contacts 101 à 132, les interrupteurs 33 à 64 aux contacts 133 à 164.;CS2: The switches 1 to 32 correspond to contacts 101 to 132, the switches 33 to 64 contacts 133 to 164.
+mbc-81;3;7;CS3: Bei der Einstellung <Tastenmatrix> entsprechen die Kontakte 1-32 und 33-64 den jeweiligen Tasten.;CS3 : Lorsqu'il est réglé sur <key matrix>, les contacts 1-32 et 33-64 correspondent aux touches respectives.;CS3: If <switch matrix> is selected, contacts 1 to 32 and 33 to 64 correspond to the used switches.
+mbc-81;3;8;Switchboard;Distribution;Switchboard
+mbc-81;3;9;Bus 0 Matrix  1...32;Bus 0 Matrice 1…32;Bus 0 Matrix  1...32
+mbc-81;3;10;Bus 0 Matrix 33...64;Bus 0 Matrice 33…64;Bus 0 Matrix 33...64
+mbc-82;4;1;GFP-SW-Version;Version logicielle GFP;SW version GFP
+mbc-82;4;2;Die aktuelle Softwareversion des GFP/Booster von Märklin, um die Update-Aufforderung von der CSx zu umgehen.;La version actuelle du logiciel du GFP/Booster utilisé pour éviter une demande de mise à jour;The actual software version of the real GFP/Booster to avoid an update request
+mbc-82;4;3;Nach dem <Update> das Modul bitte per <Reset> neu starten. Die neue Softwareversion wird dann in der CSx angezeigt.;Après une <Mise à jour> veuillez redémarrer le module par <Réinitialiser>. La nouvelle version du logiciel sera alors affichée sur le CSx.;After an <Update> please restart the module by <Reset>. The new software version will then be shown on the CSx.
+mbc-82;4;4;GFP-SW-Version;Version logicielle GFP;SW version GFP
+mbc-82;4;5;Latenz Kurzschlusserkennung;Delai de détection de court-circuit;Latency of short circuit recognation
+mbc-82;4;6;Die Latenz bis zum Ansprechen der Kurzschlusserkennung kann hier in Schritten von 50 ms eingestellt werden.;Le délai de reconnaissance du court-circuit peut être réglée par pas de 50 ms.;The latency of short circuit recognation event can be set in steps of 50 ms.
+mbc-82;4;7;Nach dem <Update> des Moduls bitte dieses aus der GUI der CS3 löschen. Der neue Latenzwert wird dann in der CS3 angezeigt.;Après une <mise à jour>, veuillez supprimer le module dans l'interface graphique du CS3 pour démarrer la synchronisation. Le nouveau délai sera alors affiché.;After an <Update> please delete the module in the GUI of a CS3 to start synchronisation. The new latency will then be shown.
+mbc-82;4;8;Bei einer CS2 bitte diesen Wert ausschließlich in der CS2-GUI ändern und über den <Refresh>-Button aktualisieren.;Dans le cas du CS2, veuillez modifier la valeur du délai uniquement dans l'interface graphique de CS2 et ensuite par le bouton <Refresh> dans le centre de parametrage .;In case of a CS2 please change the value of latency only in CS2's GUI and by <Refresh> button in the ParaCenter afterwards.
+mbc-82;4;9;Latenz [ms];Délai  [ms];Latency [ms]
+mbc-83;5;1;Loc-ID in HEX;Loc-ID en HEX;Loc-ID in HEX
+mbc-83;5;2;Dimmer StartUp;Variateur Startup;Dimmer StartUp
+mbc-83;5;3;Auto-AUS;Auto Off;Auto Off
+mbc-83;5;4;Meldezyklus;Rapport cycle;Reporting
+mbc-83;5;5;Impulsausgang;Impulsion;Pulse
+mbc-83;5;6;Wechselschalter;Bascule;Toogle
+mbc-83;5;7;StartUp-Signal;Start-Up;StartUp
+mbc-83;5;8;Adresse;Adresse;Address
+mbc-83;5;9;Typ;Type;Type
+mbc-83;5;10;Impuls;Impulsion;Pulse
+mbc-83;5;11;Wechsel;Bascule;Toogle
+mbc-83;5;12;StartUp;Start-Up;StartUp
+mbc-83;5;13;ON-Time;Tempo ON;ON-Time
+mbc-83;5;14;Ausgang 1;Canal 1;Channel 1
+mbc-83;5;15;Ausgang 2;Canal 2;Channel 2
+mbc-83;5;16;Ausgang 3;Canal 3;Channel 3
+mbc-83;5;17;Ausgang 4;Canal 4;Channel 4
+mbc-84;6;1;Loc-ID in HEX;Loc-ID en HEX;Loc-ID in HEX
+mbc-84;6;2;Meldezyklus;Rapport cycle;Reporting
+mbc-84;6;3;Servo 1;Servo 1;Servo 1
+mbc-84;6;4;Servo 2;Servo 2;Servo 2
+mbc-84;6;5;Servo 3;Servo 3;Servo 3
+mbc-84;6;6;Servo 4;Servo 4;Servo 4
+mbc-84;6;7;Adresse;Adresse;Address
+mbc-84;6;8;Grün;Vert;Green
+mbc-84;6;9;Rot;Rouge;Red
+mbc-84;6;10;Wegdiagramm;Diagramme course;Path diagram
+mbc-84;6;11;Step;Pas ;Step
+mbc-85;7;1;ModNr;N° Mod;ModN°
+mbc-85;7;2;BusNr;N° Bus;BusN°
+mbc-85;7;3;Kontakte CS2;Connexion CS2;Connectors CS2
+mbc-85;7;4;mfx-Adresse Drehscheibe;l'Adresse mfx plaque tournante;mfx-address Turntable
+mbc-85;7;5;Adresse;LocoAdr;Address
+mbc-85;7;6;Geschwindigkeit;Vitesse;Speed
+mbc-85;7;7;Integrator Gleise;Intégrateur;Integrator Tracks
+mbc-85;7;8;Integrator Bühne;Intégrateur;Integrator Bridge
+mbc-85;7;9;Gleiswinkel;Angle;Track Angles
+mbc-86;8;1;ModNr;N° Mod;ModN°
+mbc-86;8;2;BusNr;N° Bus;BusN°
+mbc-86;8;3;Kontakte CS2;Connexion CS2;Connectors CS2
+mbc-86;8;4;DCC-Adresse Schiebebühne;l'Adresse DCC Plateforme;DCC-address Platform
+mbc-86;8;5;Adresse;LocoAdr;Address
+mbc-87;9;1;MM2-Lok-Adresse;MM2-Loc-ID;MM2-Loco-Address
+mbc-87;9;2;Drehen;Rotation;Rotate
+mbc-87;9;3;Adresse;Adresse;Address
+mbc-87;9;4;Rechts;Droit;Right
+mbc-87;9;5;Stopp;Stop;Stop
+mbc-87;9;6;Links;Gauche;Left
+mbc-87;9;7;Heben/Senken;Montée/descente;Up/Down
+mbc-87;9;8;Heben;Montée;Up
+mbc-87;9;9;Senken;Descente;Down
+mbc-87;9;10;Magnet;Electro aimant;Coil
+mbc-87;9;11;Aus;Off ;Off
+mbc-87;9;12;An;On ;On
+mbc-88;10;1;ModNr;N° Mod;ModN°
+mbc-88;10;2;Halbmodul;Demi-module;Half module
+mbc-88;10;3;BusNr;N° Bus;BusN°
+mbc-88;10;4;Kontakte CS2;Connexion CS2;Connectors CS2
+mbc-88;10;5;Integrator;Intégrateur;Integrator
+mbc-88;10;6;Eingänge 1 - 8;Entrée 1 - 8;Input 1 - 8
+mbc-88;10;7;Eingänge 9 - 16;Entrée 9 - 16;Input 9 - 16
+mbc-89;11;1;I2C-Bus-Clock;I2C-Bus-Clock;I2C-Bus-Clock
+mbc-89;11;2;Takt;Horloge;Clock
+mbc-89;11;3;Basisadresse;Base adresse;Base address
+mbc-89;11;4;Keyboard Nr. 1;Pupitre N°1;Keyboard N° 1 
+mbc-89;11;5;Lokeigenschaften;Paramètre Loco;Loco settings
+mbc-89;11;6;Mapping;Cartographie;Mapping
+mbc-89;11;7;Mapping;Cartographie;Mapping
+mbc-89;11;8;Mapping & Direkt;Cartographie et direct;Mapping & Direct
+mbc-89;11;9;Keyboard;Pupitre ;Keyboard
+mbc-89;11;10;Connect6021-Softwareversion;Version du logiciel Connect6021;Connect6021 software version
+mbc-89;11;11;Das Modul mbc-89 bietet derzeit keine Parametrierungsmöglichkeiten!;Le module MBC-89 n'est pas achevé;The module mbc-89 is not finished yet!
+mbc-90;12;1;ModNr;N° Mod;ModN°
+mbc-90;12;2;BusNr;N°Bus;BusN°
+mbc-90;12;3;Kontakte CS2;Connexion CS2;Connectors CS2
+mbc-90;12;4;Integrator;Intégrateur;Integrator
+mbc-91;13;1;Loc-ID in HEX;Loc-ID en HEX;Loc-ID in HEX
+mbc-91;13;2;Meldezyklus;Rapport cycle;Reporting
+mbc-91;13;3;Auto-AUS;Auto Off;Auto Off
+mbc-91;13;4;Adresse;Adresse;Address
+mbc-91;13;5;Typ;Type;Type
+mbc-91;13;6;ON-Time;Tempo-ON;ON-Time
+mbc-91;13;7;Impuls;Impulsion;Pulse
+mbc-91;13;8;Wechsel;Bascule;Toogle
+mbc-91;13;9;Ausgang 1;Canal 1;Channel 1
+mbc-91;13;10;Ausgang 2;Canal 2;Channel 2
+mbc-91;13;11;Ausgang 3;Canal 3;Channel 3
+mbc-91;13;12;Ausgang 4;Canal 4;Channel 4
+mbc-91;13;13;Wechselschalter;Bascule;Toogle
+mbc-91;13;14;Impulsausgang;Impulsion;Pulse
+mbc-92;14;1;Loc-ID in HEX;Loc-ID en HEX;Loc-ID in HEX
+mbc-92;14;2;Meldezyklus;Rapport cycle;Reporting
+mbc-92;14;3;Auto-AUS;Auto Off;Auto Off
+mbc-92;14;4;Adresse;Adresse;Address
+mbc-92;14;5;Typ;Type;Type
+mbc-92;14;6;ON-Time;Tempo-ON;ON-Time
+mbc-92;14;7;Impuls;Impulsion;Pulse
+mbc-92;14;8;Wechsel;Bascule;Toogle
+mbc-92;14;9;Ausgang 1;Canal 1;Channel 1
+mbc-92;14;10;Ausgang 2;Canal 2;Channel 2
+mbc-92;14;11;Ausgang 3;Canal 3;Channel 3
+mbc-92;14;12;Ausgang 4;Canal 4;Channel 4
+mbc-92;14;13;Wechselschalter;Bascule;Toogle
+mbc-92;14;14;Impulsausgang;Impulsion;Pulse
+mbc-93;15;1;GFP-SW-Version;Version logicielle GFP;SW version GFP
+mbc-93;15;2;Die aktuelle Softwareversion des GFP/Booster von Märklin, um die Update-Aufforderung von der CSx zu umgehen.;La version actuelle du logiciel du GFP/Booster utilisé pour éviter une demande de mise à jour;The actual software version of the real GFP/Booster to avoid an update request
+mbc-93;15;3;Nach dem <Update> das Modul bitte per <Reset> neu starten. Die neue Softwareversion wird dann in der CSx angezeigt.;Après une <Mise à jour> veuillez redémarrer le module par <Réinitialiser>. La nouvelle version du logiciel sera alors affichée sur le CSx.;After an <Update> please restart the module by <Reset>. The new software version will then be shown on the CSx.
+mbc-93;15;4;GFP-SW-Version;Version logicielle GFP;SW version GFP
+mbc-93;15;5;Latenz Kurzschlusserkennung;Delai de détection de court-circuit;Latency of short circuit recognation
+mbc-93;15;6;Die Latenz bis zum Ansprechen der Kurzschlusserkennung kann hier in Schritten von 50 ms eingestellt werden.;Le délai de reconnaissance du court-circuit peut être réglée par pas de 50 ms.;The latency of short circuit recognation event can be set in steps of 50 ms.
+mbc-93;15;7;Nach dem <Update> des Moduls bitte dieses aus der GUI der CS3 löschen. Der neue Latenzwert wird dann in der CS3 angezeigt.;Après une <mise à jour>, veuillez supprimer le module dans l'interface graphique du CS3 pour démarrer la synchronisation. Le nouveau délai sera alors affiché.;After an <Update> please delete the module in the GUI of a CS3 to start synchronisation. The new latency will then be shown.
+mbc-93;15;8;Bei einer CS2 bitte diesen Wert ausschließlich in der CS2-GUI ändern und über den <Refresh>-Button aktualisieren.;Dans le cas du CS2, veuillez modifier la valeur du délai uniquement dans l'interface graphique de CS2 et ensuite par le bouton <Refresh> dans le centre de parametrage .;In case of a CS2 please change the value of latency only in CS2's GUI and by <Refresh> button in the ParaCenter afterwards.
+mbc-93;15;9;Latenz [ms];Délai  [ms];Latency [ms]
+MsgBox NeuInit;16;1;Sollen die Module des Typs;Module de type;Shall modules of type
+MsgBox NeuInit;16;2;neu initialisiert werden?;Nouvelle initialisation?;be initialised new?
+MsgBox NeuInit;16;3;Alle Daten der betroffenen Module werden gelöscht.;Toutes les données des modules concernés seront supprimées.;All data form the modules will be deleted.
+MsgBox NeuInit;16;4;Danach melden sich die am MBCAN-Bus befindlichen Module des Typs;Tous les modules du type;All modules of the type
+MsgBox NeuInit;16;5;wieder an.;dans le bus s'enregistreront ensuite.;on the bus will register afterwards.
+MsgBox NeuInit;16;6;Versehentlich gelöschte, aber weiterhin aktive Module erscheinen so wieder In der Datenbank.;Les modules supprimés mais actifs sur le bus seront enregistrés dans la base de données.;Deleted but active modules on the bus will be registered in the database.
+MsgBox NeuInit;16;7;MBCAN - Modulsteuerung;MBCAN - Contrôle des modules ;MBCAN - Module Control
+MsgBox Database;17;1;Die Datenbank wird im Ordner 'Dokumente/MBCAN/Datenbank/' unter der Datei 'mbc_db_;La base de données enregistrée dans le dossier 'Documents/MBCAN/Datenbank/' et nommée 'mbc_db_;The database will be saved in Folder 'Documents/MBCAN/Datenbank/' and named 'mbc_db_
+MsgBox Database;17;2;.txt' abgelegt. Bitte mit 'Ja' bestätigen oder mit 'Nein' verwerfen.;.txt'. Veuillez confirmer avec 'Oui' ou rejeter avec 'Non'.;.txt'. Please confirm with 'Yes' or reject with 'No'.
+MsgBox Database;17;3;MBCAN - Datenbanken;MBCAN -base données;MBCAN - Database
+MsgBox Manual;18;1;Die Bedienungsanleitung ist noch geöffnet oder wird von einem anderen Prozess verwendet!;Le manuel est ouvert dans un autre processus ou est utilisé par le système !;The manual is opened in another process or is used by system!
+MsgBox Manual;18;2;MBCAN - System;MBCAN - Système;MBCAN - System
+MsgBox RS232;19;1;MBCAN - RS232;MBCAN - RS232;MBCAN - RS232
+MsgBox RS233;19;2;Der COM-Port für die RS232-Kommunikation;Le port COM pour communication RS232 ;The COM port for RS232 communication
+MsgBox RS234;19;3;wird geschlossen da das Interface nicht erreichbar ist! Bitte die Einstellungen prüfen!;n'est pas joignable et sera fermé ! Veuillez vérifier les paramètres !;is not reachable and will be closed! Please check the settings!
+MsgBox RS235;19;4;konnte nicht geöffnet werden!;n'est pas joignable !;is not reachable!
+MsgBox BT;20;1;MBCAN - Bluetooth;MBCAN - Bluetooth;MBCAN - Bluetooth
+MsgBox BT;20;2;Der COM-Port für die Bluetooth-Kommunikation;Le port COM pour la communication Bluetooth;The COM port for Bluetooth communication
+MsgBox BT;20;3;wird geschlossen da das Interface nicht erreichbar ist! Bitte die Einstellungen prüfen!;n'est pas joignable et sera fermé ! Veuillez vérifier les paramètres !;is not reachable and will be closed! Please check the settings!
+MsgBox BT;20;4;konnte nicht geöffnet werden!;n'est pas joignable !;is not reachable!
+MsgBox TCP;21;1;MBCAN - TCP;MBCAN - TCP;MBCAN - TCP
+MsgBox TCP;21;2;Der Port für die TCP-Kommunikation wird geschlossen da das Interface nicht erreichbar ist! Bitte die Einstellungen prüfen!;Le port TCP n'est pas accessible et sera fermé ! Veuillez vérifier les paramètres !;The TCP port is not reachable and will be closed! Please check the settings!
+MsgBox TCP;21;3;Vom TCP-Port kann nicht gelesen werden!;Lire depuis TCP est impossible !;Reading from TCP is impossible!
+MsgBox TCP;21;4;Auf den TCP-Port kann nicht geschrieben werden!;Ecrire avec TCP est impossible!;Writing to TCP is impossible!
+MsgBox TCP;21;5;Der TCP-Port für die Kommunikation konnte nicht geöffnet werden!;Le port TCP n'est pas accessible !;The TCP port is not reachable!
+MsgBox Count;22;1;Die maximale Anzahl von;Le maximum de;The maximum of 
+MsgBox Count;22;2;Modulen ist registriert!;modules ont déjà été enregistré!;modules has already by registered!
+MsgBox Count;22;3;MBCAN - Modulsteuerung;MBCAN - Contrôle des modules;MBCAN - Module Control
+MsgBox Format;23;1;Diese Datei ist kein gültiges HEX-File für den Modultyp;Ce fichier n'a pas de contenu compatible pour le type de module;This file has no compatible content for the module type
+MsgBox Format;23;2;MBCAN - Firmwareupgrade;MBCAN - Mise à niveau du micrologiciel;MBCAN - Firmware Upgrade
+MsgBox Upgrade;24;1;Die neue Firmware wird nun an das Modul vom Typ;Le nouveau firmware pour le type de module;The new firmware for the module type
+MsgBox Upgrade;24;2;übertragen ;est désormais transmis;will now be transmitted
+MsgBox Upgrade;24;3;Dieser Vorgang kann jederzeit über den <Stopp>-Button unterbrochen werden;Le processus peut être interrompu en appuyant sur <Stop> à tout moment.;The process can be interrupted by pressing <Stop> at any time.
+MsgBox Upgrade;24;4;MBCAN - Firmwareupgrade;MBCAN - Mise à niveau du micrologiciel;MBCAN - Firmware Upgrade
+MsgBox Prog;25;1;Die Übertragung der neuen Firmware ist abgeschlossen.;La transmission est terminée.;Z´The transmission has been completed.
+MsgBox Prog;25;2;Das Modul vom Typ;Le module de type;The module of type
+MsgBox Prog;25;3;wird jetzt neu gestartet und die Firmware in den Programmspeicher geschrieben.;va maintenant être redémarré et le nouveau firmware sera programmé dans la ROM.;will now be restarted and the new firmware will be programmed into ROM.
+MsgBox Prog;25;4;Währenddessen bitte das Modul nicht von der Spannungsversorgung trennen.;Veuillez ne pas couper l'alimentation du module.;Please do not seperate the module from power.
+MsgBox Prog;25;5;Soll weiter fortgefahren werden?;Voulez-vous continuer?;Continue?
+MsgBox Prog;25;6;ACHTUNG;ATTENTION;ATTENTION
+MsgBox Prog;25;7;Sollte sich das Modul nach ca. 3 min. nicht zurückgemeldet haben, dann muss es ausgebaut und von Grund auf neu über die ISP-Schnittstelle programmiert werden!!!;Si le module ne s'initialise pas après environ 3 minutes, la programmationà échouer. L'interface ISP doit être utilisée pour le chargement du programme.;Should the module do not register after about 3 min., the programming might failed. Then, the ISP interface has to be used for reset and programming.
+MsgBox Prog;25;8;MBCAN - Firmwareupgrade;MBCAN - Mise à niveau du micrologiciel;MBCAN - Firmware Upgrade
+MsgBox Name;26;1;MBCAN - System;MBCAN - Système;MBCAN - System
+MsgBox Name;26;2;Unerlaubte Namensvergabe.;Ce nom n'est pas autorisé.;This name is not allowed.
+MsgBox Name;26;3;Bitte nicht mehr als 18 Zeichen verwenden!;Merci de ne pas utiliser plus de 18 caractères !;Please do not use more than 18 symbols!
+MsgBox Name;26;4;Bitte verwenden Sie keine '@','.', ',', '!';Veuillez ne pas utiliser '@','.', ',', '!';Please do not use '@','.', ',', '!'
+MsgBox Name;26;5;Der Name des Moduls darf nicht leer sein!;Le nom du module ne doit pas être vide !;The name of the module should not be empty!
+MsgBox Database;27;1;MBCAN - Datenbanken;MBCAN - Base données;MBCAN - Database
+MsgBox Database;27;2;Soll eine neue Systemdatenbank erstellt werden? Alle Daten werden gelöscht und die Module müssen sich neu anmelden. Dies kann einige Zeit in Anspruch nehmen.;Une nouvelle base de données système doit-elle être créée ? Toutes les données de tous les modules seront supprimées.Attendre quelques instants.;Shall a new system database be created? All data of all modules will be deleted. This will last some moments.
+MsgBox Database;27;3;Die ausgewählte Datei hat nicht das richtige Format. Es wird eine Dateilänge von 240 Zeilen erwartet. Gelesen werden konnten nur;Le fichier sélectionné a un format incorrect. Une longueur de 240 lignes est attendue. Seulement;The selected file has a wrong format. A length of 240 rows is expected. Only 
+MsgBox Database;27;4;Zeilen!;les lignes pouvaient être lues !;rows could be read!
+MsgBox Database;27;5;Die ausgewählte Datei hat nicht das richtige Format. Die Nummerierung der Steps ist fehlerhaft ab Zeile;Le fichier sélectionné n'est pas au bon format. La numérotation des étapes est incorrecte à partir de la ligne;The selected file has a wrong format. Die numbering of the steps has failures beginning with row
+MsgBox Database;27;6;Die ausgewählte Datei hat nicht das richtige Format. Die maximale Aussteuerung der Servos beträgt 120. In Zeile;Le fichier sélectionné n'est pas au bon format. La modulation maximale des servos est de 120. En ligne;The selected file has a wromg format. The maximum value of end position for a servo is 120. In row
+MsgBox Database;27;7;ist ein Wert von;est une valeur de;a value of
+MsgBox Database;27;8;angegeben!;déclaré!;is posted!
+MsgBox Init;28;1;MBCAN - System;MBCAN - Système;MBCAN - System
+MsgBox Init;28;2;IP-Adresse nicht korrekt eingegeben. Bitte anpassen!;Adresse IP invalide. Veuillez ajuster !;IP address invalid. Please correct!
+MsgBox Sprache;29;1;MBCAN - System;MBCAN - Système;MBCAN - System
+MsgBox Sprache;29;2;Die Sprachen-Datei ist noch geöffnet oder wird von einem anderen Prozess verwendet!;The file 'sprachen.csv' is still open or is used by system. Please also check your firewall if the process is blocked!;The file 'sprachen.csv' is still open or is used by system. Please also check your firewall if the process is blocked!
+frmServo;30;1;Servodiagramm;Diagramme  servo;Servo track
+frmServo;30;2;Ok;OK;Ok
+frmServo;30;3;Step;Pas ;Step
+frmServo;30;4;Wert;Valeur;Value
+frmServo;30;5;Verwerfen;Supprimer;Drop
+frmServo;30;6;ROT;Rouge;RED
+frmServo;30;7;Mitte;Centre;MID
+frmServo;30;8;GRÜN;Brun;GREEN
+frmServo;30;9;Drehrichtung;Direction;Direction
+frmServo;30;10;Servoweg laden;Charge course servo;Track load
+frmServo;30;11;Servoweg speichern;Sauve course servo;Track save
+frmServo;30;12;Hinweis;Notice;Notice
+frmServo;30;13;Die Drehrichtung ist abhängig vom Servotyp.;La direction dépend du type de servo;The direction depends on the type of servo.
+frmServo;30;14;Deshalb sind hier die Endlagen und auch der entsprechende Servoweg auf die Stellungen <ROT> und <GRÜN> bezogen.;Par conséquent, les positions finales et la course correspondante du servo sont liées aux positions <ROUGE> et <VERT>.;So the final positions of the servos' track are named <RED> and <GREEN>.
+frmServo;30;15;MBCAN - Wegdiagramm des Servos;MBCAN - diagramme de course des servos;MBCAN - Servo Track Diagram
+frmInit;31;1;Modulindex;Index module;Module index
+frmInit;31;2;Dieser Index symbolisiert die erste Stelle der GUiD. Default-Wert 'm'. Erlaubt ist jeder Kleinbuchstabe.;Cet index symbolise la première position du GUID. Valeur par défaut 'm'. Toute lettre minuscule est autorisée.;This index stands for the first digit of the GUiD. Default value is 'm'. Each narrow letter is possible.
+frmInit;31;3;Dieser Index symbolisiert die Gerätekennung bei der Anmeldung an die CSx. Default-Wert 'AAAA'. Vergleiche CAN-Protokoll-Defintion von Märklin.;Cet index symbolise l'ID de l'appareil lors de la connexion au CSx. Valeur par défaut 'AAAA'. Comparez la définition du protocole CAN de Märklin.;This index stands for the unit identifier when registered at CSx. Default value is 'AAAA'. Please compare to CAN-Protocole-Definition by Märklin.
+frmInit;31;4;MBCAN - Kommunikationsparameter;Paramètres de communication MBCAN;MBCAN - Communication Settings
+frmInit;31;5;Gerätekennung;Identification appareil;Unit identifier
+frmLoks;32;1;Alias-Adr;Alias Adr;Alias Addr
+frmLoks;32;2;Speed;Vitesse;Speed
+frmLoks;32;3;Ok;OK;Ok
+frmLoks;32;4;Refresh;Rafraichir;Refresh
+frmLoks;32;5;Vorwärts;Avant;Forward
+frmLoks;32;6;Rückwärts;Arrière;Backward
+frmLoks;32;7;Funktion;Fonction;Function
+frmLoks;32;8;Übersicht Lokomotiven;Aperçu Loco;Overview Locos
+frmWinkel;33;1;MBCAN - Zielwinkel der Drehscheibe;MBCAN - Positions angulaires;MBCAN - Angular Positions
+frmWinkel;33;2;Angaben der Winkel im Hexadezimal-System ;Angles des positions au format hexdecimal;Angels in hexa decimal format
+frmWinkel;33;3;analog zur LCD-Anzeige auf dem mbc-94;analogiques sur l'afficheur LCD mbc-94;analog to LCD-Display of mbc-94
+frmWinkel;33;4;Speichern…;Sauve…;Save…
+frmWinkel;33;5;Verwerfen;Supprimer;Drop
+frmWinkel;33;6;Ok;OK;Ok
+frmProzessorAuswahl;34;1;MBCAN - Zielprozessor auswählen;MBCAN - Sélectionner le processeur cible;MBCAN - Select target processor
+frmProzessorAuswahl;34;2;Zielprozessor;Processeur cible;Target processor
+frmProzessorAuswahl;34;3;OK;OK;OK
+frmProzessorAuswahl;34;4;Abbrechen;Annuler;Cancel
+frmProzessorAuswahl;34;5;Der aktuelle Prozessortyp gemäß Artikelnummer lautet:;Le type de processeur actuel selon le numéro d'article est :;The current processor type according to the article number is:
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;1;Diese Datei ist zu groß für den Boot-Speicherchip-Zwischenspeicher (max.;Ce fichier est trop volumineux pour la mémoire tampon de la puce de démarrage (max.;This file is too large for the boot storage chip staging buffer (max.
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;2;Byte).;octets).;bytes).
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;3;Datei;Fichier;File
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;4;Modultyp;Type de module;Module type
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;5;Passt diese Datei zum ausgewählten Modultyp und Zielprozessor? Firmware jetzt übertragen?;Ce fichier correspond-il au type de module et au processeur cible sélectionnés ? Transférer le firmware maintenant ?;Does this file match the selected module type and target processor? Transfer the firmware now?
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;6;Bitte die .bin-Datei wählen (nicht die .uf2-Datei für den Bootloader-Drag&Drop).;Veuillez sélectionner le fichier .bin (pas le fichier .uf2 pour le glisser-déposer du chargeur de démarrage).;Please select the .bin file (not the .uf2 file for bootloader drag & drop).
+MsgBox Firmwareupgrade RP2040/ESP32-C3;35;7;Die angezeigte Obergrenze ist die Kapazität des Boot-Speicherchips, NICHT zwingend die tatsächliche OTA-Partitionsgröße dieses Boards (abhängig von Tools/Werkzeuge -> Flash Size in der Arduino-IDE) - ein zu großes Image kann trotzdem fehlschlagen.;La limite affichée correspond à la capacité de la puce mémoire de démarrage, PAS nécessairement à la taille réelle de la partition OTA de cette carte (dépend de l'option Tools/Werkzeuge -> Flash Size choisie dans l'IDE Arduino) - une image trop volumineuse peut quand même échouer.;The limit shown is the boot storage chip's capacity, NOT necessarily this board's actual OTA partition size (depends on the Tools -> Flash Size option chosen in the Arduino IDE) - an oversized image can still fail to apply.
+frmMain;1;74;Datenbank zeigen ...;Afficher la base de données ...;Show database ...
+frmDatenbank;36;1;MBCAN - Datenbank;MBCAN - Base de données;MBCAN - Database
+frmDatenbank;36;2;Status;Statut;Status
+frmDatenbank;36;3;Typ;Type;Type
+frmDatenbank;36;4;Name;Nom;Name
+frmDatenbank;36;5;Artikelnummer;Référence article;Article number
+frmDatenbank;36;6;Seriennummer;Numéro de série;Serial number
+frmDatenbank;36;7;GUiD;GUiD;GUiD
+frmDatenbank;36;8;SW;SW;SW
+frmDatenbank;36;9;HW;HW;HW
+frmDatenbank;36;10;MM-Adresse;Adresse MM;MM address
+frmDatenbank;36;11;s88-Modulnr.;N° module s88;s88 module no.
+frmDatenbank;36;12;Steckernetzteil;Bloc d'alimentation;Power adapter
+frmDatenbank;36;13;Spannung;Tension;Voltage
+frmDatenbank;36;14;Temperatur;Température;Temperature
+frmDatenbank;36;15;Aktualisieren;Actualiser;Refresh
+frmDatenbank;36;16;Schließen;Fermer;Close
+frmDatenbank;36;17;Angemeldet;Enregistré;Registered
+frmDatenbank;36;18;Aktiv;Actif;Active
+frmDatenbank;36;19;Fehlt;Absent;Missing
+frmDatenbank;36;20;Gelöscht;Supprimé;Deleted
+frmDatenbank;36;21;Unbekannt;Inconnu;Unknown
+frmDatenbank;36;22;Prozessor;Processeur;Processor

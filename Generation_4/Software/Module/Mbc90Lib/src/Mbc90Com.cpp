@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 14.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc90Com.cpp #############################################################
@@ -67,7 +68,6 @@
 
     //*********************************************************************************************
     //* Konstruktor zur Deklaration von Objektvariablen (initialisiert ausserdem die              *
-    //* modulspezifische CS2-Konfigurationstabelle _cs2IndexEx[] und die                          *
     //* Konfig-Bestaetigungsnachricht _msgKonfigOk[])                                             *
     //*********************************************************************************************
     //* utils:       zugehoerige MbcUtils-Instanz                                                 *
@@ -265,7 +265,6 @@
             _displayLowPrev  = 0;
             _displayHighPrev = 0;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -284,7 +283,6 @@
             _displayLowPrev  = 0;
             _displayHighPrev = 0;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -517,8 +515,7 @@
 
     //*********************************************************************************************
     //* Modulspezifische Parameterdaten aus dem EEPROM lesen: Modulparameter aus der EEPROM-      *
-    //* Zusatzregion laden (mit Defaultwerten fuer den unbeschriebenen Zustand, 0xff-Sentinel),   *
-    //* aktualisiert die S88-Modulnummer-Anzeige in _cs2IndexEx.                                  *
+    //* Zusatzregion laden (mit Defaultwerten fuer den unbeschriebenen Zustand, 0xff-Sentinel).   *
     //*********************************************************************************************
 
     void Mbc90Com::eepromReadParaExtern()
@@ -543,19 +540,11 @@
             uint8_t value = buf[EEX_S88TIMING + index];
             MBC_90_INTS88(index) = (value == 0xff) ? 1 : value;
         }
-
-        _cs2IndexEx[ROW_S88MOD][CS2ROW_OFFSET_L] = MBC_90_S88_L;
-
-        for (uint8_t index = 0; index < 16; index++)
-        {
-            _cs2IndexEx[ROW_S88TIMING_BASE + index][CS2ROW_OFFSET_L] = MBC_90_INTS88(index);
-        }
     }
 
     //*********************************************************************************************
     //* Modulspezifischen Parameterblock in die EEPROM-Zusatzregion schreiben - kein RAM-Resync   *
-    //* noetig, MBC_90_INTS88()/_S88_H/_L lesen ohnehin direkt aus dem Systemarray - aktualisiert *
-    //* bei EE_90_S88ADDR zusaetzlich die Anzeige in _cs2IndexEx                                  *
+    //* noetig, MBC_90_INTS88()/_S88_H/_L lesen ohnehin direkt aus dem Systemarray.               *
     //*********************************************************************************************
     //* block: Identifier des zu schreibenden Blocks (0x0A/0x0B)                                  *
     //*********************************************************************************************
@@ -572,19 +561,12 @@
                 buf[1] = MBC_90_S88_L;
                 _utils->eepromWriteExtra(EEX_S88ADDR, buf, 2);
 
-                _cs2IndexEx[ROW_S88MOD][CS2ROW_OFFSET_L] = MBC_90_S88_L;
-
             break;
 
             case EE_90_S88TIMING:
 
                 for (uint8_t index = 0; index < 16; index++) buf[index] = MBC_90_INTS88(index);
                 _utils->eepromWriteExtra(EEX_S88TIMING, buf, 16);
-
-                for (uint8_t index = 0; index < 16; index++)
-                {
-                    _cs2IndexEx[ROW_S88TIMING_BASE + index][CS2ROW_OFFSET_L] = MBC_90_INTS88(index);
-                }
 
             break;
         }
@@ -660,7 +642,7 @@
         {
             gueltig = (wert <= 93);
 
-            if (gueltig)
+            if (gueltig && (MBC_90_S88_L != (uint8_t) wert))
             {
                 MBC_90_S88_L = (uint8_t) wert;
                 eepromWriteParaExtern(EE_90_S88ADDR);
@@ -670,7 +652,7 @@
         {
             gueltig = (wert >= 1) && (wert <= 250);
 
-            if (gueltig)
+            if (gueltig && (MBC_90_INTS88(kanal - KANAL_S88TIMING_BASE) != (uint8_t) wert))
             {
                 MBC_90_INTS88(kanal - KANAL_S88TIMING_BASE) = (uint8_t) wert;
                 eepromWriteParaExtern(EE_90_S88TIMING);
@@ -719,18 +701,33 @@
     }
 
     //*********************************************************************************************
-    //* Zeile aus dem modulspezifischen cs2_index_ex[]-Array liefern - laufendeNr 0 = einzige     *
-    //* Zeile (S88-Modulnummer), sonst nullptr                                                    *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - ROW_S88MOD = S88-    *
+    //* Modulnummer, ROW_S88TIMING_BASE+0..15 = Integrationszeit K1..K16, sonst nullptr. Vorlage  *
+    //* (initCs2Ex[], PROGMEM) bleibt statisch, nur der aktuelle Wert wird bei jedem Aufruf       *
+    //* frisch aus dem Systemarray gepatcht.                                                       *
     //*********************************************************************************************
     //* laufendeNr: 0..MBC90_ANZMESSWERTEMODUL+MBC90_ANZKONFIGMODUL-1                             *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                         *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
     //*********************************************************************************************
 
     const uint8_t* Mbc90Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC90_ANZMESSWERTEMODUL + MBC90_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        if (laufendeNr == ROW_S88MOD)
+        {
+            _cs2ScratchRow[CS2ROW_OFFSET_L] = MBC_90_S88_L;
+        }
+        else if ((laufendeNr >= ROW_S88TIMING_BASE)
+                 && (laufendeNr < (uint8_t) (ROW_S88TIMING_BASE + 16)))
+        {
+            _cs2ScratchRow[CS2ROW_OFFSET_L] = MBC_90_INTS88(laufendeNr - ROW_S88TIMING_BASE);
+        }
+
+        return _cs2ScratchRow;
     }
 
     //*********************************************************************************************

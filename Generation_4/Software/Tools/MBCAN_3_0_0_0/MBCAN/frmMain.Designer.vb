@@ -619,10 +619,10 @@ Partial Class frmMain
         Me.stp_RS232 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.stp_BT = New System.Windows.Forms.ToolStripStatusLabel()
         Me.stp_TCP = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.stp_CSx = New System.Windows.Forms.ToolStripStatusLabel()
         Me.stp_Refresh = New System.Windows.Forms.ToolStripStatusLabel()
         Me.spb_Refresh = New System.Windows.Forms.ToolStripProgressBar()
         Me.stp_Alive = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.stp_CSx = New System.Windows.Forms.ToolStripStatusLabel()
         Me.stp_Upgrade = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tm_Neu = New System.Windows.Forms.Timer(Me.components)
         Me.tm_Alive = New System.Windows.Forms.Timer(Me.components)
@@ -2208,7 +2208,7 @@ Partial Class frmMain
         Me.nud_mbc84_Links_CH4.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Links_CH4.TabIndex = 81
         Me.nud_mbc84_Links_CH4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Links_CH4.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Links_CH4.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_adr_CH4
         '
@@ -2236,7 +2236,7 @@ Partial Class frmMain
         Me.nud_mbc84_Rechts_CH4.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Rechts_CH4.TabIndex = 81
         Me.nud_mbc84_Rechts_CH4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Rechts_CH4.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Rechts_CH4.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_Rechts_CH4
         '
@@ -2309,7 +2309,7 @@ Partial Class frmMain
         Me.nud_mbc84_Links_CH3.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Links_CH3.TabIndex = 79
         Me.nud_mbc84_Links_CH3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Links_CH3.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Links_CH3.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_adr_CH3
         '
@@ -2337,7 +2337,7 @@ Partial Class frmMain
         Me.nud_mbc84_Rechts_CH3.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Rechts_CH3.TabIndex = 79
         Me.nud_mbc84_Rechts_CH3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Rechts_CH3.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Rechts_CH3.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_Rechts_CH3
         '
@@ -2410,7 +2410,7 @@ Partial Class frmMain
         Me.nud_mbc84_Links_CH2.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Links_CH2.TabIndex = 77
         Me.nud_mbc84_Links_CH2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Links_CH2.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Links_CH2.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_adr_CH2
         '
@@ -2438,7 +2438,7 @@ Partial Class frmMain
         Me.nud_mbc84_Rechts_CH2.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Rechts_CH2.TabIndex = 77
         Me.nud_mbc84_Rechts_CH2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Rechts_CH2.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Rechts_CH2.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_Rechts_CH2
         '
@@ -2511,7 +2511,7 @@ Partial Class frmMain
         Me.nud_mbc84_Links_CH1.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Links_CH1.TabIndex = 75
         Me.nud_mbc84_Links_CH1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Links_CH1.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Links_CH1.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_adr_CH1
         '
@@ -2539,7 +2539,7 @@ Partial Class frmMain
         Me.nud_mbc84_Rechts_CH1.Size = New System.Drawing.Size(53, 20)
         Me.nud_mbc84_Rechts_CH1.TabIndex = 73
         Me.nud_mbc84_Rechts_CH1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.nud_mbc84_Rechts_CH1.Value = New Decimal(New Integer() {60, 0, 0, 0})
+        Me.nud_mbc84_Rechts_CH1.Value = New Decimal(New Integer() {30, 0, 0, 0})
         '
         'lbl_mbc84_Rechts_CH1
         '
@@ -4258,12 +4258,12 @@ Partial Class frmMain
         'nud_mbc89_i2c
         '
         Me.nud_mbc89_i2c.Location = New System.Drawing.Point(95, 15)
-        Me.nud_mbc89_i2c.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.nud_mbc89_i2c.Minimum = New Decimal(New Integer() {40, 0, 0, 0})
         Me.nud_mbc89_i2c.Name = "nud_mbc89_i2c"
         Me.nud_mbc89_i2c.Size = New System.Drawing.Size(69, 20)
         Me.nud_mbc89_i2c.TabIndex = 29
         Me.nud_mbc89_i2c.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        Me.nud_mbc89_i2c.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.nud_mbc89_i2c.Value = New Decimal(New Integer() {40, 0, 0, 0})
         '
         'gb_mbc89_Basisadresse
         '
@@ -7048,15 +7048,22 @@ Partial Class frmMain
         '
         Me.stp_BT.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
         Me.stp_BT.Name = "stp_BT"
-        Me.stp_BT.Size = New System.Drawing.Size(58, 1)
+        Me.stp_BT.Size = New System.Drawing.Size(59, 1)
         Me.stp_BT.Text = "BT: None"
         '
         'stp_TCP
         '
         Me.stp_TCP.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
         Me.stp_TCP.Name = "stp_TCP"
-        Me.stp_TCP.Size = New System.Drawing.Size(66, 1)
+        Me.stp_TCP.Size = New System.Drawing.Size(67, 1)
         Me.stp_TCP.Text = "TCP: None"
+        '
+        'stp_CSx
+        '
+        Me.stp_CSx.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
+        Me.stp_CSx.Name = "stp_CSx"
+        Me.stp_CSx.Size = New System.Drawing.Size(71, 1)
+        Me.stp_CSx.Text = "CSx: absent"
         '
         'stp_Refresh
         '
@@ -7073,15 +7080,8 @@ Partial Class frmMain
         '
         Me.stp_Alive.BorderSides = CType((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Right), System.Windows.Forms.ToolStripStatusLabelBorderSides)
         Me.stp_Alive.Name = "stp_Alive"
-        Me.stp_Alive.Size = New System.Drawing.Size(230, 1)
+        Me.stp_Alive.Size = New System.Drawing.Size(228, 1)
         Me.stp_Alive.Text = "Alive: Modultyp mbcxx Modulnummer: 0"
-        '
-        'stp_CSx
-        '
-        Me.stp_CSx.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right
-        Me.stp_CSx.Name = "stp_CSx"
-        Me.stp_CSx.Size = New System.Drawing.Size(90, 1)
-        Me.stp_CSx.Text = "CSx: absent"
         '
         'stp_Upgrade
         '

@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 21.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc83Com.cpp #############################################################
@@ -244,7 +245,6 @@
 
     #endif
 
-        memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
         memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
 
         for (uint8_t i = 0; i < 8; i++)
@@ -399,29 +399,16 @@
 
         for (uint8_t i = 0; i < 4; i++) if (arr[O_TIO + i] == 0xff) arr[O_TIO + i] = 20;
 
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * i + 1][7] = arr[O_TIO + i];
-        }
-
         // Dimmerstellung - unbeschrieben (0xff) auf 0 (aus)
 
         _utils->eepromReadExtra(EEX_83_DIMM, &arr[O_DIMM], 1);
 
         if (arr[O_DIMM] == 0xff) arr[O_DIMM] = 0;
 
-        _cs2IndexEx[ROW_DIMM][7] = arr[O_DIMM];
-
         // Art der Ausgaenge - bewusst KEINE 0xff-Korrektur (0xff bedeutet "alle gesperrt" und
         // bleibt als Default erhalten, siehe Klassenkommentar in Mbc83Com.h)
 
         _utils->eepromReadExtra(EEX_83_ART, &arr[O_ART], 1);
-
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * i][ART_OFFSET] =
-                (uint8_t) ((arr[O_ART] >> (2 * i)) & 0x03);
-        }
 
         // Auto-Aus - unbeschrieben (0xff) auf 100 (=1000ms)
 
@@ -429,15 +416,11 @@
 
         if (arr[O_AUS] == 0xff) arr[O_AUS] = 100;
 
-        _cs2IndexEx[ROW_AUS][7] = arr[O_AUS];
-
         // Zwangsrueckmeldezyklus - unbeschrieben (0xff) auf 0
 
         _utils->eepromReadExtra(EEX_83_RUECK, &arr[O_RUECK], 1);
 
         if (arr[O_RUECK] == 0xff) arr[O_RUECK] = 0;
-
-        _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = arr[O_RUECK];
 
         // MM-Adresse - Default 0x3000, wenn das High-Byte unbeschrieben (0xff) ist
 
@@ -452,16 +435,13 @@
 
         _baseAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | (uint16_t) arr[O_MM_L]);
 
-        _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((_baseAddr - MMADDR_BASE) / 4);
-
         applyDimmer();
     }
 
     //*********************************************************************************************
     //* Persistiert je nach block den passenden Ausschnitt des Systemarrays in der EEPROM-        *
-    //* Zusatzregion, aktualisiert bei MM-Addr/Auto-Aus/Meldezyklus/Dimmer/Timing/Art jeweils die *
-    //* zugehoerige(n) _cs2IndexEx-Zeile(n) und wendet danach UNBEDINGT den aktuellen Dimmerwert  *
-    //* erneut an (nicht nur beim eigenen Dimmer-Block). Bei block==EE_83_AUS wird der Wert       *
+    //* Zusatzregion und wendet danach UNBEDINGT den aktuellen Dimmerwert erneut an (nicht nur    *
+    //* beim eigenen Dimmer-Block). Bei block==EE_83_AUS wird der Wert                            *
     //* zusaetzlich auf 200 geklemmt (nicht verworfen) - betrifft in der Praxis nur den           *
     //* ParaCenter-Weg (PC_ARRAY_DATA), da der CS2-Konfigkanal ungueltige Auto-Aus-Werte bereits  *
     //* in cs2IndexParameterExtern() ablehnt, bevor diese Funktion ueberhaupt aufgerufen wird.    *
@@ -481,8 +461,6 @@
 
             _baseAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | (uint16_t) arr[O_MM_L]);
 
-            _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((_baseAddr - MMADDR_BASE) / 4);
-
             // MM-Addr geaendert: Rueckmeldeprozess sofort anstossen, wenn der Meldezyklus
             // aktiviert ist und gerade keiner laeuft
 
@@ -491,21 +469,10 @@
         else if (block == EE_83_MM_TIMING)
         {
             _utils->eepromWriteExtra(EEX_83_TIO, &arr[O_TIO], 4);
-
-            for (uint8_t i = 0; i < 4; i++)
-            {
-                _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * i + 1][7] = arr[O_TIO + i];
-            }
         }
         else if (block == EE_83_MM_ART)
         {
             _utils->eepromWriteExtra(EEX_83_ART, &arr[O_ART], 1);
-
-            for (uint8_t i = 0; i < 4; i++)
-            {
-                _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * i][ART_OFFSET] =
-                    (uint8_t) ((arr[O_ART] >> (2 * i)) & 0x03);
-            }
         }
         else if (block == EE_83_AUS)
         {
@@ -517,19 +484,18 @@
             if (arr[O_AUS] > 200) arr[O_AUS] = 200;
 
             _utils->eepromWriteExtra(EEX_83_AUS, &arr[O_AUS], 1);
-
-            _cs2IndexEx[ROW_AUS][7] = arr[O_AUS];
         }
         else if (block == EE_83_RUECK)
         {
-            // Alten Zustand vor dem Ueberschreiben merken, um den disabled->enabled-Uebergang
-            // zu erkennen (siehe unten)
+            // Alten, noch persistierten Zustand vor dem Ueberschreiben lesen, um den
+            // disabled->enabled-Uebergang zu erkennen (siehe unten) - arr[O_RUECK] traegt hier
+            // bereits den NEUEN Wert (vom Aufrufer vorher gesetzt)
 
-            bool warAktiviert = (_cs2IndexEx[ROW_RUECK][RUECK_OFFSET] != 0);
+            uint8_t alt;
+            _utils->eepromReadExtra(EEX_83_RUECK, &alt, 1);
+            bool warAktiviert = (alt != 0);
 
             _utils->eepromWriteExtra(EEX_83_RUECK, &arr[O_RUECK], 1);
-
-            _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = arr[O_RUECK];
 
             // Meldezyklus wurde soeben aktiviert: Rueckmeldeprozess sofort anstossen, wenn
             // gerade keiner laeuft
@@ -539,8 +505,6 @@
         else if (block == EE_83_DIMM)
         {
             _utils->eepromWriteExtra(EEX_83_DIMM, &arr[O_DIMM], 1);
-
-            _cs2IndexEx[ROW_DIMM][7] = arr[O_DIMM];
         }
 
         applyDimmer();
@@ -591,15 +555,17 @@
 
             if (gueltig)
             {
-                uint16_t addr = (uint16_t) (MMADDR_BASE + 4 * wert);
-                uint8_t  *arr = _utils->array();
+                uint16_t addr    = (uint16_t) (MMADDR_BASE + 4 * wert);
+                uint8_t  *arr    = _utils->array();
+                uint16_t oldAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | arr[O_MM_L]);
 
-                arr[O_MM_H] = (uint8_t) (addr >> 8);
-                arr[O_MM_L] = (uint8_t) (addr & 0x00ff);
+                if (addr != oldAddr)
+                {
+                    arr[O_MM_H] = (uint8_t) (addr >> 8);
+                    arr[O_MM_L] = (uint8_t) (addr & 0x00ff);
 
-                eepromWriteParaExtern(EE_83_MMAddr);   // persistiert + aktualisiert _baseAddr
-
-                _cs2IndexEx[ROW_MODNR][7] = (uint8_t) wert;
+                    eepromWriteParaExtern(EE_83_MMAddr);   // persistiert + aktualisiert _baseAddr
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_MODNR;
@@ -613,9 +579,12 @@
             {
                 uint8_t *arr = _utils->array();
 
-                arr[O_AUS] = (uint8_t) wert;
+                if (arr[O_AUS] != (uint8_t) wert)
+                {
+                    arr[O_AUS] = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_83_AUS);   // persistiert + aktualisiert _cs2IndexEx
+                    eepromWriteParaExtern(EE_83_AUS);   // persistiert
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_AUS;
@@ -629,9 +598,12 @@
             {
                 uint8_t *arr = _utils->array();
 
-                arr[O_RUECK] = (uint8_t) wert;
+                if (arr[O_RUECK] != (uint8_t) wert)
+                {
+                    arr[O_RUECK] = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_83_RUECK);   // persistiert + aktualisiert _cs2IndexEx
+                    eepromWriteParaExtern(EE_83_RUECK);   // persistiert + stoesst ggf. Zyklus an
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_RUECK;
@@ -645,9 +617,12 @@
             {
                 uint8_t *arr = _utils->array();
 
-                arr[O_DIMM] = (uint8_t) wert;
+                if (arr[O_DIMM] != (uint8_t) wert)
+                {
+                    arr[O_DIMM] = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_83_DIMM);   // persistiert + aktualisiert _cs2IndexEx
+                    eepromWriteParaExtern(EE_83_DIMM);   // persistiert
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_DIMM;
@@ -668,12 +643,15 @@
                 {
                     uint8_t *arr      = _utils->array();
                     uint8_t  artShift = (uint8_t) (2 * idx);
+                    uint8_t  altWert  = (uint8_t) ((arr[O_ART] >> artShift) & 0x03);
 
-                    arr[O_ART] = (uint8_t) ((arr[O_ART] & ~(0x03 << artShift))
-                                             | ((uint8_t) wert << artShift));
+                    if (altWert != (uint8_t) wert)
+                    {
+                        arr[O_ART] = (uint8_t) ((arr[O_ART] & ~(0x03 << artShift))
+                                                 | ((uint8_t) wert << artShift));
 
-                    eepromWriteParaExtern(EE_83_MM_ART);   // persistiert +
-                                                            // aktualisiert _cs2IndexEx
+                        eepromWriteParaExtern(EE_83_MM_ART);   // persistiert
+                    }
                 }
 
                 _msgKonfigOk[MBC_CAN_D5] = kanal;
@@ -689,10 +667,12 @@
                 {
                     uint8_t *arr = _utils->array();
 
-                    arr[O_TIO + idx] = (uint8_t) wert;
+                    if (arr[O_TIO + idx] != (uint8_t) wert)
+                    {
+                        arr[O_TIO + idx] = (uint8_t) wert;
 
-                    eepromWriteParaExtern(EE_83_MM_TIMING);   // persistiert + aktualisiert
-                                                               // _cs2IndexEx
+                        eepromWriteParaExtern(EE_83_MM_TIMING);   // persistiert
+                    }
                 }
 
                 _msgKonfigOk[MBC_CAN_D5] = kanal;
@@ -708,19 +688,58 @@
     }
 
     //*********************************************************************************************
-    //* Zeile aus dem modulspezifischen cs2_index_ex[]-Array liefern - mbc-83 hat 12 Kanaele      *
-    //* (ROW_MODNR = MM-Addr, ROW_AUS = Auto-Aus, ROW_RUECK = Meldezyklus, ROW_DIMM = Dimmer,     *
-    //* ROW_ART_TIMING_BASE+0..7 = je Doppelspulenantrieb interleaved Art/Timing), sonst nullptr  *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - mbc-83 hat 12        *
+    //* Kanaele (ROW_MODNR = MM-Addr, ROW_AUS = Auto-Aus, ROW_RUECK = Meldezyklus, ROW_DIMM =     *
+    //* Dimmer, ROW_ART_TIMING_BASE+0..7 = je Doppelspulenantrieb interleaved Art/Timing), sonst  *
+    //* nullptr. Vorlage (initCs2Ex[], PROGMEM) bleibt statisch, nur der aktuelle Wert wird bei   *
+    //* jedem Aufruf frisch aus dem Systemarray/_baseAddr gepatcht.                                *
     //*********************************************************************************************
     //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                                         *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                         *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
     //*********************************************************************************************
 
     const uint8_t* Mbc83Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC83_ANZMESSWERTEMODUL + MBC83_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        uint8_t *arr = _utils->array();
+
+        if (laufendeNr == ROW_MODNR)
+        {
+            _cs2ScratchRow[7] = (uint8_t) ((_baseAddr - MMADDR_BASE) / 4);
+        }
+        else if (laufendeNr == ROW_AUS)
+        {
+            _cs2ScratchRow[7] = arr[O_AUS];
+        }
+        else if (laufendeNr == ROW_RUECK)
+        {
+            _cs2ScratchRow[RUECK_OFFSET] = arr[O_RUECK];
+        }
+        else if (laufendeNr == ROW_DIMM)
+        {
+            _cs2ScratchRow[7] = arr[O_DIMM];
+        }
+        else if ((laufendeNr >= ROW_ART_TIMING_BASE)
+                 && (laufendeNr < (uint8_t) (ROW_ART_TIMING_BASE + 8)))
+        {
+            uint8_t offset = (uint8_t) (laufendeNr - ROW_ART_TIMING_BASE);
+            uint8_t idx    = (uint8_t) (offset / 2);
+
+            if ((offset & 0x01) == 0)
+            {
+                _cs2ScratchRow[ART_OFFSET] = (uint8_t) ((arr[O_ART] >> (2 * idx)) & 0x03);
+            }
+            else
+            {
+                _cs2ScratchRow[7] = arr[O_TIO + idx];
+            }
+        }
+
+        return _cs2ScratchRow;
     }
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

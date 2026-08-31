@@ -101,13 +101,8 @@
         #if defined(ARDUINO_ARCH_RP2040)
             rp2040.wdt_begin(8000);
         #elif defined(ESP32)
-            esp_task_wdt_config_t config;
-
-            config.timeout_ms     = 8000;
-            config.idle_core_mask = 0;
-            config.trigger_panic  = true;
-
-            esp_task_wdt_init(&config);
+            esp_task_wdt_config_t wdtConfig = {8000, 1, true};   // ms, Core-0-Idle-Task, Panic (IDF5/Core-3.x-API)
+            esp_task_wdt_init(&wdtConfig);
             esp_task_wdt_add(nullptr);
         #endif
     }

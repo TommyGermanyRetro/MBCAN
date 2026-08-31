@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 08.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc88Com.cpp #############################################################
@@ -65,7 +66,6 @@
 
     //*********************************************************************************************
     //* Konstruktor zur Deklaration von Objektvariablen (initialisiert ausserdem die              *
-    //* modulspezifische CS2-Konfigurationstabelle _cs2IndexEx[] und die                          *
     //* Konfig-Bestaetigungsnachricht _msgKonfigOk[])                                             *
     //*********************************************************************************************
     //* utils:       zugehoerige MbcUtils-Instanz                                                 *
@@ -186,7 +186,6 @@
             for (uint8_t index = 0; index < 8; index++) _outputs[index] = outputs[index];
             for (uint8_t index = 0; index < 8; index++) _pinActive[index] = false;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -201,7 +200,6 @@
             for (uint8_t index = 0; index < 8; index++) _outputs[index] = outputs[index];
             for (uint8_t index = 0; index < 8; index++) _pinActive[index] = false;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -380,8 +378,7 @@
 
     //*********************************************************************************************
     //* Modulspezifische Parameterdaten aus dem EEPROM lesen: Modulparameter aus der EEPROM-      *
-    //* Zusatzregion laden (mit Defaultwerten fuer den unbeschriebenen Zustand, 0xff-Sentinel),   *
-    //* aktualisiert die S88-Modulnummer-/Halbmodul-/Integrationszeit-Anzeige in _cs2IndexEx      *
+    //* Zusatzregion laden (mit Defaultwerten fuer den unbeschriebenen Zustand, 0xff-Sentinel).   *
     //*********************************************************************************************
 
     void Mbc88Com::eepromReadParaExtern()
@@ -405,22 +402,14 @@
         {
             uint8_t value = buf[EEX_S88TIMING + index];
             MBC_88_INTS88(index) = (value == 0xff) ? 1 : value;
-
-            _cs2IndexEx[ROW_S88TIMING_BASE + index][S88TIMING_OFFSET_H] = 0;
-            _cs2IndexEx[ROW_S88TIMING_BASE + index][S88TIMING_OFFSET_L] = MBC_88_INTS88(index);
         }
 
         MBC_88_MOD = (buf[EEX_S88MOD] == 0xff) ? 0 : buf[EEX_S88MOD];
-
-        _cs2IndexEx[ROW_S88MOD][S88MOD_OFFSET]             = MBC_88_S88_L;
-        _cs2IndexEx[ROW_S88HALBMODUL][S88HALBMODUL_OFFSET] = MBC_88_MOD;
     }
 
     //*********************************************************************************************
-    //* Modulspezifischen Parameterblock in die EEPROM-Zusatzregion schreiben kein RAM-Resync     *
-    //* noetig, MBC_88_INTS88()/_S88_H/_L/_MOD lesen ohnehin direkt aus dem Systemarray -         *
-    //* EE_88_S88ADDR/EE_88_S88MOD/EE_88_S88TIMING aktualisieren zusaetzlich die jeweilige        *
-    //* Anzeige in _cs2IndexEx                                                                    *
+    //* Modulspezifischen Parameterblock in die EEPROM-Zusatzregion schreiben - kein RAM-Resync   *
+    //* noetig, MBC_88_INTS88()/_S88_H/_L/_MOD lesen ohnehin direkt aus dem Systemarray.          *
     //*********************************************************************************************
     //* block: Identifier des zu schreibenden Blocks (0x0A....)                                   *
     //*********************************************************************************************
@@ -437,8 +426,6 @@
                 buf[1] = MBC_88_S88_L;
                 _utils->eepromWriteExtra(EEX_S88ADDR, buf, 2);
 
-                _cs2IndexEx[ROW_S88MOD][S88MOD_OFFSET] = MBC_88_S88_L;
-
             break;
 
             case EE_88_S88TIMING:
@@ -446,20 +433,12 @@
                 for (uint8_t index = 0; index < 8; index++) buf[index] = MBC_88_INTS88(index);
                 _utils->eepromWriteExtra(EEX_S88TIMING, buf, 8);
 
-                for (uint8_t index = 0; index < 8; index++)
-                {
-                    _cs2IndexEx[ROW_S88TIMING_BASE + index][S88TIMING_OFFSET_H] = 0;
-                    _cs2IndexEx[ROW_S88TIMING_BASE + index][S88TIMING_OFFSET_L] = MBC_88_INTS88(index);
-                }
-
             break;
 
             case EE_88_S88MOD:
 
                 buf[0] = MBC_88_MOD;
                 _utils->eepromWriteExtra(EEX_S88MOD, buf, 1);
-
-                _cs2IndexEx[ROW_S88HALBMODUL][S88HALBMODUL_OFFSET] = MBC_88_MOD;
 
             break;
         }
@@ -537,7 +516,7 @@
         {
             gueltig = (wert >= 1) && (wert <= 93);
 
-            if (gueltig)
+            if (gueltig && (MBC_88_S88_L != (uint8_t) wert))
             {
                 MBC_88_S88_L = (uint8_t) wert;
                 eepromWriteParaExtern(EE_88_S88ADDR);
@@ -547,7 +526,7 @@
         {
             gueltig = (wert <= 1);
 
-            if (gueltig)
+            if (gueltig && (MBC_88_MOD != (uint8_t) wert))
             {
                 MBC_88_MOD = (uint8_t) wert;
                 eepromWriteParaExtern(EE_88_S88MOD);
@@ -561,8 +540,11 @@
             {
                 uint8_t idx = (uint8_t) (kanal - KANAL_S88TIMING_BASE);
 
-                MBC_88_INTS88(idx) = (uint8_t) wert;
-                eepromWriteParaExtern(EE_88_S88TIMING);
+                if (MBC_88_INTS88(idx) != (uint8_t) wert)
+                {
+                    MBC_88_INTS88(idx) = (uint8_t) wert;
+                    eepromWriteParaExtern(EE_88_S88TIMING);
+                }
             }
         }
         else
@@ -608,19 +590,38 @@
     }
 
     //*********************************************************************************************
-    //* Zeile aus dem modulspezifischen Konfigkanal-Array liefern - laufendeNr 0 = S88-           *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - laufendeNr 0 = S88-  *
     //* Modulnummer, laufendeNr 1 = Halbmodul, laufendeNr 2..9 = Integrationszeit Kontakt 1...8,  *
-    //* sonst nullptr                                                                             *
+    //* sonst nullptr. Vorlage (initCs2Ex[], PROGMEM) bleibt statisch, nur der aktuelle Wert wird *
+    //* bei jedem Aufruf frisch aus dem Systemarray gepatcht.                                      *
     //*********************************************************************************************
     //* laufendeNr: 0..MBC88_ANZMESSWERTEMODUL+MBC88_ANZKONFIGMODUL-1                             *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                         *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
     //*********************************************************************************************
 
     const uint8_t* Mbc88Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC88_ANZMESSWERTEMODUL + MBC88_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        if (laufendeNr == ROW_S88MOD)
+        {
+            _cs2ScratchRow[S88MOD_OFFSET] = MBC_88_S88_L;
+        }
+        else if (laufendeNr == ROW_S88HALBMODUL)
+        {
+            _cs2ScratchRow[S88HALBMODUL_OFFSET] = MBC_88_MOD;
+        }
+        else if ((laufendeNr >= ROW_S88TIMING_BASE)
+                 && (laufendeNr < (uint8_t) (ROW_S88TIMING_BASE + 8)))
+        {
+            _cs2ScratchRow[S88TIMING_OFFSET_H] = 0;
+            _cs2ScratchRow[S88TIMING_OFFSET_L] = MBC_88_INTS88(laufendeNr - ROW_S88TIMING_BASE);
+        }
+
+        return _cs2ScratchRow;
     }
 
     //*********************************************************************************************

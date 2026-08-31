@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 18.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc84Com.cpp #############################################################
@@ -396,7 +397,6 @@
 
     #endif
 
-        memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
         memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
 
         for (uint8_t i = 0; i < 4; i++) _servoPin[i] = servoPins[i];
@@ -612,13 +612,6 @@
 
         arr[O_SVMAX + 8] = CENTER;
 
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            _cs2IndexEx[ROW_SVBASE + 3 * i][7]     = arr[O_SVMAX + 2 * i];
-            _cs2IndexEx[ROW_SVBASE + 3 * i + 1][7] = arr[O_SVMAX + 2 * i + 1];
-            _cs2IndexEx[ROW_SVBASE + 3 * i + 2][7] = arr[O_SVMAX + 9 + i];
-        }
-
         // Aktorstellung - unbeschrieben (0xff) auf 0, danach je Servo normalisieren
 
         uint8_t aktor;
@@ -649,8 +642,6 @@
 
         _baseAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | (uint16_t) arr[O_MM_L]);
 
-        _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((_baseAddr - MMADDR_BASE) / 4);
-
         // Zwangsrueckmeldezyklus - unbeschrieben (0xff) auf 0
 
         uint8_t rueck;
@@ -658,8 +649,6 @@
         _utils->eepromReadExtra(EEX_84_RUECK, &rueck, 1);
 
         arr[O_RUECK] = (rueck == 0xff) ? 0 : rueck;
-
-        _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = arr[O_RUECK];
 
         // Servoweg
 
@@ -709,14 +698,15 @@
         }
         else if (block == EE_84_RUECK)
         {
-            // Alten Zustand vor dem Ueberschreiben merken, um den disabled->enabled-Uebergang
-            // zu erkennen (siehe unten)
+            // Alten, noch persistierten Zustand vor dem Ueberschreiben lesen, um den
+            // disabled->enabled-Uebergang zu erkennen (siehe unten) - arr[O_RUECK] traegt hier
+            // bereits den NEUEN Wert (vom Aufrufer vorher gesetzt)
 
-            bool warAktiviert = (_cs2IndexEx[ROW_RUECK][RUECK_OFFSET] != 0);
+            uint8_t alt;
+            _utils->eepromReadExtra(EEX_84_RUECK, &alt, 1);
+            bool warAktiviert = (alt != 0);
 
             _utils->eepromWriteExtra(EEX_84_RUECK, &arr[O_RUECK], 1);
-
-            _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = arr[O_RUECK];
 
             // Meldezyklus wurde soeben aktiviert: Rueckmeldeprozess sofort anstossen, wenn
             // gerade keiner laeuft
@@ -786,8 +776,8 @@
     //* (0=disabled/1=enabled) uebernehmen; msg[D5] im Bereich KANAL_SVBASE..+11 - neuen          *
     //* Rot-/Gruen-Endanschlag (0...RT_GN_MAX) bzw. neue Verzoegerung (0...VZ_MAX) fuer den per   *
     //* Offset kodierten Servo uebernehmen, siehe Klassenkommentar in Mbc84Com.h. Alle 14 Kanaele *
-    //* persistieren, aktualisieren _cs2IndexEx und werden mit TRUE quittiert - ein ungueltiger   *
-    //* Wert bleibt ohne Wirkung und wird mit FALSE quittiert.                                    *
+    //* persistieren und werden mit TRUE quittiert - ein ungueltiger Wert bleibt ohne Wirkung und *
+    //* wird mit FALSE quittiert.                                                                 *
     //*********************************************************************************************
     //* msg: CAN-Nachricht (msg[D5]==KANAL_MODNR/KANAL_RUECK, msg[D6..D7]=neuer Wert)             *
     //*********************************************************************************************
@@ -803,15 +793,17 @@
 
             if (gueltig)
             {
-                uint16_t addr = (uint16_t) (MMADDR_BASE + 4 * wert);
-                uint8_t  *arr = _utils->array();
+                uint16_t addr    = (uint16_t) (MMADDR_BASE + 4 * wert);
+                uint8_t  *arr    = _utils->array();
+                uint16_t oldAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | arr[O_MM_L]);
 
-                arr[O_MM_H] = (uint8_t) (addr >> 8);
-                arr[O_MM_L] = (uint8_t) (addr & 0x00ff);
+                if (addr != oldAddr)
+                {
+                    arr[O_MM_H] = (uint8_t) (addr >> 8);
+                    arr[O_MM_L] = (uint8_t) (addr & 0x00ff);
 
-                eepromWriteParaExtern(EE_84_MMAddr);   // persistiert + aktualisiert _baseAddr
-
-                _cs2IndexEx[ROW_MODNR][7] = (uint8_t) wert;
+                    eepromWriteParaExtern(EE_84_MMAddr);   // persistiert + aktualisiert _baseAddr
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_MODNR;
@@ -825,9 +817,12 @@
             {
                 uint8_t *arr = _utils->array();
 
-                arr[O_RUECK] = (uint8_t) wert;
+                if (arr[O_RUECK] != (uint8_t) wert)
+                {
+                    arr[O_RUECK] = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_84_RUECK);   // persistiert + aktualisiert _cs2IndexEx
+                    eepromWriteParaExtern(EE_84_RUECK);   // persistiert + stoesst ggf. Zyklus an
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_RUECK;
@@ -844,14 +839,17 @@
             if (gueltig)
             {
                 uint8_t *arr = _utils->array();
+                uint8_t *feld = (sub == 0) ? (arr + O_SVMAX + 2 * servo)
+                              : (sub == 1) ? (arr + O_SVMAX + 2 * servo + 1)
+                                           : (arr + O_SVMAX + 9 + servo);
 
-                if (sub == 0) arr[O_SVMAX + 2 * servo]     = (uint8_t) wert;
-                if (sub == 1) arr[O_SVMAX + 2 * servo + 1] = (uint8_t) wert;
-                if (sub == 2) arr[O_SVMAX + 9 + servo]     = (uint8_t) wert;
+                if (*feld != (uint8_t) wert)
+                {
+                    *feld = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_84_SERVOSMAX);   // persistiert + aktualisiert _servoState
-
-                _cs2IndexEx[ROW_SVBASE + offset][7] = (uint8_t) wert;
+                    eepromWriteParaExtern(EE_84_SERVOSMAX);   // persistiert + aktualisiert
+                                                               // _servoState
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = kanal;
@@ -866,19 +864,45 @@
     }
 
     //*********************************************************************************************
-    //* Zeile aus dem modulspezifischen cs2_index_ex[]-Array liefern - mbc-84 hat 14 Kanaele      *
-    //* (ROW_MODNR = MM-Addr, ROW_RUECK = Meldezyklus, ROW_SVBASE+0..11 = 3                       *
-    //* Endanschlag-/Verzoegerung-Kanaele je Servo), sonst nullptr                                *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - mbc-84 hat 14        *
+    //* Kanaele (ROW_MODNR = MM-Addr, ROW_RUECK = Meldezyklus, ROW_SVBASE+0..11 = 3               *
+    //* Endanschlag-/Verzoegerung-Kanaele je Servo), sonst nullptr. Vorlage (initCs2Ex[],         *
+    //* PROGMEM) bleibt statisch, nur der aktuelle Wert wird bei jedem Aufruf frisch aus dem      *
+    //* Systemarray/_baseAddr gepatcht.                                                            *
     //*********************************************************************************************
     //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                                         *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                         *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
     //*********************************************************************************************
 
     const uint8_t* Mbc84Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC84_ANZMESSWERTEMODUL + MBC84_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        uint8_t *arr = _utils->array();
+
+        if (laufendeNr == ROW_MODNR)
+        {
+            _cs2ScratchRow[7] = (uint8_t) ((_baseAddr - MMADDR_BASE) / 4);
+        }
+        else if (laufendeNr == ROW_RUECK)
+        {
+            _cs2ScratchRow[RUECK_OFFSET] = arr[O_RUECK];
+        }
+        else if ((laufendeNr >= ROW_SVBASE) && (laufendeNr < (uint8_t) (ROW_SVBASE + 12)))
+        {
+            uint8_t offset = (uint8_t) (laufendeNr - ROW_SVBASE);
+            uint8_t servo  = (uint8_t) (offset / 3);
+            uint8_t sub    = (uint8_t) (offset % 3);   // 0=RT max, 1=GN max, 2=Delay
+
+            _cs2ScratchRow[7] = (sub == 0) ? arr[O_SVMAX + 2 * servo]
+                              : (sub == 1) ? arr[O_SVMAX + 2 * servo + 1]
+                                           : arr[O_SVMAX + 9 + servo];
+        }
+
+        return _cs2ScratchRow;
     }
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

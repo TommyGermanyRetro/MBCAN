@@ -18,6 +18,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -25,7 +26,7 @@
 //###### Start Quellcode Mbc80Com.h ###############################################################
 
 #ifndef _MBC80COM_H_
-#define _MBC80COM_H_     "V1.0.0 - 05.08.2026"
+#define _MBC80COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -172,12 +173,15 @@
                 void sendMessageExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine Zeile aus _cs2IndexEx[] (die beiden L88-Softwareversion-         *
-                //* Konfigkanaele) oder nullptr, wenn laufendeNr keinen Kanal mehr bezeichnet.    *
+                //* Baut die angeforderte Kanalzeile (die beiden L88-Softwareversion-             *
+                //* Konfigkanaele) frisch in _cs2ScratchRow zusammen (PROGMEM-Vorlage + aktueller *
+                //* Wert aus dem Systemarray) und gibt sie zurueck, sonst nullptr, wenn           *
+                //* laufendeNr keinen Kanal mehr bezeichnet.                                       *
                 //*********************************************************************************
                 //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                             *
                 //*********************************************************************************
-                //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                             *
+                //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig)      *
+                //*         oder nullptr                                                          *
                 //*********************************************************************************
 
                 const uint8_t* cs2IndexExtern(uint8_t laufendeNr) override;
@@ -187,13 +191,16 @@
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Modulspezifische CSx-GUI-Parameter (ANZMESSWERTEMODUL=0, ANZKONFIGMODUL=2,        +
             //+ cs2_index_ex[]): zwei Konfigkanaele (Zeile 0 = Label "SW Major:", Zeile 1 = Label +
-            //+ "SW Minor:", je Slider 1...255) - siehe cs2IndexParameterExtern()                 +
+            //+ "SW Minor:", je Slider 1...255) - siehe cs2IndexParameterExtern(). Die            +
+            //+ Kanaldefinition (initCs2Ex[], PROGMEM) bleibt komplett im Flash -                 +
+            //+ cs2IndexExtern() baut die angeforderte Zeile bei jedem Aufruf frisch in           +
+            //+ _cs2ScratchRow zusammen.                                                           +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC80_ANZMESSWERTEMODUL 0   // Anzahl der modulspez. Messwerte
             #define MBC80_ANZKONFIGMODUL    2   // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC80_ANZMESSWERTEMODUL + MBC80_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +

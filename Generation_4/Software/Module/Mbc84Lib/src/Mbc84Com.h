@@ -39,6 +39,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 18.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -46,12 +47,16 @@
 //###### Start Quellcode Mbc84Com.h ###############################################################
 
 #ifndef _MBC84COM_H_
-#define _MBC84COM_H_     "V1.0.0 - 18.08.2026"
+#define _MBC84COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
 #include <Arduino.h>
-#if !defined(__AVR__)
+#if defined(ESP32)
+    #include <ESP32Servo.h>   // Servo.h ist auf ESP32 nicht verfuegbar - ESP32Servo.h stellt
+                              // dieselbe Servo-Klasse/API (attach/write/writeMicroseconds/read)
+                              // ueber die LEDC-Peripherie bereit, separat zu installieren
+#elif !defined(__AVR__)
     #include <Servo.h>
 #endif
 #include <MbcCom.h>
@@ -171,9 +176,12 @@
                 void cs2IndexParameterExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine Zeile aus _cs2IndexEx[] (MM-Addr-, Meldezyklus- oder Servo-      *
-                //* Endanschlag/-Verzoegerung-Konfigkanal) oder nullptr, wenn laufendeNr keinen   *
-                //* Kanal mehr bezeichnet.                                                        *
+                //* Baut die angeforderte Kanalzeile (MM-Addr-, Meldezyklus- oder Servo-          *
+                //* Endanschlag/-Verzoegerung-Konfigkanal) frisch in _cs2ScratchRow zusammen       *
+                //* (PROGMEM-Vorlage initCs2Ex[] + aktueller Wert aus dem Systemarray/_baseAddr)   *
+                //* und gibt sie zurueck, sonst nullptr. Spart gegenueber einer dauerhaften        *
+                //* RAM-Kopie 14x40 Byte RAM. Der zurueckgegebene Zeiger ist NUR bis zum           *
+                //* naechsten Aufruf gueltig.                                                      *
                 //*********************************************************************************
                 //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                             *
                 //*********************************************************************************
@@ -199,13 +207,17 @@
             //+ Modulnummer 0...255; Zeile 1 = Label "Meldezyklus", Auswahlliste                  +
             //+ disabled/enabled; Zeilen 2..13 = je 3 Kanaele pro Servo ("SvN RT max"/"SvN GN     +
             //+ max", je 0...30; "SvN Delay", 0...10, N=1...4) - siehe                            +
-            //+ KANAL_SVBASE/cs2IndexParameterExtern() in Mbc84Com.cpp)                           +
+            //+ KANAL_SVBASE/cs2IndexParameterExtern() in Mbc84Com.cpp). Die Kanaldefinition       +
+            //+ (initCs2Ex[], PROGMEM) bleibt komplett im Flash - cs2IndexExtern() baut die        +
+            //+ angeforderte Zeile bei jedem Aufruf frisch in _cs2ScratchRow zusammen statt 14     +
+            //+ dauerhafte 40-Byte-Zeilen im RAM zu halten (siehe Projekt-Memory                  +
+            //+ project_mbcan_cs2_konfigkanal_pattern).                                            +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC84_ANZMESSWERTEMODUL 0   // Anzahl der modulspez. Messwerte
             #define MBC84_ANZKONFIGMODUL    14  // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC84_ANZMESSWERTEMODUL + MBC84_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +

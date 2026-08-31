@@ -40,9 +40,10 @@ als RAM-sparenderer Wert gewählt). Das Systemarray (siehe `MbcUtils.h`) liegt n
 angelegten, exakt bemessenen Puffer übergeben (Makro `MBC_SYSARRAY_SIZE(genPurpSize)`, siehe
 Minimalbeispiel unten) — jedes Modul zahlt damit genau für die Größe, die es braucht, statt sich
 eine für alle Module gemeinsame, im ungünstigen Fall überdimensionierte Größe zu teilen. Die
-tatsächliche RAM-Auslastung hängt inzwischen auch stark von der Anzahl der CS2-Konfigkanäle
-(`_cs2IndexEx`, siehe Klassenkommentar in `Mbc84Com.h`) ab und sollte je nach Ausbaustufe über die
-Arduino-IDE-Kompilierausgabe am realen Sketch nachgemessen werden, statt hier veraltete Fixwerte
+CS2-Konfigkanäle selbst kosten dank `_cs2ScratchRow` (siehe Klassenkommentar in `Mbc84Com.h`) nur
+noch einen einzigen gemeinsamen 40-Byte-Puffer RAM, unabhängig von der Kanalanzahl - die
+tatsächliche RAM-Auslastung sollte trotzdem je nach Ausbaustufe über die Arduino-IDE-
+Kompilierausgabe am realen Sketch nachgemessen werden, statt hier veraltete Fixwerte
 fortzuschreiben.
 
 ## Installation
@@ -124,8 +125,11 @@ je `loop()`-Durchlauf die komplette Laufzeitlogik.
 ## Abhängigkeiten
 
 - [MBCANLib](../MBCANLib)
-- `Servo` (bei AVR/RP2040-Cores bereits enthalten; auf ESP32 ggf. `ESP32Servo` nötig, falls der
-  verwendete Core keine eigene kompatible `Servo`-Bibliothek mitbringt)
+- `Servo` (bei AVR/RP2040-Cores bereits enthalten) bzw. auf ESP32 die separat zu installierende
+  Bibliothek `ESP32Servo` (verifiziert mit Version 3.2.1) - der ESP32-Arduino-Core bringt anders
+  als AVR/RP2040 keine eigene `Servo.h` mit. `Mbc84Com.h` bindet je nach Plattform automatisch
+  `<Servo.h>` oder `<ESP32Servo.h>` ein (gleiche `Servo`-Klasse/API, kompiliert ohne weitere
+  Codeänderung).
 
 ## Copyright
 

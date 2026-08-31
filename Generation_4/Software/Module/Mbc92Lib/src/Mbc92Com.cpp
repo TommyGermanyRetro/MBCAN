@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 14.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc92Com.cpp #############################################################
@@ -230,7 +231,6 @@
             for (uint8_t index = 0; index < 8; index++) _stellpult[index]  = stellpult[index];
             for (uint8_t index = 0; index < 4; index++) _relaisTime[index] = 20;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -249,7 +249,6 @@
             for (uint8_t index = 0; index < 8; index++) _stellpult[index]  = stellpult[index];
             for (uint8_t index = 0; index < 4; index++) _relaisTime[index] = 20;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -487,8 +486,7 @@
     //*********************************************************************************************
     //* Modulspezifische Parameterdaten aus dem EEPROM lesen: Modulparameter aus der              *
     //* EEPROM-Zusatzregion laden (mit Defaultwerten fuer den unbeschriebenen Zustand,            *
-    //* 0xff-Sentinel), aktualisiert die MM-Addr-/Auto-Aus-/Zwangsrueckmeldung-/                  *
-    //* Art-der-Aktoren-/Impulszeit-Anzeige in _cs2IndexEx                                        *
+    //* 0xff-Sentinel).                                                                            *
     //*********************************************************************************************
 
     void Mbc92Com::eepromReadParaExtern()
@@ -500,8 +498,6 @@
         for (uint8_t index = 0; index < 4; index++)
         {
             _relaisTime[index] = (buf[EEX_TIMING + index] == 0xff) ? 20 : buf[EEX_TIMING + index];
-
-            _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * index + 1][7] = _relaisTime[index];
         }
 
         MBC_92_MM = (buf[EEX_AKTOR] == 0xff) ? 0b01010101 : buf[EEX_AKTOR];
@@ -517,22 +513,9 @@
             MBC_92_MM_L = buf[EEX_MMADDR + 1];
         }
 
-        uint16_t addr = (uint16_t) (((uint16_t) MBC_92_MM_H << 8) | (uint16_t) MBC_92_MM_L);
-
-        _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((addr - MMADDR_BASE) / 4);
-
         MBC_92_AUS    = (buf[EEX_AUS]   == 0xff) ? 100 : buf[EEX_AUS];
         MBC_92_RUECK  = (buf[EEX_RUECK] == 0xff) ? 0   : buf[EEX_RUECK];
         MBC_92_MM_ART = (buf[EEX_ART]   == 0xff) ? 0   : buf[EEX_ART];
-
-        _cs2IndexEx[ROW_AUS][7]              = MBC_92_AUS;
-        _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = MBC_92_RUECK;
-
-        for (uint8_t pair = 0; pair < 4; pair++)
-        {
-            _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * pair][ART_OFFSET] =
-                ((MBC_92_MM_ART & (0x03 << (pair * 2))) != 0) ? 1 : 0;
-        }
     }
 
     //*********************************************************************************************
@@ -581,11 +564,6 @@
                 for (uint8_t index = 0; index < 4; index++) buf[index] = _relaisTime[index];
                 _utils->eepromWriteExtra(EEX_TIMING, buf, 4);
 
-                for (uint8_t index = 0; index < 4; index++)
-                {
-                    _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * index + 1][7] = _relaisTime[index];
-                }
-
             break;
 
             case EE_92_AKTOR:
@@ -615,18 +593,20 @@
                 buf[0] = MBC_92_AUS;
                 _utils->eepromWriteExtra(EEX_AUS, buf, 1);
 
-                _cs2IndexEx[ROW_AUS][7] = MBC_92_AUS;
-
             break;
 
             case EE_92_RUECK:
             {
-                bool warAktiviert = (_cs2IndexEx[ROW_RUECK][RUECK_OFFSET] != 0);
+                // Alten, noch persistierten Zustand vor dem Ueberschreiben lesen, um den
+                // disabled->enabled-Uebergang zu erkennen (siehe unten) - MBC_92_RUECK traegt
+                // hier bereits den NEUEN Wert (vom Aufrufer vorher gesetzt)
+
+                uint8_t alt;
+                _utils->eepromReadExtra(EEX_RUECK, &alt, 1);
+                bool warAktiviert = (alt != 0);
 
                 buf[0] = MBC_92_RUECK;
                 _utils->eepromWriteExtra(EEX_RUECK, buf, 1);
-
-                _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = MBC_92_RUECK;
 
                 // Rueckmeldung wurde soeben aktiviert: Rueckmeldeprozess sofort anstossen,
                 // wenn gerade keiner laeuft
@@ -639,12 +619,6 @@
 
                 buf[0] = MBC_92_MM_ART;
                 _utils->eepromWriteExtra(EEX_ART, buf, 1);
-
-                for (uint8_t pair = 0; pair < 4; pair++)
-                {
-                    _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * pair][ART_OFFSET] =
-                        ((MBC_92_MM_ART & (0x03 << (pair * 2))) != 0) ? 1 : 0;
-                }
 
             break;
         }
@@ -754,14 +728,16 @@
 
             if (gueltig)
             {
-                uint16_t addr = (uint16_t) (MMADDR_BASE + 4 * wert);
+                uint16_t addr    = (uint16_t) (MMADDR_BASE + 4 * wert);
+                uint16_t altAddr = (uint16_t) (((uint16_t) MBC_92_MM_H << 8) | MBC_92_MM_L);
 
-                MBC_92_MM_H = (uint8_t) (addr >> 8);
-                MBC_92_MM_L = (uint8_t) (addr & 0x00ff);
+                if (altAddr != addr)
+                {
+                    MBC_92_MM_H = (uint8_t) (addr >> 8);
+                    MBC_92_MM_L = (uint8_t) (addr & 0x00ff);
 
-                eepromWriteParaExtern(EE_92_MMAddr);   // persistiert + aktualisiert _baseAddr
-
-                _cs2IndexEx[ROW_MODNR][7] = (uint8_t) wert;
+                    eepromWriteParaExtern(EE_92_MMAddr);   // persistiert + aktualisiert _baseAddr
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_MODNR;
@@ -771,7 +747,7 @@
         {
             bool gueltig = (wert <= 200);
 
-            if (gueltig)
+            if (gueltig && (MBC_92_AUS != (uint8_t) wert))
             {
                 MBC_92_AUS = (uint8_t) wert;
                 eepromWriteParaExtern(EE_92_AUS);
@@ -784,7 +760,7 @@
         {
             bool gueltig = (wert <= 1);
 
-            if (gueltig)
+            if (gueltig && (MBC_92_RUECK != (uint8_t) wert))
             {
                 MBC_92_RUECK = (uint8_t) wert;
                 eepromWriteParaExtern(EE_92_RUECK);
@@ -806,13 +782,18 @@
 
                 if (gueltig)
                 {
-                    if (wert) MBC_92_MM_ART |= (uint8_t)  (0x01 << (idx * 2));
-                    else      MBC_92_MM_ART &= (uint8_t) ~(0x03 << (idx * 2));
+                    uint8_t altWert = (uint8_t) ((MBC_92_MM_ART >> (idx * 2)) & 0x01);
 
-                    eepromWriteParaExtern(EE_92_MM_ART);   // persistiert + aktualisiert
-                                                            // Anzeige aller 4 Sp + wendet die
-                                                            // neue Nutzungsart sofort an
-                                                            // (relaisAllOff())
+                    if (altWert != (uint8_t) wert)
+                    {
+                        if (wert) MBC_92_MM_ART |= (uint8_t)  (0x01 << (idx * 2));
+                        else      MBC_92_MM_ART &= (uint8_t) ~(0x03 << (idx * 2));
+
+                        eepromWriteParaExtern(EE_92_MM_ART);   // persistiert + aktualisiert
+                                                                // Anzeige aller 4 Sp + wendet die
+                                                                // neue Nutzungsart sofort an
+                                                                // (relaisAllOff())
+                    }
                 }
 
                 _msgKonfigOk[MBC_CAN_D5] = kanal;
@@ -824,7 +805,7 @@
 
                 bool gueltig = (wert >= 1) && (wert <= 250);
 
-                if (gueltig)
+                if (gueltig && (*(&MBC_92_TIO + idx) != (uint8_t) wert))
                 {
                     *(&MBC_92_TIO + idx) = (uint8_t) wert;
 
@@ -878,19 +859,55 @@
     }
 
     //*********************************************************************************************
-    //* Zeile aus dem modulspezifischen cs2_index_ex[]-Array liefern - mbc-92 hat elf (ROW_MODNR  *
-    //* = MM-Addr, ROW_AUS = Auto-Aus, ROW_RUECK = Zwangsrueckmeldung, ROW_ART_TIMING_BASE+0..7 = *
-    //* interleaved Art/Impulszeit je Doppelspulenantrieb 1...4), sonst nullptr                   *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - mbc-92 hat elf        *
+    //* Kanaele (ROW_MODNR = MM-Addr, ROW_AUS = Auto-Aus, ROW_RUECK = Zwangsrueckmeldung,          *
+    //* ROW_ART_TIMING_BASE+0..7 = interleaved Art/Impulszeit je Doppelspulenantrieb 1...4),       *
+    //* sonst nullptr. Vorlage (initCs2Ex[], PROGMEM) bleibt statisch, nur der aktuelle Wert wird  *
+    //* bei jedem Aufruf frisch aus dem Systemarray gepatcht.                                       *
     //*********************************************************************************************
     //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                                         *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                         *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
     //*********************************************************************************************
 
     const uint8_t* Mbc92Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC92_ANZMESSWERTEMODUL + MBC92_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        if (laufendeNr == ROW_MODNR)
+        {
+            uint16_t addr = (uint16_t) (((uint16_t) MBC_92_MM_H << 8) | (uint16_t) MBC_92_MM_L);
+
+            _cs2ScratchRow[7] = (uint8_t) ((addr - MMADDR_BASE) / 4);
+        }
+        else if (laufendeNr == ROW_AUS)
+        {
+            _cs2ScratchRow[7] = MBC_92_AUS;
+        }
+        else if (laufendeNr == ROW_RUECK)
+        {
+            _cs2ScratchRow[RUECK_OFFSET] = MBC_92_RUECK;
+        }
+        else if ((laufendeNr >= ROW_ART_TIMING_BASE)
+                 && (laufendeNr < (uint8_t) (ROW_ART_TIMING_BASE + 8)))
+        {
+            uint8_t offset = (uint8_t) (laufendeNr - ROW_ART_TIMING_BASE);
+            uint8_t pair   = (uint8_t) (offset / 2);
+
+            if ((offset & 0x01) == 0)
+            {
+                _cs2ScratchRow[ART_OFFSET] =
+                    ((MBC_92_MM_ART & (0x03 << (pair * 2))) != 0) ? 1 : 0;
+            }
+            else
+            {
+                _cs2ScratchRow[7] = *(&MBC_92_TIO + pair);
+            }
+        }
+
+        return _cs2ScratchRow;
     }
 
     //*********************************************************************************************

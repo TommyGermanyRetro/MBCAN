@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 06.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc91Com.cpp #############################################################
@@ -75,7 +76,7 @@
     // Art ist eine Auswahlliste, hier aber REIN INFORMATIV und echt ReadOnly: MBC_91_MM_ART wird
     // nur einmalig beim Start aus der Bestueckungserkennung gelesen (siehe beginModule()),
     // mbc-91 kennt selbst keinen Wechselschalter-Betrieb. Da die Art per Hardware und nicht per
-    // Software feststeht, traegt artRowFix() bereits in beginModule() NUR die tatsaechlich
+    // Software feststeht, traegt cs2IndexExtern() bei jeder Anfrage NUR die tatsaechlich
     // erkannte Option (entweder "Impuls" oder "Wechsel", nie beide) in die Zeile ein - anders als
     // bei einer echten Auswahl (z.B. Zwangsrueckmeldung) wird kein zweiter, per Software
     // gesperrter Listenpunkt angeboten. cs2IndexParameterExtern() verarbeitet trotzdem nur die
@@ -137,7 +138,7 @@
         },
 
         // INDEX_CTRL 1.EX.4 - Art der Aktoren Doppelspulenantrieb 1 (Auswahlliste mit genau 1
-        // Punkt, ReadOnly - Platzhalter "Impuls", artRowFix() traegt in beginModule() die
+        // Punkt, ReadOnly - Platzhalter "Impuls", cs2IndexExtern() traegt bei jeder Anfrage die
         // tatsaechlich per Bestueckung erkannte Option ein, siehe Klassenkommentar)
 
         {   KANAL_ART_TIMING_BASE,0x01,0x01,0x00,0x00,0x00,0x00,0x00,    // 1...8
@@ -245,7 +246,6 @@
             for (uint8_t index = 0; index < 4; index++) _bestueckung[index] = nullptr;
             for (uint8_t index = 0; index < 4; index++) _relaisTime[index] = 20;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -268,7 +268,6 @@
             for (uint8_t index = 0; index < 4; index++) _bestueckung[index] = bestueckung[index];
             for (uint8_t index = 0; index < 4; index++) _relaisTime[index]  = 20;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -288,7 +287,6 @@
             for (uint8_t index = 0; index < 4; index++) _bestueckung[index] = nullptr;
             for (uint8_t index = 0; index < 4; index++) _relaisTime[index] = 20;
 
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -533,8 +531,8 @@
     //*********************************************************************************************
     //* Modulspezifische Parameterdaten aus dem EEPROM lesen                                      *
     //* - hier: Modulparameter aus der EEPROM-Zusatzregion laden (mit Defaultwerten fuer den      *
-    //* unbeschriebenen Zustand, 0xff-Sentinel), aktualisiert die MM-Addr-Anzeige in _cs2IndexEx. *
-    //* Seedet ausserdem das Systemarray (MBC_91_TIO) aus _relaisTime[], damit dieses ab dem      *
+    //* unbeschriebenen Zustand, 0xff-Sentinel). Seedet ausserdem das Systemarray (MBC_91_TIO)    *
+    //* aus _relaisTime[], damit dieses ab dem                                                    *
     //* Start ein korrektes Abbild ist - sowohl der rohe PC_ARRAY_DATA-Schreibweg als auch der    *
     //* neue Impulszeit-Konfigkanal (siehe cs2IndexParameterExtern()) schreiben dort hinein,      *
     //* bevor eepromWriteParaExtern(EE_91_MM_TIMING) alle 4 Werte persistiert.                    *
@@ -551,8 +549,6 @@
             _relaisTime[index] = (buf[EEX_TIMING + index] == 0xff) ? 20 : buf[EEX_TIMING + index];
 
             *(&MBC_91_TIO + index) = _relaisTime[index];
-
-            _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * index + 1][7] = _relaisTime[index];
         }
 
         MBC_91_MM = (buf[EEX_AKTOR] == 0xff) ? 0b01010101 : buf[EEX_AKTOR];
@@ -568,15 +564,8 @@
             MBC_91_MM_L = buf[EEX_MMADDR + 1];
         }
 
-        uint16_t addr = (uint16_t) (((uint16_t) MBC_91_MM_H << 8) | (uint16_t) MBC_91_MM_L);
-
-        _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((addr - MMADDR_BASE) / 4);
-
         MBC_91_AUS   = (buf[EEX_AUS] == 0xff)   ? 100 : buf[EEX_AUS];
         MBC_91_RUECK = (buf[EEX_RUECK] == 0xff) ? 0   : buf[EEX_RUECK];
-
-        _cs2IndexEx[ROW_AUS][7]              = MBC_91_AUS;
-        _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = MBC_91_RUECK;
     }
 
     //*********************************************************************************************
@@ -625,11 +614,6 @@
                 for (uint8_t index = 0; index < 4; index++) buf[index] = _relaisTime[index];
                 _utils->eepromWriteExtra(EEX_TIMING, buf, 4);
 
-                for (uint8_t index = 0; index < 4; index++)
-                {
-                    _cs2IndexEx[ROW_ART_TIMING_BASE + 2 * index + 1][7] = _relaisTime[index];
-                }
-
             break;
 
             case EE_91_AKTOR:
@@ -659,18 +643,20 @@
                 buf[0] = MBC_91_AUS;
                 _utils->eepromWriteExtra(EEX_AUS, buf, 1);
 
-                _cs2IndexEx[ROW_AUS][7] = MBC_91_AUS;
-
             break;
 
             case EE_91_RUECK:
             {
-                bool warAktiviert = (_cs2IndexEx[ROW_RUECK][RUECK_OFFSET] != 0);
+                // Alten, noch persistierten Zustand vor dem Ueberschreiben lesen, um den
+                // disabled->enabled-Uebergang zu erkennen (siehe unten) - MBC_91_RUECK traegt
+                // hier bereits den NEUEN Wert (vom Aufrufer vorher gesetzt)
+
+                uint8_t alt;
+                _utils->eepromReadExtra(EEX_RUECK, &alt, 1);
+                bool warAktiviert = (alt != 0);
 
                 buf[0] = MBC_91_RUECK;
                 _utils->eepromWriteExtra(EEX_RUECK, buf, 1);
-
-                _cs2IndexEx[ROW_RUECK][RUECK_OFFSET] = MBC_91_RUECK;
 
                 // Rueckmeldung wurde soeben aktiviert: Rueckmeldeprozess sofort anstossen,
                 // wenn gerade keiner laeuft
@@ -775,14 +761,16 @@
 
             if (gueltig)
             {
-                uint16_t addr = (uint16_t) (MMADDR_BASE + 4 * wert);
+                uint16_t addr    = (uint16_t) (MMADDR_BASE + 4 * wert);
+                uint16_t altAddr = (uint16_t) (((uint16_t) MBC_91_MM_H << 8) | MBC_91_MM_L);
 
-                MBC_91_MM_H = (uint8_t) (addr >> 8);
-                MBC_91_MM_L = (uint8_t) (addr & 0x00ff);
+                if (altAddr != addr)
+                {
+                    MBC_91_MM_H = (uint8_t) (addr >> 8);
+                    MBC_91_MM_L = (uint8_t) (addr & 0x00ff);
 
-                eepromWriteParaExtern(EE_91_MMAddr);   // persistiert + aktualisiert _baseAddr
-
-                _cs2IndexEx[ROW_MODNR][7] = (uint8_t) wert;
+                    eepromWriteParaExtern(EE_91_MMAddr);   // persistiert + aktualisiert _baseAddr
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_MODNR;
@@ -792,7 +780,7 @@
         {
             bool gueltig = (wert <= 200);
 
-            if (gueltig)
+            if (gueltig && (MBC_91_AUS != (uint8_t) wert))
             {
                 MBC_91_AUS = (uint8_t) wert;
                 eepromWriteParaExtern(EE_91_AUS);
@@ -805,7 +793,7 @@
         {
             bool gueltig = (wert <= 1);
 
-            if (gueltig)
+            if (gueltig && (MBC_91_RUECK != (uint8_t) wert))
             {
                 MBC_91_RUECK = (uint8_t) wert;
                 eepromWriteParaExtern(EE_91_RUECK);
@@ -826,10 +814,13 @@
             {
                 uint8_t idx = (uint8_t) ((kanal - KANAL_ART_TIMING_BASE) / 2);
 
-                *(&MBC_91_TIO + idx) = (uint8_t) wert;
+                if (*(&MBC_91_TIO + idx) != (uint8_t) wert)
+                {
+                    *(&MBC_91_TIO + idx) = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_91_MM_TIMING);   // persistiert alle 4 + synchronisiert
-                                                           // _relaisTime[]/CS2-Anzeige
+                    eepromWriteParaExtern(EE_91_MM_TIMING);   // persistiert alle 4 + synchronisiert
+                                                               // _relaisTime[]/CS2-Anzeige
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = kanal;
@@ -888,39 +879,76 @@
     //* Return: nullptr (keine Erweiterung)                                                       *
     //*********************************************************************************************
 
+    //*********************************************************************************************
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - mbc-91 hat elf       *
+    //* Kanaele (ROW_MODNR = MM-Addr, ROW_AUS = Auto-Aus, ROW_RUECK = Zwangsrueckmeldung,         *
+    //* ROW_ART_TIMING_BASE+0..7 = je Doppelspulenantrieb interleaved Art/Timing), sonst nullptr. *
+    //* Vorlage (initCs2Ex[], PROGMEM) bleibt statisch, nur der aktuelle Wert wird bei jedem      *
+    //* Aufruf frisch aus dem Systemarray gepatcht. Die Art-der-Aktoren-Zeilen (gerader Offset ab *
+    //* ROW_ART_TIMING_BASE) werden dabei auf genau die per Bestueckung erkannte Art fixiert -    *
+    //* echtes ReadOnly heisst hier: nicht zwei Optionen anbieten und eine davon per Software     *
+    //* sperren, sondern von vornherein nur die eine tatsaechlich vorhandene Option eintragen     *
+    //* (Anzahl der Auswahlpunkte = 1, "Jetzige Einstellung" = Index 0) - MBC_91_MM_ART wird      *
+    //* nur einmalig beim Start aus der Bestueckungserkennung gesetzt (siehe beginModule()) und   *
+    //* danach hier bei jeder Anfrage neu ausgewertet.                                            *
+    //*********************************************************************************************
+    //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                                         *
+    //*********************************************************************************************
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
+    //*********************************************************************************************
+
     const uint8_t* Mbc91Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC91_ANZMESSWERTEMODUL + MBC91_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
-    }
 
-    //*********************************************************************************************
-    //* "Art der Aktoren"-Konfigzeile (Kenner 0x01) auf genau die per Bestueckung erkannte Art    *
-    //* fixieren - echtes ReadOnly heisst hier: nicht zwei Optionen anbieten und eine davon per   *
-    //* Software sperren, sondern von vornherein nur die eine tatsaechlich vorhandene Option in   *
-    //* die Auswahlliste eintragen (Anzahl der Auswahlpunkte = 1, "Jetzige Einstellung" = Index   *
-    //* 0). Wird einmalig aus beginModule() aufgerufen, da die Art per Hardware, nicht per        *
-    //* Software, feststeht.                                                                      *
-    //*********************************************************************************************
-    //* row:     Zeilenindex in _cs2IndexEx[] (ROW_ART_TIMING_BASE + 2*Paarnummer)                *
-    //* wechsel: true = Wechselschalter, false = Impulsausgang (siehe MBC_91_MM_ART-Maske)        *
-    //*********************************************************************************************
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
 
-    void Mbc91Com::artRowFix(uint8_t row, bool wechsel)
-    {
-        static const uint8_t textImpuls[MBC_COM_CS2PAKETE * 8 - 17] PROGMEM =
-            {'I','m','p','u','l','s',0x00,
-             0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+        if (laufendeNr == ROW_MODNR)
+        {
+            uint16_t addr = (uint16_t) (((uint16_t) MBC_91_MM_H << 8) | (uint16_t) MBC_91_MM_L);
 
-        static const uint8_t textWechsel[MBC_COM_CS2PAKETE * 8 - 17] PROGMEM =
-            {'W','e','c','h','s','e','l',0x00,
-             0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+            _cs2ScratchRow[7] = (uint8_t) ((addr - MMADDR_BASE) / 4);
+        }
+        else if (laufendeNr == ROW_AUS)
+        {
+            _cs2ScratchRow[7] = MBC_91_AUS;
+        }
+        else if (laufendeNr == ROW_RUECK)
+        {
+            _cs2ScratchRow[RUECK_OFFSET] = MBC_91_RUECK;
+        }
+        else if ((laufendeNr >= ROW_ART_TIMING_BASE)
+                 && (laufendeNr < (uint8_t) (ROW_ART_TIMING_BASE + 8)))
+        {
+            uint8_t offset = (uint8_t) (laufendeNr - ROW_ART_TIMING_BASE);
+            uint8_t pair   = (uint8_t) (offset / 2);
 
-        _cs2IndexEx[row][2] = 0x01;   // Anzahl der Auswahlpunkte: nur die eine erkannte Art
-        _cs2IndexEx[row][ART_OFFSET] = 0x00;   // Jetzige Einstellung: immer Index 0
+            if ((offset & 0x01) == 0)
+            {
+                static const uint8_t textImpuls[MBC_COM_CS2PAKETE * 8 - 17] PROGMEM =
+                    {'I','m','p','u','l','s',0x00,
+                     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
-        memcpy_P(&_cs2IndexEx[row][17], wechsel ? textWechsel : textImpuls,
-                 MBC_COM_CS2PAKETE * 8 - 17);
+                static const uint8_t textWechsel[MBC_COM_CS2PAKETE * 8 - 17] PROGMEM =
+                    {'W','e','c','h','s','e','l',0x00,
+                     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+
+                bool wechsel = (MBC_91_MM_ART & (0x03 << (pair * 2))) != 0;
+
+                _cs2ScratchRow[2]          = 0x01;   // Anzahl der Auswahlpunkte: nur die eine
+                                                      // erkannte Art
+                _cs2ScratchRow[ART_OFFSET] = 0x00;   // Jetzige Einstellung: immer Index 0
+
+                memcpy_P(&_cs2ScratchRow[17], wechsel ? textWechsel : textImpuls,
+                         MBC_COM_CS2PAKETE * 8 - 17);
+            }
+            else
+            {
+                _cs2ScratchRow[7] = *(&MBC_91_TIO + pair);
+            }
+        }
+
+        return _cs2ScratchRow;
     }
 
     //*********************************************************************************************
@@ -972,14 +1000,8 @@
             if (_bestueckung[3]->read()) MBC_91_MM_ART |= 0x01;
         }
 
-        // "Art der Aktoren"-Zeilen (ReadOnly, siehe Klassenkommentar) aus MBC_91_MM_ART fixieren -
-        // 2-Bit-je-Paar-Maske, nur als ==0 (Impuls)/!=0 (Wechsel) ausgewertet
-
-        for (uint8_t pair = 0; pair < 4; pair++)
-        {
-            artRowFix(ROW_ART_TIMING_BASE + 2 * pair,
-                      (MBC_91_MM_ART & (0x03 << (pair * 2))) != 0);
-        }
+        // "Art der Aktoren"-Anzeige (ReadOnly, siehe Klassenkommentar) liest MBC_91_MM_ART jetzt
+        // erst bei Bedarf direkt in cs2IndexExtern() aus - kein Vorab-Fixieren mehr noetig
 
         eepromReadParaExtern();
 

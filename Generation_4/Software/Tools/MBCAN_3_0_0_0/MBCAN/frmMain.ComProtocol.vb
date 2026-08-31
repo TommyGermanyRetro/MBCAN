@@ -580,23 +580,27 @@ Partial Class frmMain
 
         If S88Modul = Val(Register_Get_S88ModNr(AktTyp, AktNr)) Then
 
-            If MBC.ModulTyp(AktTyp).Bezeichner = "mbc-88" Then
-                S88Pin = Val("&H" + Befehl.D6) - 8 * MBC.ModulTyp(AktTyp).Modul(AktNr).S88ModHalbNr
-            Else
-                S88Pin = Val("&H" + Befehl.D6)
+            If (AktTyp > 0) And (AktNr > 0) Then
+
+                If MBC.ModulTyp(AktTyp).Bezeichner = "mbc-88" Then
+                    S88Pin = Val("&H" + Befehl.D6) - 8 * MBC.ModulTyp(AktTyp).Modul(AktNr).S88ModHalbNr
+                Else
+                    S88Pin = Val("&H" + Befehl.D6)
+                End If
+
+                S88 = Val(Register_Get_S88Value(AktTyp, AktNr))
+
+                If S88Stellung = 0 Then
+                    S88 = (S88 And Not (2 ^ S88Pin)) And &HFFFF
+                Else
+                    S88 = (S88 Or 2 ^ S88Pin) And &HFFFF
+                End If
+
+                Register_Set_S88Value(S88, AktTyp, AktNr)
+
+                Register_Modul_Aktorstellung_Show()
+
             End If
-
-            S88 = Val(Register_Get_S88Value(AktTyp, AktNr))
-
-            If S88Stellung = 0 Then
-                S88 = (S88 And Not (2 ^ S88Pin)) And &HFFFF
-            Else
-                S88 = (S88 Or 2 ^ S88Pin) And &HFFFF
-            End If
-
-            Register_Set_S88Value(S88, AktTyp, AktNr)
-
-            Register_Modul_Aktorstellung_Show()
 
         End If
 
@@ -688,9 +692,11 @@ Partial Class frmMain
             ' Danach verlassse die Funktion da Befehl verarbeitet wurde
 
             If (Befehl.ID = Val(Register_Get_MMAddr(0, AktTyp, AktNr))) Then
-                If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
-                    COMMMReceive(&HFC, &H1, &H2)
-                    Register_Modul_Aktorstellung_Show()
+                If (AktTyp > 0) And (AktNr > 0) Then
+                    If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
+                        COMMMReceive(&HFC, &H1, &H2)
+                        Register_Modul_Aktorstellung_Show()
+                    End If
                 End If
 
                 Exit Sub
@@ -699,9 +705,11 @@ Partial Class frmMain
 
             If (Befehl.ID = Val(Register_Get_MMAddr(1, AktTyp, AktNr))) Then
 
-                If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
-                    COMMMReceive(&HF3, &H4, &H8)
-                    Register_Modul_Aktorstellung_Show()
+                If (AktTyp > 0) And (AktNr > 0) Then
+                    If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
+                        COMMMReceive(&HF3, &H4, &H8)
+                        Register_Modul_Aktorstellung_Show()
+                    End If
                 End If
 
                 Exit Sub
@@ -710,9 +718,11 @@ Partial Class frmMain
 
             If (Befehl.ID = Val(Register_Get_MMAddr(2, AktTyp, AktNr))) Then
 
-                If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
-                    COMMMReceive(&HCF, &H10, &H20)
-                    Register_Modul_Aktorstellung_Show()
+                If (AktTyp > 0) And (AktNr > 0) Then
+                    If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
+                        COMMMReceive(&HCF, &H10, &H20)
+                        Register_Modul_Aktorstellung_Show()
+                    End If
                 End If
 
                 Exit Sub
@@ -721,9 +731,11 @@ Partial Class frmMain
 
             If (Befehl.ID = Val(Register_Get_MMAddr(3, AktTyp, AktNr))) Then
 
-                If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
-                    COMMMReceive(&H3F, &H40, &H80)
-                    Register_Modul_Aktorstellung_Show()
+                If (AktTyp > 0) And (AktNr > 0) Then
+                    If MBC.ModulTyp(AktTyp).Modul(AktNr).Status < IsMissing Then
+                        COMMMReceive(&H3F, &H40, &H80)
+                        Register_Modul_Aktorstellung_Show()
+                    End If
                 End If
 
                 Exit Sub

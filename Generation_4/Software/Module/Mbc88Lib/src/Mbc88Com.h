@@ -15,6 +15,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 08.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -22,7 +23,7 @@
 //###### Start Quellcode Mbc88Com.h ###############################################################
 
 #ifndef _MBC88COM_H_
-#define _MBC88COM_H_     "V1.0.0 - 08.08.2026"
+#define _MBC88COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -44,7 +45,6 @@
 
             //*************************************************************************************
             //* Konstruktor zur Deklaration von Objektvariablen (initialisiert ausserdem die      *
-            //* modulspezifische CS2-Konfigurationstabelle _cs2IndexEx[] und die                  *
             //* Konfig-Bestaetigungsnachricht _msgKonfigOk[])                                     *
             //*************************************************************************************
             //* utils:      zugehoerige MbcUtils-Instanz                                          *
@@ -170,13 +170,15 @@
                 void sendMessageExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine der zehn Zeilen aus _cs2IndexEx[] (S88-Modulnummer/Halbmodul/    *
-                //* 8x Integrationszeit) oder nullptr, wenn laufendeNr keinen Kanal mehr          *
-                //* bezeichnet.                                                                   *
+                //* Baut eine der zehn Kanalzeilen (S88-Modulnummer/Halbmodul/8x Integrationszeit) *
+                //* frisch in _cs2ScratchRow zusammen (PROGMEM-Vorlage + aktueller Wert aus dem    *
+                //* Systemarray) und gibt sie zurueck, sonst nullptr, wenn laufendeNr keinen       *
+                //* Kanal mehr bezeichnet.                                                         *
                 //*********************************************************************************
                 //* laufendeNr: 0..MBC88_ANZMESSWERTEMODUL+MBC88_ANZKONFIGMODUL-1                 *
                 //*********************************************************************************
-                //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                             *
+                //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig)      *
+                //*         oder nullptr                                                          *
                 //*********************************************************************************
 
                 const uint8_t* cs2IndexExtern(uint8_t laufendeNr) override;
@@ -185,13 +187,16 @@
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Modulspezifische CSx-GUI-Parameter: zehn Konfigkanaele (S88-Modulnummer,          +
-            //+ Halbmodul, 8x Integrationszeit)                                                   +
+            //+ Halbmodul, 8x Integrationszeit). Die Kanaldefinition (initCs2Ex[], PROGMEM)       +
+            //+ bleibt komplett im Flash - cs2IndexExtern() baut die angeforderte Zeile bei jedem +
+            //+ Aufruf frisch in _cs2ScratchRow zusammen statt 10 dauerhafte 40-Byte-Zeilen im     +
+            //+ RAM zu halten.                                                                     +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC88_ANZMESSWERTEMODUL 0    // Anzahl der modulspez. Messwerte
             #define MBC88_ANZKONFIGMODUL    10   // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC88_ANZMESSWERTEMODUL + MBC88_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +

@@ -377,7 +377,7 @@
             }
 
             _bothRx = false;
-            _initialized = true;
+            _initialized = ok;
 
             return ok;
         }

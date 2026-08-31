@@ -29,6 +29,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 21.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -36,7 +37,7 @@
 //###### Start Quellcode Mbc83Com.h ###############################################################
 
 #ifndef _MBC83COM_H_
-#define _MBC83COM_H_     "V1.0.0 - 21.08.2026"
+#define _MBC83COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -157,13 +158,15 @@
                 void cs2IndexParameterExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine Zeile aus _cs2IndexEx[] (MM-Addr-, Auto-Aus-, Meldezyklus-,      *
-                //* Dimmer- oder Art-/Timing-Konfigkanal) oder nullptr, wenn laufendeNr keinen    *
-                //* Kanal mehr bezeichnet.                                                        *
+                //* Baut die angeforderte Kanalzeile (MM-Addr-, Auto-Aus-, Meldezyklus-, Dimmer-  *
+                //* oder Art-/Timing-Konfigkanal) frisch in _cs2ScratchRow zusammen (PROGMEM-     *
+                //* Vorlage + aktueller Wert aus dem Systemarray/_baseAddr) und gibt sie zurueck, *
+                //* sonst nullptr.                                                                *
                 //*********************************************************************************
                 //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                             *
                 //*********************************************************************************
-                //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                             *
+                //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig)      *
+                //*         oder nullptr                                                          *
                 //*********************************************************************************
 
                 const uint8_t* cs2IndexExtern(uint8_t laufendeNr) override;
@@ -187,13 +190,16 @@
             //+ Label Meldezyklus, Auswahlliste disabled/enabled; Zeile 3 = Label Dimmer, Rohwert +
             //+ 0...200; Zeilen 4...11 = je Doppelspulenantrieb interleaved Art (Auswahlliste     +
             //+ Impuls/Wechsel/StartUp) gefolgt von Impulszeit (Rohwert 1...250 x10ms)) - siehe   +
-            //+ cs2IndexParameterExtern() in Mbc83Com.cpp                                         +
+            //+ cs2IndexParameterExtern() in Mbc83Com.cpp). Die Kanaldefinition (initCs2Ex[],     +
+            //+ PROGMEM) bleibt komplett im Flash - cs2IndexExtern() baut die angeforderte Zeile  +
+            //+ bei jedem Aufruf frisch in _cs2ScratchRow zusammen statt 12 dauerhafte            +
+            //+ 40-Byte-Zeilen im RAM zu halten.                                                   +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC83_ANZMESSWERTEMODUL 0   // Anzahl der modulspez. Messwerte
             #define MBC83_ANZKONFIGMODUL    12  // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC83_ANZMESSWERTEMODUL + MBC83_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +

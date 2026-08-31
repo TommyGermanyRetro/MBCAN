@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="ms_Menu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
+    <value>299, 17</value>
   </metadata>
   <data name="lbl_mbc81_Nutzung_Erlaeuterung_1.Text" xml:space="preserve">
     <value>Über die Combo-Box kann ausgewählt werden, ob das Modul als MM2-Switchboard genutzt wird (Ersatz für 6040) oder als Halbmodul für den BUS 0 des mbc-80 (L88-Bus-0). Bei den Halbmodulen können von den 64 möglichen Tastern der Matrix entweder die Tasten 1 bis 32 oder 33 bis 64 ausgewählt werden.</value>
@@ -148,19 +148,25 @@
     <value>True</value>
   </metadata>
   <metadata name="stp_Status.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>235, 17</value>
+    <value>505, 17</value>
   </metadata>
   <metadata name="tm_Neu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>345, 17</value>
+    <value>612, 17</value>
   </metadata>
   <metadata name="tm_Alive.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>121, 17</value>
+    <value>405, 17</value>
+  </metadata>
+  <metadata name="tm_ComTimeout.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
   </metadata>
   <metadata name="ofd_Oeffnen.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>455, 17</value>
+    <value>708, 17</value>
+  </metadata>
+  <metadata name="ofd_OeffnenBin.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>162, 17</value>
   </metadata>
   <metadata name="tm_Update.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>590, 17</value>
+    <value>828, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>74</value>

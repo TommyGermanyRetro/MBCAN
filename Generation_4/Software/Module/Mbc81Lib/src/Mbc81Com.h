@@ -28,6 +28,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 22.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -35,7 +36,7 @@
 //###### Start Quellcode Mbc81Com.h ###############################################################
 
 #ifndef _MBC81COM_H_
-#define _MBC81COM_H_     "V1.0.0 - 22.08.2026"
+#define _MBC81COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -109,8 +110,7 @@
 
                 //*********************************************************************************
                 //* Persistiert den betroffenen Block (MM-Addr oder Nutzung) in der EEPROM-        *
-                //* Zusatzregion und haelt die intern gecachte Basisadresse/Nutzung sowie die      *
-                //* zugehoerige _cs2IndexEx-Zeile synchron.                                        *
+                //* Zusatzregion und haelt die intern gecachte Basisadresse/Nutzung synchron.      *
                 //*********************************************************************************
                 //* block: Identifier des zu schreibenden Blocks (EE_81_MMAddr/EE_81_Nutzung)      *
                 //*********************************************************************************
@@ -137,12 +137,14 @@
                 void cs2IndexParameterExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine Zeile aus _cs2IndexEx[] (KeyB- oder Nutz-Konfigkanal) oder         *
-                //* nullptr, wenn laufendeNr keinen Kanal mehr bezeichnet.                          *
+                //* Baut die angeforderte Kanalzeile (KeyB- oder Nutz-Konfigkanal) frisch in       *
+                //* _cs2ScratchRow zusammen (PROGMEM-Vorlage + aktueller Wert aus dem              *
+                //* Systemarray/_baseAddr) und gibt sie zurueck, sonst nullptr.                    *
                 //*********************************************************************************
                 //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                              *
                 //*********************************************************************************
-                //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                               *
+                //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig)       *
+                //*         oder nullptr                                                           *
                 //*********************************************************************************
 
                 const uint8_t* cs2IndexExtern(uint8_t laufendeNr) override;
@@ -152,13 +154,15 @@
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Modulspezifische CSx-GUI-Parameter: 2 Konfigkanaele (Label "KeyB:", Modulnummer    +
             //+ 0...63; Label "Nutz:", Auswahlliste Switch/B0 1..32/B0 33..63), siehe              +
-            //+ cs2IndexParameterExtern() in Mbc81Com.cpp                                          +
+            //+ cs2IndexParameterExtern() in Mbc81Com.cpp. Die Kanaldefinition (initCs2Ex[],       +
+            //+ PROGMEM) bleibt komplett im Flash - cs2IndexExtern() baut die angeforderte Zeile   +
+            //+ bei jedem Aufruf frisch in _cs2ScratchRow zusammen.                                 +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC81_ANZMESSWERTEMODUL 0   // Anzahl der modulspez. Messwerte
             #define MBC81_ANZKONFIGMODUL    2   // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC81_ANZMESSWERTEMODUL + MBC81_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +

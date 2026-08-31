@@ -20,6 +20,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 14.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -27,7 +28,7 @@
 //###### Start Quellcode Mbc92Com.h ###############################################################
 
 #ifndef _MBC92COM_H_
-#define _MBC92COM_H_     "V1.0.0 - 14.08.2026"
+#define _MBC92COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -187,14 +188,15 @@
                 void sendMessageExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine Zeile aus _cs2IndexEx[] (MM-Addr-, Auto-Aus-,                    *
-                //* Zwangsrueckmeldung-, eine der 4 Art-der-Aktoren- oder eine der 4              *
-                //* Impulszeit-Konfigkanaele) oder nullptr, wenn laufendeNr keinen Kanal mehr     *
-                //* bezeichnet.                                                                   *
+                //* Baut die angeforderte Kanalzeile (MM-Addr-, Auto-Aus-, Zwangsrueckmeldung-,   *
+                //* eine der 4 Art-der-Aktoren- oder eine der 4 Impulszeit-Konfigkanaele) frisch   *
+                //* in _cs2ScratchRow zusammen (PROGMEM-Vorlage + aktueller Wert aus dem          *
+                //* Systemarray/_baseAddr) und gibt sie zurueck, sonst nullptr.                   *
                 //*********************************************************************************
                 //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                             *
                 //*********************************************************************************
-                //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                             *
+                //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig)      *
+                //*         oder nullptr                                                          *
                 //*********************************************************************************
 
                 const uint8_t* cs2IndexExtern(uint8_t laufendeNr) override;
@@ -206,13 +208,16 @@
             //+ Modulnummer 0...255; Zeile 1 = Auto-Aus, Rohwert 0...200 x10ms; Zeile 2 =         +
             //+ Zwangsrueckmeldung, Auswahlliste disabled/enabled; Zeilen 3...10 = je             +
             //+ Doppelspulenantrieb interleaved Art der Aktoren (Auswahlliste Impuls/Wechsel)     +
-            //+ gefolgt von Impulszeit (Rohwert 1...250 x10ms) - siehe cs2IndexParameterExtern()) +
+            //+ gefolgt von Impulszeit (Rohwert 1...250 x10ms) - siehe cs2IndexParameterExtern()). +
+            //+ Die Kanaldefinition (initCs2Ex[], PROGMEM) bleibt komplett im Flash -             +
+            //+ cs2IndexExtern() baut die angeforderte Zeile bei jedem Aufruf frisch in           +
+            //+ _cs2ScratchRow zusammen statt 11 dauerhafte 40-Byte-Zeilen im RAM zu halten.       +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC92_ANZMESSWERTEMODUL 0   // Anzahl der modulspez. Messwerte
             #define MBC92_ANZKONFIGMODUL    11  // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC92_ANZMESSWERTEMODUL + MBC92_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +

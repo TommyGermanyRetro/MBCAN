@@ -29,7 +29,7 @@
 //* | ADC Busspannung                 | GPIO26 (ADC0)                 |                           *
 //* | ADC Steckernetzteil             | GPIO27 (ADC1)                 |                           *
 //* | I2C SDA/SCL (4x PCF8574)        | GPIO4 / GPIO5                 |                           *
-//* | L01..L16                        | siehe PIN_LED[] im Sketch     |                           *
+//* | L01..L16                        | siehe PIN_LEDS[] im Sketch     |                           *
 //*************************************************************************************************
 //* Datei: Mbc81_RP2040_Pico.ino                                                                  *
 //*************************************************************************************************
@@ -61,7 +61,7 @@
 
     // L01..L16 (Index 0..15 = MM-Adressoffset, siehe Mbc81Com.h)
 
-    const uint8_t PIN_LED[16] =
+    const uint8_t PIN_LEDS[16] =
         { 0, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 17, 21, 23, 24, 25 };
 
 //------ Modulidentitaet (ASCII-Ziffern) ----------------------------------------------------------
@@ -82,10 +82,10 @@
 
     MbcPcf8574 *tasterChips[4] = { &tasterChip0, &tasterChip1, &tasterChip2, &tasterChip3 };
 
-    MbcDigitalOut led00(PIN_LED[0]),  led01(PIN_LED[1]),  led02(PIN_LED[2]),  led03(PIN_LED[3]);
-    MbcDigitalOut led04(PIN_LED[4]),  led05(PIN_LED[5]),  led06(PIN_LED[6]),  led07(PIN_LED[7]);
-    MbcDigitalOut led08(PIN_LED[8]),  led09(PIN_LED[9]),  led10(PIN_LED[10]), led11(PIN_LED[11]);
-    MbcDigitalOut led12(PIN_LED[12]), led13(PIN_LED[13]), led14(PIN_LED[14]), led15(PIN_LED[15]);
+    MbcDigitalOut led00(PIN_LEDS[0]),  led01(PIN_LEDS[1]),  led02(PIN_LEDS[2]),  led03(PIN_LEDS[3]);
+    MbcDigitalOut led04(PIN_LEDS[4]),  led05(PIN_LEDS[5]),  led06(PIN_LEDS[6]),  led07(PIN_LEDS[7]);
+    MbcDigitalOut led08(PIN_LEDS[8]),  led09(PIN_LEDS[9]),  led10(PIN_LEDS[10]), led11(PIN_LEDS[11]);
+    MbcDigitalOut led12(PIN_LEDS[12]), led13(PIN_LEDS[13]), led14(PIN_LEDS[14]), led15(PIN_LEDS[15]);
 
     MbcDigitalOut *leds[16] =
         { &led00, &led01, &led02, &led03, &led04, &led05, &led06, &led07,

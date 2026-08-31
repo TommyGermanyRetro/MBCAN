@@ -126,6 +126,15 @@ Nur Arduino-Core-Bibliotheken: `SPI`, `Wire`, `EEPROM`.
 - [Mbc91Lib](../Mbc91Lib) — Magnetartikel-Schaltdecoder mbc-91 (4 Doppelspulenantriebe, Stellpult)
 - [Mbc92Lib](../Mbc92Lib) — Magnetartikel-Schaltdecoder mbc-92 (4 Doppelspulenantriebe, Stellpult,
   konfigurierbare Ausgangsart)
+- [Mbc93Lib](../Mbc93Lib) — Booster-Monitor mbc-93 (mfx-Booster auf Basis Märklin 6017: Ein/Aus,
+  Kurzschlusserkennung, Lüfter)
+- [Mbc82Lib](../Mbc82Lib) — Booster-Monitor mbc-82 (mfx-Boosterlink: Ein/Aus,
+  Kurzschlusserkennung, baugleiche Basis wie mbc-93, aber ohne Lüfter)
+- [Mbc89Lib](../Mbc89Lib) — Connect6021-Interface mbc-89 (CU 6021/Keyboard/Memory-Bus-Bridge samt
+  Gleis-Signaldecoder; rohe AVR-Register, nur ATmega644P). **Einzige Ausnahme ohne
+  `depends=MBCANLib`** - eigenständig mit umbenannten Kopien der Kernklassen, da mbc-89 die
+  TWI-Hardware exklusiv braucht und sonst mit der durch `MbcI2cBus` unvermeidlich mitgezogenen
+  `Wire`-Bibliothek kollidiert (siehe Mbc89Lib-README).
 
 ## Copyright
 

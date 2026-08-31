@@ -55,12 +55,6 @@
     static const uint8_t INDEX_2_4 = 6, INDEX_2_4_HW_1 = 13, INDEX_2_4_HW_2 = 14, INDEX_2_4_HW_3 = 16;
     static const uint8_t INDEX_2_4_HW_4 = 17, INDEX_2_4_HW_5 = 19, INDEX_2_4_HW_6 = 20;
 
-    // Anzahl der Basis-CS2-Konfigurationskanaele (INDEX_0 + Messwerte + Konfig) ohne
-    // modulspezifische Erweiterung - modulspezifische Kanaele haengen sich in checkCs2Connection()
-    // direkt dahinter an, siehe cs2IndexExtern() in MbcCom.h
-
-    static const uint8_t BASIS_ANZAHL = MBC_COM_ANZMESSWERTE + MBC_COM_ANZKONFIG + 1;   // 7
-
     // Anzahl Sendeversuche bei fehlgeschlagenem CAN-Versand (siehe sendMessage()) - MbcCan::send()
     // kann bei belegtem TX-Puffer fehlschlagen (false liefern). Besonders bei mehrzeiligen
     // CS2-Konfigkanal-Uebertragungen (checkCs2Connection(), CAN_ID_KONFIG) reicht ein einziges
@@ -126,12 +120,14 @@
     #if defined(__AVR__)
         MbcCom::MbcCom(MbcUtils &utils, MbcCan &can, MbcBootStorage &bootStorage, uint8_t pinReset,
                        uint8_t anzMesswerteModul, uint8_t anzKonfigModul)
-            : _utils(&utils), _can(&can), _bootStorage(&bootStorage), _pinReset(pinReset)
+            : _utils(&utils), _can(&can), _bootStorage(&bootStorage), _pinReset(pinReset),
+              _anzMesswerteModul(anzMesswerteModul)
         {
     #else
         MbcCom::MbcCom(MbcUtils &utils, MbcCan &can, MbcBootStorage &bootStorage,
                        uint8_t anzMesswerteModul, uint8_t anzKonfigModul)
-            : _utils(&utils), _can(&can), _bootStorage(&bootStorage)
+            : _utils(&utils), _can(&can), _bootStorage(&bootStorage),
+              _anzMesswerteModul(anzMesswerteModul)
         {
     #endif
         // Vordefinierte CAN-Nachrichtentemplates
@@ -236,6 +232,19 @@
 
         cs2_index[INDEX_0][0] = (uint8_t) (MBC_COM_ANZMESSWERTE + anzMesswerteModul);
         cs2_index[INDEX_0][1] = (uint8_t) (MBC_COM_ANZKONFIG + anzKonfigModul);
+
+        // Kanalnummern der Basis-Konfigkanaele (Seriennummer/GUiD/Firmware/Hardware) um die
+        // Anzahl modulspezifischer Messwertkanaele verschieben - die CSx zeigt die ersten
+        // (MBC_COM_ANZMESSWERTE + anzMesswerteModul) Kanaele als Messwerte an, unabhaengig von
+        // deren eigener Kennung (siehe checkCs2Connection()); modulspezifische Messwertkanaele
+        // muessen deshalb direkt hinter die Basis-Messwerte einsortiert werden, nicht hinter die
+        // Basis-Konfigkanaele. Bei anzMesswerteModul=0 (alle bisherigen Module) bleiben die
+        // Werte unveraendert bei 3/4/5/6.
+
+        cs2_index[INDEX_2_1][0] = (uint8_t) (MBC_COM_ANZMESSWERTE + anzMesswerteModul + 1);
+        cs2_index[INDEX_2_2][0] = (uint8_t) (MBC_COM_ANZMESSWERTE + anzMesswerteModul + 2);
+        cs2_index[INDEX_2_3][0] = (uint8_t) (MBC_COM_ANZMESSWERTE + anzMesswerteModul + 3);
+        cs2_index[INDEX_2_4][0] = (uint8_t) (MBC_COM_ANZMESSWERTE + anzMesswerteModul + 4);
     }
 
     //*********************************************************************************************
@@ -1029,9 +1038,31 @@
                 {
                     uint8_t idNr = msg[MBC_CAN_D4];
 
-                    const uint8_t *sourceArr = (idNr < BASIS_ANZAHL)
-                                                  ? cs2_index[idNr]
-                                                  : cs2IndexExtern((uint8_t) (idNr - BASIS_ANZAHL));
+                    // Kanal-Layout (wire-Kanalnummer idNr): 0=Geraeteinfo, 1..ANZMESSWERTE=Basis-
+                    // Messwerte, direkt dahinter anzMesswerteModul modulspezifische Messwertkanaele
+                    // (siehe Konstruktor), dann ANZKONFIG Basis-Konfigkanaele (dort ebenfalls um
+                    // anzMesswerteModul verschoben), ganz am Ende die modulspezifischen
+                    // Konfigkanaele - generisch fuer jede Anzahl modulspezifischer Messwert-/
+                    // Konfigkanaele, nicht nur fuer den aktuell groessten bekannten Fall
+
+                    const uint8_t *sourceArr;
+
+                    if (idNr <= MBC_COM_ANZMESSWERTE)
+                    {
+                        sourceArr = cs2_index[idNr];
+                    }
+                    else if (idNr <= (uint8_t) (MBC_COM_ANZMESSWERTE + _anzMesswerteModul))
+                    {
+                        sourceArr = cs2IndexExtern((uint8_t) (idNr - MBC_COM_ANZMESSWERTE - 1));
+                    }
+                    else if (idNr <= (uint8_t) (MBC_COM_ANZMESSWERTE + _anzMesswerteModul + MBC_COM_ANZKONFIG))
+                    {
+                        sourceArr = cs2_index[idNr - _anzMesswerteModul];
+                    }
+                    else
+                    {
+                        sourceArr = cs2IndexExtern((uint8_t) (idNr - MBC_COM_ANZMESSWERTE - MBC_COM_ANZKONFIG - 1));
+                    }
 
                     if (sourceArr == nullptr) break;
 

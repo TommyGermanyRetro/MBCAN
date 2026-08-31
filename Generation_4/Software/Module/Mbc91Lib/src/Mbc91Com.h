@@ -19,6 +19,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 06.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 #pragma once
@@ -26,7 +27,7 @@
 //###### Start Quellcode Mbc91Com.h ###############################################################
 
 #ifndef _MBC91COM_H_
-#define _MBC91COM_H_     "V1.0.0 - 06.08.2026"
+#define _MBC91COM_H_     "V1.0.1 - 29.08.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -217,10 +218,12 @@
                 void sendMessageExtern(const uint8_t msg[MBC_COM_MSG_LAENGE]) override;
 
                 //*********************************************************************************
-                //* Liefert eine Zeile aus _cs2IndexEx[] (MM-Addr-, Auto-Aus-,                    *
-                //* Zwangsrueckmeldung-, eine der 4 Art-der-Aktoren- oder eine der 4              *
-                //* Impulszeit-Konfigkanaele) oder nullptr, wenn laufendeNr keinen Kanal mehr     *
-                //* bezeichnet.                                                                   *
+                //* Baut die angeforderte Kanalzeile (MM-Addr-, Auto-Aus-, Zwangsrueckmeldung-,   *
+                //* eine der 4 Art-der-Aktoren- oder eine der 4 Impulszeit-Konfigkanaele) frisch   *
+                //* in _cs2ScratchRow zusammen (PROGMEM-Vorlage + aktueller Wert aus dem          *
+                //* Systemarray) und gibt sie zurueck, sonst nullptr. Die Art-der-Aktoren-Zeilen   *
+                //* werden dabei jedesmal aus MBC_91_MM_ART auf die per Bestueckung erkannte      *
+                //* Option fixiert (echtes ReadOnly, siehe Klassenkommentar).                      *
                 //*********************************************************************************
                 //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                             *
                 //*********************************************************************************
@@ -236,14 +239,17 @@
             //+ Modulnummer 0...255; Zeile 1 = Auto-Aus, Rohwert 0...200 x10ms; Zeile 2 =         +
             //+ Zwangsrueckmeldung, Auswahlliste disabled/enabled; Zeilen 3...10 = je             +
             //+ Doppelspulenantrieb interleaved Art der Aktoren (Auswahlliste mit genau 1 Punkt   +
-            //+ entsprechend der per Bestueckung erkannten Art, ReadOnly, siehe artRowFix())      +
+            //+ entsprechend der per Bestueckung erkannten Art, ReadOnly, siehe cs2IndexExtern()) +
             //+ gefolgt von Impulszeit (Rohwert 1...250 x10ms) - siehe cs2IndexParameterExtern()) +
+            //+ Die Kanaldefinition (initCs2Ex[], PROGMEM) bleibt komplett im Flash -             +
+            //+ cs2IndexExtern() baut die angeforderte Zeile bei jedem Aufruf frisch in           +
+            //+ _cs2ScratchRow zusammen statt 11 dauerhafte 40-Byte-Zeilen im RAM zu halten.       +
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             #define MBC91_ANZMESSWERTEMODUL 0   // Anzahl der modulspez. Messwerte
             #define MBC91_ANZKONFIGMODUL    11  // Anzahl der modulspez. Konfigurationskanaele
 
-            uint8_t _cs2IndexEx[MBC91_ANZMESSWERTEMODUL + MBC91_ANZKONFIGMODUL][MBC_COM_CS2PAKETE * 8];
+            uint8_t _cs2ScratchRow[MBC_COM_CS2PAKETE * 8];
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ Erweiterung der CAN-Nachrichten                                                   +
@@ -274,7 +280,6 @@
             uint16_t relaisSync();
             void     switchboardCheck();
             void     handleSwitchCommand(const uint8_t msg[MBC_CAN_MSG_LEN]);
-            void     artRowFix(uint8_t row, bool wechsel);
     };
 
 //------ Ende Klassendefinition Mbc91Com ----------------------------------------------------------

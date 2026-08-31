@@ -1691,6 +1691,9 @@ Public Class frmMain
     '*** betroffen, die folgen ausschliesslich FLAG_Edit_Enable. Ausnahme mbc84 (AktTyp=5):     ***
     '*** tab_Module bleibt von der CSx-Sperre ausgenommen, damit die Wegdiagramm-Buttons        ***
     '*** erreichbar bleiben - stattdessen werden dort die Eingabefelder einzeln gesperrt.       ***
+    '*** Ausnahme mbc89 (AktTyp=10): tab_Module bleibt ebenfalls ausgenommen, damit der         ***
+    '*** Lokeigenschaften-Button (btn_mbc89_Loks) bei CSx-Anwesenheit erreichbar bleibt -        ***
+    '*** stattdessen werden nur die 5 Konfig-Gruppenboxen gesperrt.                             ***
     '**********************************************************************************************
 
     Public Sub Register_Modul_CSxLock_Apply()
@@ -1718,6 +1721,23 @@ Public Class frmMain
             nud_mbc84_Links_CH4.Enabled = locked
             nud_mbc84_Rechts_CH4.Enabled = locked
             nud_mbc84_Step_CH4.Enabled = locked
+
+        ElseIf AktTyp = 10 Then
+
+            ' mbc89: tab_Module bleibt von der CSx-Sperre unberuehrt, damit der
+            ' Lokeigenschaften-Button (btn_mbc89_Loks, liegt direkt auf dem Tab, nicht in einer
+            ' der Gruppenboxen) erreichbar bleibt - stattdessen werden nur die 5 Konfig-
+            ' Gruppenboxen gesperrt (deaktiviert automatisch alle enthaltenen Steuerelemente)
+
+            Dim locked As Boolean = FLAG_Edit_Enable AndAlso Not FLAG_CSxPingEmpfangen
+
+            tab_Module.Enabled = FLAG_Edit_Enable
+
+            gb_mbc89_Keyboard.Enabled = locked
+            gb_mbc89_Basisadresse.Enabled = locked
+            gb_mbc89_Version.Enabled = locked
+            gb_mbc89_Mapping.Enabled = locked
+            gb_mbc89_I2C.Enabled = locked
 
         Else
 

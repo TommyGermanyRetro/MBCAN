@@ -209,10 +209,12 @@
                 //* (40
                 //* Byte, CS2PAKETE*8) oder nullptr, wenn laufendeNr keinen Kanal mehr bezeichnet.
                 //* laufendeNr zaehlt durchgehend 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1 (erst die
-                //* Messwert-, dann die Konfigkanaele der Unterklasse) - MbcCom haengt diese
-                //* Kanaele
-                //* direkt hinter die BASIS_ANZAHL Basiskanaele an, siehe MbcCom.cpp. Default:
-                //* nullptr (keine Erweiterung).
+                //* Messwert-, dann die Konfigkanaele der Unterklasse) - MbcCom sortiert die
+                //* Messwertkanaele davon (laufendeNr 0..ANZMESSWERTEMODUL-1) direkt hinter die
+                //* Basis-Messwerte ein und verschiebt die nachfolgenden Basis-Konfigkanaele
+                //* entsprechend; die restlichen laufendeNr (Konfigkanaele der Unterklasse) haengen
+                //* ganz am Ende an - siehe checkCs2Connection() in MbcCom.cpp. Default: nullptr
+                //* (keine Erweiterung).
 
                 virtual const uint8_t* cs2IndexExtern(uint8_t laufendeNr) { (void) laufendeNr; return nullptr; }
 
@@ -260,6 +262,15 @@
             #if defined(__AVR__)
                 uint8_t _pinReset;
             #endif
+
+            // Anzahl modulspezifischer Messwertkanaele (Konstruktor-Parameter, siehe oben) -
+            // wird zur Laufzeit gebraucht, um in checkCs2Connection() modulspezifische
+            // Messwertkanaele DIREKT HINTER die Basis-Messwerte (Versorgungsspannung/Temperatur)
+            // einzuschieben und die nachfolgenden Basis-Konfigkanaele (Seriennummer/GUiD/
+            // Firmware/Hardware) entsprechend zu verschieben - unabhaengig davon, wie viele
+            // modulspezifische Messwertkanaele eine Unterklasse deklariert (0, 1, 2 oder mehr)
+
+            uint8_t _anzMesswerteModul;
 
             struct { bool transfer, write, read; }                             _io;
             struct { bool init, newPhase; uint8_t step; uint16_t sysindex; bool startup; } _init;

@@ -306,7 +306,7 @@
 
     ' INDEX 1
     ' Uebernehmen die ausgewaehlte Zentrale
-    Public Sub mbc89_tabpage_Mapping_Set(ByRef nud As Object, AktTyp As Integer, AktNr As Integer)
+    Public Sub Tabpage_Mapping_Set(ByRef nud As Object, AktTyp As Integer, AktNr As Integer)
 
         Dim index As Integer
 

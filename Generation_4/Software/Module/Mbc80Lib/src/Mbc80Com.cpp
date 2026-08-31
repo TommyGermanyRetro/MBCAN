@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc80Com.cpp #############################################################
@@ -109,7 +110,6 @@
                      MBC80_ANZMESSWERTEMODUL, MBC80_ANZKONFIGMODUL),
               _canMbcan(&canMbcan), _bridge(&bridge), _baseAddr(0), _autoCnt(0), _streaming(false)
         {
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -121,7 +121,6 @@
                      MBC80_ANZMESSWERTEMODUL, MBC80_ANZKONFIGMODUL),
               _canMbcan(&canMbcan), _bridge(&bridge), _baseAddr(0), _autoCnt(0), _streaming(false)
         {
-            memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
             memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
         }
 
@@ -145,12 +144,11 @@
     //*********************************************************************************************
     //* Modulspezifische Parameterdaten aus dem EEPROM lesen                                      *
     //* Laedt die gespeicherte L88-Softwareversion aus der EEPROM-Zusatzregion (mit Defaultwert   *
-    //* [1,1] fuer den unbeschriebenen Zustand, 0xff-Sentinel), aktualisiert die SW-Major-/       *
-    //* SW-Minor-Anzeige in _cs2IndexEx UND die CS2-Ping-Antwort (swInitExtern()) - MbcCom::      *
-    //* begin() ruft hashInit()/swInitExtern() bereits VOR diesem beginModule()-Aufruf auf, zu    *
-    //* diesem fruehen Zeitpunkt stehen die EEPROM-Werte in MBC_80_L88SW_1/2 aber noch nicht;     *
-    //* ohne den erneuten swInitExtern()-Aufruf hier wuerde die Ping-Antwort bis zur ersten       *
-    //* Aenderung einen undefinierten Startwert zeigen                                            *
+    //* [1,1] fuer den unbeschriebenen Zustand, 0xff-Sentinel) und aktualisiert die CS2-Ping-      *
+    //* Antwort (swInitExtern()) - MbcCom::begin() ruft hashInit()/swInitExtern() bereits VOR     *
+    //* diesem beginModule()-Aufruf auf, zu diesem fruehen Zeitpunkt stehen die EEPROM-Werte in   *
+    //* MBC_80_L88SW_1/2 aber noch nicht; ohne den erneuten swInitExtern()-Aufruf hier wuerde die *
+    //* Ping-Antwort bis zur ersten Aenderung einen undefinierten Startwert zeigen                *
     //*********************************************************************************************
 
     void Mbc80Com::eepromReadParaExtern()
@@ -162,18 +160,13 @@
         MBC_80_L88SW_1 = (buf[0] == 0xff) ? 1 : buf[0];
         MBC_80_L88SW_2 = (buf[1] == 0xff) ? 1 : buf[1];
 
-        _cs2IndexEx[ROW_L88SW_MAJ][L88SW_OFFSET_H] = 0;
-        _cs2IndexEx[ROW_L88SW_MAJ][L88SW_OFFSET_L] = MBC_80_L88SW_1;
-        _cs2IndexEx[ROW_L88SW_MIN][L88SW_OFFSET_H] = 0;
-        _cs2IndexEx[ROW_L88SW_MIN][L88SW_OFFSET_L] = MBC_80_L88SW_2;
-
         swInitExtern();
     }
 
     //*********************************************************************************************
     //* Modulspezifische Parameterdaten in das EEPROM schreiben                                   *
-    //* Persistiert die L88-SW-Version in der EEPROM-Zusatzregion, haelt can_msg[] konsistent zum *
-    //* RAM-Wert und aktualisiert die SW-Major-/SW-Minor-Anzeige in _cs2IndexEx                   *
+    //* Persistiert die L88-SW-Version in der EEPROM-Zusatzregion und haelt can_msg[] konsistent  *
+    //* zum RAM-Wert.                                                                              *
     //*********************************************************************************************
     //* block: Identifier des zu schreibenden Blocks (0x0A....)                                   *
     //*********************************************************************************************
@@ -186,9 +179,6 @@
 
             _utils->eepromWriteExtra(EEX_L88SW, buf, 2);
             swInitExtern();
-
-            _cs2IndexEx[ROW_L88SW_MAJ][L88SW_OFFSET_L] = MBC_80_L88SW_1;
-            _cs2IndexEx[ROW_L88SW_MIN][L88SW_OFFSET_L] = MBC_80_L88SW_2;
         }
     }
 
@@ -251,35 +241,45 @@
     //* und wird per FALSE quittiert. Der Konfigurationswert ist laut CS2-Protokoll ein           *
     //* vollstaendiges Word ueber D6 (High) + D7 (Low), nicht nur D7 - Wertebereich hier stets <= *
     //* 255, D6 des eingehenden Worts daher zwar immer 0, wird aber der Vollstaendigkeit halber   *
-    //* mitausgewertet.                                                                           *
+    //* mitausgewertet. EEPROM-Schreibzugriff erfolgt NUR bei einer echten Wertaenderung (die CSx *
+    //* sendet Konfigwerte auch als Echo/Polling erneut).                                         *
     //*********************************************************************************************
     //* msg: CAN-Nachricht (msg[D5]==KANAL_L88SW_MAJ/KANAL_L88SW_MIN, msg[D6..D7]=neuer Wert)     *
     //*********************************************************************************************
 
     void Mbc80Com::cs2IndexParameterExtern(const uint8_t msg[MBC_COM_MSG_LAENGE])
     {
-        uint8_t  kanal = msg[MBC_CAN_D5];
-        uint16_t wert  = (uint16_t) (((uint16_t) msg[MBC_CAN_D6] << 8) | msg[MBC_CAN_D7]);
+        uint8_t  kanal     = msg[MBC_CAN_D5];
+        uint16_t wert      = (uint16_t) (((uint16_t) msg[MBC_CAN_D6] << 8) | msg[MBC_CAN_D7]);
         bool     gueltig;
+        bool     geaendert = false;
 
         if (kanal == KANAL_L88SW_MAJ)
         {
             gueltig = (wert >= 1) && (wert <= 255);
 
-            if (gueltig) MBC_80_L88SW_1 = (uint8_t) wert;
+            if (gueltig && (MBC_80_L88SW_1 != (uint8_t) wert))
+            {
+                MBC_80_L88SW_1 = (uint8_t) wert;
+                geaendert = true;
+            }
         }
         else if (kanal == KANAL_L88SW_MIN)
         {
             gueltig = (wert >= 1) && (wert <= 255);
 
-            if (gueltig) MBC_80_L88SW_2 = (uint8_t) wert;
+            if (gueltig && (MBC_80_L88SW_2 != (uint8_t) wert))
+            {
+                MBC_80_L88SW_2 = (uint8_t) wert;
+                geaendert = true;
+            }
         }
         else
         {
             return;
         }
 
-        if (gueltig) eepromWriteParaExtern(EE_L88_SW);
+        if (geaendert) eepromWriteParaExtern(EE_L88_SW);
 
         _msgKonfigOk[MBC_CAN_D5] = kanal;
         _msgKonfigOk[MBC_CAN_D6] = gueltig ? 0x01 : 0x00;
@@ -319,18 +319,34 @@
     }
 
     //*********************************************************************************************
-    //* Zeile aus dem modulspezifischen cs2_index_ex[]-Array liefern - mbc-80 hat zwei Kanaele    *
-    //* (SW-Major/SW-Minor der vorgetaeuschten L88-Softwareversion), sonst nullptr                *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - mbc-80 hat zwei      *
+    //* Kanaele (SW-Major/SW-Minor der vorgetaeuschten L88-Softwareversion), sonst nullptr.       *
+    //* Vorlage (initCs2Ex[], PROGMEM) bleibt statisch, nur der aktuelle Wert wird bei jedem      *
+    //* Aufruf frisch aus dem Systemarray gepatcht.                                                *
     //*********************************************************************************************
     //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                                         *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                         *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr     *
     //*********************************************************************************************
 
     const uint8_t* Mbc80Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC80_ANZMESSWERTEMODUL + MBC80_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        if (laufendeNr == ROW_L88SW_MAJ)
+        {
+            _cs2ScratchRow[L88SW_OFFSET_H] = 0;
+            _cs2ScratchRow[L88SW_OFFSET_L] = MBC_80_L88SW_1;
+        }
+        else if (laufendeNr == ROW_L88SW_MIN)
+        {
+            _cs2ScratchRow[L88SW_OFFSET_H] = 0;
+            _cs2ScratchRow[L88SW_OFFSET_L] = MBC_80_L88SW_2;
+        }
+
+        return _cs2ScratchRow;
     }
 
     //*********************************************************************************************

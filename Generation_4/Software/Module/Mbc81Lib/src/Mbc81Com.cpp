@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 22.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc81Com.cpp #############################################################
@@ -133,7 +134,6 @@
 
     #endif
 
-        memcpy_P(_cs2IndexEx, initCs2Ex, sizeof(_cs2IndexEx));
         memcpy_P(_msgKonfigOk, initMsgKonfigOk, MBC_COM_MSG_LAENGE);
 
         for (uint8_t i = 0; i < 4; i++)  _tasterChips[i] = tasterChips[i];
@@ -229,21 +229,16 @@
 
         _baseAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | (uint16_t) arr[O_MM_L]);
 
-        _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((_baseAddr - MMADDR_MIN) / 16);
-
         _utils->eepromReadExtra(EEX_81_Nutzung, &arr[O_NUTZUNG], 1);
 
         if (arr[O_NUTZUNG] == 0xff) arr[O_NUTZUNG] = 0;
 
         _nutzung = arr[O_NUTZUNG];
-
-        _cs2IndexEx[ROW_NUTZUNG][NUTZUNG_OFFSET] = _nutzung;
     }
 
     //*********************************************************************************************
     //* Persistiert den betroffenen Block (MM-Addr oder Nutzung) in der EEPROM-Zusatzregion und    *
-    //* haelt sowohl die intern gecachte Basisadresse/Nutzung als auch die zugehoerige             *
-    //* _cs2IndexEx-Zeile synchron.                                                                 *
+    //* haelt die intern gecachte Basisadresse/Nutzung synchron.                                    *
     //*********************************************************************************************
     //* block: Identifier des zu schreibenden Blocks (EE_81_MMAddr/EE_81_Nutzung)                  *
     //*********************************************************************************************
@@ -257,16 +252,12 @@
             _utils->eepromWriteExtra(EEX_81_MMAddr, &arr[O_MM_H], 2);
 
             _baseAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | (uint16_t) arr[O_MM_L]);
-
-            _cs2IndexEx[ROW_MODNR][7] = (uint8_t) ((_baseAddr - MMADDR_MIN) / 16);
         }
         else if (block == EE_81_Nutzung)
         {
             _utils->eepromWriteExtra(EEX_81_Nutzung, &arr[O_NUTZUNG], 1);
 
             _nutzung = arr[O_NUTZUNG];
-
-            _cs2IndexEx[ROW_NUTZUNG][NUTZUNG_OFFSET] = _nutzung;
         }
     }
 
@@ -308,14 +299,20 @@
 
             if (gueltig)
             {
-                uint16_t addr = (uint16_t) (MMADDR_MIN + 16 * wert);
-                uint8_t  *arr = _utils->array();
+                uint16_t addr    = (uint16_t) (MMADDR_MIN + 16 * wert);
+                uint8_t  *arr    = _utils->array();
+                uint16_t oldAddr = (uint16_t) (((uint16_t) arr[O_MM_H] << 8) | arr[O_MM_L]);
 
-                arr[O_MM_H] = (uint8_t) (addr >> 8);
-                arr[O_MM_L] = (uint8_t) (addr & 0x00ff);
+                // EEPROM-Schreibzugriff nur bei echter Aenderung (die CSx sendet Konfigwerte
+                // auch als Echo/Polling erneut)
 
-                eepromWriteParaExtern(EE_81_MMAddr);   // persistiert + aktualisiert
-                                                        // _baseAddr/_cs2IndexEx
+                if (addr != oldAddr)
+                {
+                    arr[O_MM_H] = (uint8_t) (addr >> 8);
+                    arr[O_MM_L] = (uint8_t) (addr & 0x00ff);
+
+                    eepromWriteParaExtern(EE_81_MMAddr);   // persistiert + aktualisiert _baseAddr
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_MODNR;
@@ -329,10 +326,12 @@
             {
                 uint8_t *arr = _utils->array();
 
-                arr[O_NUTZUNG] = (uint8_t) wert;
+                if (arr[O_NUTZUNG] != (uint8_t) wert)
+                {
+                    arr[O_NUTZUNG] = (uint8_t) wert;
 
-                eepromWriteParaExtern(EE_81_Nutzung);   // persistiert + aktualisiert
-                                                         // _nutzung/_cs2IndexEx
+                    eepromWriteParaExtern(EE_81_Nutzung);   // persistiert + aktualisiert _nutzung
+                }
             }
 
             _msgKonfigOk[MBC_CAN_D5] = KANAL_NUTZUNG;
@@ -347,18 +346,33 @@
     }
 
     //*********************************************************************************************
-    //* Liefert die einzige Zeile aus _cs2IndexEx[] (KeyB-Konfigkanal) oder nullptr, wenn          *
-    //* laufendeNr keinen Kanal mehr bezeichnet.                                                    *
+    //* Baut die angeforderte Kanalzeile frisch in _cs2ScratchRow zusammen - ROW_MODNR = KeyB,     *
+    //* ROW_NUTZUNG = Nutz, sonst nullptr. Vorlage (initCs2Ex[], PROGMEM) bleibt statisch, nur     *
+    //* der aktuelle Wert wird bei jedem Aufruf frisch aus dem Systemarray/_baseAddr gepatcht.     *
     //*********************************************************************************************
     //* laufendeNr: 0..ANZMESSWERTEMODUL+ANZKONFIGMODUL-1                                          *
     //*********************************************************************************************
-    //* Return: Zeiger auf die 40-Byte-Zeile oder nullptr                                          *
+    //* Return: Zeiger auf _cs2ScratchRow (nur bis zum naechsten Aufruf gueltig) oder nullptr      *
     //*********************************************************************************************
 
     const uint8_t* Mbc81Com::cs2IndexExtern(uint8_t laufendeNr)
     {
         if (laufendeNr >= (MBC81_ANZMESSWERTEMODUL + MBC81_ANZKONFIGMODUL)) return nullptr;
-        return _cs2IndexEx[laufendeNr];
+
+        memcpy_P(_cs2ScratchRow, initCs2Ex[laufendeNr], sizeof(_cs2ScratchRow));
+
+        uint8_t *arr = _utils->array();
+
+        if (laufendeNr == ROW_MODNR)
+        {
+            _cs2ScratchRow[7] = (uint8_t) ((_baseAddr - MMADDR_MIN) / 16);
+        }
+        else if (laufendeNr == ROW_NUTZUNG)
+        {
+            _cs2ScratchRow[NUTZUNG_OFFSET] = arr[O_NUTZUNG];
+        }
+
+        return _cs2ScratchRow;
     }
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

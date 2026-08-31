@@ -1,0 +1,2805 @@
+=== CommunicationThread.vb:1 ===
+ALT:
+  'Gemeinsame Thread-Lifecycle-Mechanik fuer die Empfangs-Threads von RS232/BT/TCP            '
+  'Start/Stop-Sequenz war bisher 3x (RS232Oeffnen/Schliessen, BTOeffnen/Schliessen,           '
+  'TCPOeffnen/Schliessen in frmMain.vb) identisch dupliziert. Die kanalspezifische Logik      '
+  '(Menue-/Statusleisten-Umschaltung, Port-Oeffnen/Schliessen, Empfangs-Parsing) bleibt       '
+  'bewusst in frmMain.vb, da sie sich je Kanal unterscheidet.                                 '
+NEU:
+  '**************************************************************************************************
+  '*** Gemeinsame Thread-Lifecycle-Mechanik fuer die Empfangs-Threads von RS232/BT/TCP            ***
+  '*** Start/Stop-Sequenz war bisher 3x (RS232Oeffnen/Schliessen, BTOeffnen/Schliessen,           ***
+  '*** TCPOeffnen/Schliessen in frmMain.vb) identisch dupliziert. Die kanalspezifische Logik      ***
+  '*** (Menue-/Statusleisten-Umschaltung, Port-Oeffnen/Schliessen, Empfangs-Parsing) bleibt       ***
+  '*** bewusst in frmMain.vb, da sie sich je Kanal unterscheidet.                                 ***
+  '**************************************************************************************************
+
+=== IMbcModul.vb:1 ===
+ALT:
+  'Gemeinsame Schnittstelle aller Modul-Instanzklassen (mbc_modul_80_cl ... mbc_modul_93_cl)  '
+  'frmMain spricht das jeweils aktive Modul ausschliesslich ueber                             '
+  'MBC.ModulTyp(AktTyp).Modul(AktNr) an (Late Binding, da diese Collections als Object        '
+  'typisiert sind). Dieses Interface schreibt den bisher nur durch Konvention eingehaltenen   '
+  'Methodenvertrag fest, damit der Compiler eine fehlende oder abweichende Signatur in einer  '
+  'der 14 Klassen sofort meldet.                                                              '
+NEU:
+  '**************************************************************************************************
+  '*** Gemeinsame Schnittstelle aller Modul-Instanzklassen (mbc_modul_80_cl ... mbc_modul_93_cl)  ***
+  '*** frmMain spricht das jeweils aktive Modul ausschliesslich ueber                             ***
+  '*** MBC.ModulTyp(AktTyp).Modul(AktNr) an (Late Binding, da diese Collections als Object        ***
+  '*** typisiert sind). Dieses Interface schreibt den bisher nur durch Konvention eingehaltenen   ***
+  '*** Methodenvertrag fest, damit der Compiler eine fehlende oder abweichende Signatur in einer  ***
+  '*** der 14 Klassen sofort meldet.                                                              ***
+  '**************************************************************************************************
+
+=== datenbanken.vb:1 ===
+ALT:
+  'Moduldatenbanken                                                                           '
+NEU:
+  '**************************************************************************************************
+  '*** Moduldatenbanken                                                                           ***
+  '**************************************************************************************************
+
+=== datenbanken.vb:9 ===
+ALT:
+  'Menue - Kommunikationsparameter laden                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Kommunikationsparameter laden                                                  ***
+      '**********************************************************************************************
+
+=== datenbanken.vb:126 ===
+ALT:
+  'Menue - Kommunikationsparameter speichern                                              '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Kommunikationsparameter speichern                                              ***
+      '**********************************************************************************************
+
+=== datenbanken.vb:158 ===
+ALT:
+  'Menue - Moduldatenbank laden                                                           '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Moduldatenbank laden                                                           ***
+      '**********************************************************************************************
+
+=== datenbanken.vb:318 ===
+ALT:
+  'Menue - Moduldatenbank speichern                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Moduldatenbank speichern                                                       ***
+      '**********************************************************************************************
+
+=== datenbanken.vb:422 ===
+ALT:
+  'Menue - Moduldatenbank neu anlegen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Moduldatenbank neu anlegen                                                     ***
+      '**********************************************************************************************
+
+=== datenbanken.vb:498 ===
+ALT:
+  'Servo - Servowegdiagramm laden                                                         '
+NEU:
+      '**********************************************************************************************
+      '*** Servo - Servowegdiagramm laden                                                         ***
+      '**********************************************************************************************
+
+=== datenbanken.vb:585 ===
+ALT:
+  'Servo - Servowegdiagramm laden                                                         '
+NEU:
+      '**********************************************************************************************
+      '*** Servo - Servowegdiagramm laden                                                         ***
+      '**********************************************************************************************
+
+=== definitionen.vb:1 ===
+ALT:
+  'Globale Variablen und Strukturen                                                           '
+NEU:
+  '**************************************************************************************************
+  '*** Globale Variablen und Strukturen                                                           ***
+  '**************************************************************************************************
+
+=== definitionen.vb:9 ===
+ALT:
+  'Definitionen zur Belegung des Systemarrays aus den Modulen Zum Vergleich sind die      '
+  'Definitionen aus den C-Programmen fuer die AVR eingefuegt                              '
+NEU:
+      '**********************************************************************************************
+      '*** Definitionen zur Belegung des Systemarrays aus den Modulen Zum Vergleich sind die      ***
+      '*** Definitionen aus den C-Programmen fuer die AVR eingefuegt                              ***
+      '**********************************************************************************************
+
+=== definitionen.vb:14 ===
+ALT:
+  'Indizes fuer Standardparameter der Module                                              '
+NEU:
+      '**********************************************************************************************
+      '*** Indizes fuer Standardparameter der Module                                              ***
+      '**********************************************************************************************
+
+=== definitionen.vb:162 ===
+ALT:
+  'OTA-Header fuer RP2040/ESP32 (siehe MbcOta.h in MBCANLib - Gegenstueck auf dem Modul)  '
+  'Wird nach der letzten Firmware-Page zusaetzlich auf MBC_OTA_HEADER_PAGE geschrieben,   '
+  'damit MbcOta::apply() beim naechsten Reset ein vollstaendiges Image erkennt.           '
+NEU:
+      '**********************************************************************************************
+      '*** OTA-Header fuer RP2040/ESP32 (siehe MbcOta.h in MBCANLib - Gegenstueck auf dem Modul)  ***
+      '*** Wird nach der letzten Firmware-Page zusaetzlich auf MBC_OTA_HEADER_PAGE geschrieben,   ***
+      '*** damit MbcOta::apply() beim naechsten Reset ein vollstaendiges Image erkennt.           ***
+      '**********************************************************************************************
+
+=== definitionen.vb:171 ===
+ALT:
+  'ESP32-C3-OTA-App-Partitionsgroesse (siehe partitions.csv in den ESP32-C3-Beispiel-     '
+  'Sketches, ota_0/ota_1) - kleiner als die W25Q64-Kapazitaet oben und damit die          '
+  'tatsaechlich bindende Obergrenze fuer ein .bin-Firmware-Image auf diesem Board. RP2040 '
+  'hat KEIN Gegenstueck (Groesse haengt vom Tools -> Flash Size-Menue beim Kompilieren ab,'
+  'dem PC-Tool zur Laufzeit unbekannt) - dort bleibt die W25Q64-Kapazitaet oben die einzig'
+  'pruefbare Grenze.                                                                      '
+NEU:
+      '**********************************************************************************************
+      '*** ESP32-C3-OTA-App-Partitionsgroesse (siehe partitions.csv in den ESP32-C3-Beispiel-     ***
+      '*** Sketches, ota_0/ota_1) - kleiner als die W25Q64-Kapazitaet oben und damit die          ***
+      '*** tatsaechlich bindende Obergrenze fuer ein .bin-Firmware-Image auf diesem Board. RP2040 ***
+      '*** hat KEIN Gegenstueck (Groesse haengt vom Tools -> Flash Size-Menue beim Kompilieren ab,***
+      '*** dem PC-Tool zur Laufzeit unbekannt) - dort bleibt die W25Q64-Kapazitaet oben die einzig***
+      '*** pruefbare Grenze.                                                                      ***
+      '**********************************************************************************************
+
+=== definitionen.vb:182 ===
+ALT:
+  'Sonderindizes fuer allgemeime Steuerung der EEPROM-Programmierung                      '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderindizes fuer allgemeime Steuerung der EEPROM-Programmierung                      ***
+      '**********************************************************************************************
+
+=== definitionen.vb:197 ===
+ALT:
+  'Sonderindizes fuer allgemeime Steuerung der EEPROM-Programmierung                      '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderindizes fuer allgemeime Steuerung der EEPROM-Programmierung                      ***
+      '**********************************************************************************************
+
+=== definitionen.vb:213 ===
+ALT:
+  'Sonderspeicherbereich fuer Funktionen der Module Die Sonderbelegungen sind in den      '
+  'VB-Modulen definiert. Hier ist nur der gesamte Speicher indiziert.                     '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderspeicherbereich fuer Funktionen der Module Die Sonderbelegungen sind in den      ***
+      '*** VB-Modulen definiert. Hier ist nur der gesamte Speicher indiziert.                     ***
+      '**********************************************************************************************
+
+=== definitionen.vb:225 ===
+ALT:
+  'Abschluss des Systemarrays                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** Abschluss des Systemarrays                                                             ***
+      '**********************************************************************************************
+
+=== definitionen.vb:233 ===
+ALT:
+  'CAN-Befehlsnummern PC-Kommunikation initialisieren                                     '
+NEU:
+      '**********************************************************************************************
+      '*** CAN-Befehlsnummern PC-Kommunikation initialisieren                                     ***
+      '**********************************************************************************************
+
+=== definitionen.vb:281 ===
+ALT:
+  'Versionsinfos initialisieren                                                           '
+NEU:
+      '**********************************************************************************************
+      '*** Versionsinfos initialisieren                                                           ***
+      '**********************************************************************************************
+
+=== definitionen.vb:285 ===
+ALT:
+  'CAN-Nachrichten fuer die PC-Kommunikation initialisieren                               '
+NEU:
+      '**********************************************************************************************
+      '*** CAN-Nachrichten fuer die PC-Kommunikation initialisieren                               ***
+      '**********************************************************************************************
+
+=== definitionen.vb:306 ===
+ALT:
+  'CAN-Befehlsadressen (LocID) fuer PC-Kommunikation initialisieren                       '
+NEU:
+      '**********************************************************************************************
+      '*** CAN-Befehlsadressen (LocID) fuer PC-Kommunikation initialisieren                       ***
+      '**********************************************************************************************
+
+=== definitionen.vb:327 ===
+ALT:
+  'CAN-Befehle, Nachrichten und Indices fuer CS2-Kommunikation initialisieren             '
+NEU:
+      '**********************************************************************************************
+      '*** CAN-Befehle, Nachrichten und Indices fuer CS2-Kommunikation initialisieren             ***
+      '**********************************************************************************************
+
+=== definitionen.vb:339 ===
+ALT:
+  'CAN-Befehlsstruktur                                                                    '
+NEU:
+      '**********************************************************************************************
+      '*** CAN-Befehlsstruktur                                                                    ***
+      '**********************************************************************************************
+
+=== definitionen.vb:470 ===
+ALT:
+  'Modul- und Systemarray                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Modul- und Systemarray                                                                 ***
+      '**********************************************************************************************
+
+=== definitionen.vb:474 ===
+ALT:
+  'Klassen-Modell                                                                         '
+NEU:
+      '**********************************************************************************************
+      '*** Klassen-Modell                                                                         ***
+      '**********************************************************************************************
+
+=== definitionen.vb:517 ===
+ALT:
+  'Automatenindizes                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Automatenindizes                                                                       ***
+      '**********************************************************************************************
+
+=== definitionen.vb:566 ===
+ALT:
+  'Schnittstellenvariablen fuer RS232, Bluetooth und UDP                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Schnittstellenvariablen fuer RS232, Bluetooth und UDP                                  ***
+      '**********************************************************************************************
+
+=== frmDatenbank.vb:1 ===
+ALT:
+  'Schreibgeschuetzte Uebersicht aller Module in der Moduldatenbank                           '
+  'Aufruf ueber Menue System / Datenbank zeigen. Zeigt je Modul die gemeinsamen Stammdaten    '
+  'sowie MM-Adresse/s88-Modulnummer ueber das IMbcModul-Interface - dadurch funktioniert die  '
+  'Befuellung einheitlich fuer alle 14 Modultypen, ohne deren Typ unterscheiden zu muessen.   '
+NEU:
+  '**************************************************************************************************
+  '*** Schreibgeschuetzte Uebersicht aller Module in der Moduldatenbank                           ***
+  '*** Aufruf ueber Menue System / Datenbank zeigen. Zeigt je Modul die gemeinsamen Stammdaten    ***
+  '*** sowie MM-Adresse/s88-Modulnummer ueber das IMbcModul-Interface - dadurch funktioniert die  ***
+  '*** Befuellung einheitlich fuer alle 14 Modultypen, ohne deren Typ unterscheiden zu muessen.   ***
+  '**************************************************************************************************
+
+=== frmDatenbank.vb:28 ===
+ALT:
+  'Tabelle aus der Moduldatenbank neu befuellen                                           '
+NEU:
+      '**********************************************************************************************
+      '*** Tabelle aus der Moduldatenbank neu befuellen                                           ***
+      '**********************************************************************************************
+
+=== frmDatenbank.vb:89 ===
+ALT:
+  'Numerischen Modulstatus in dasselbe Icon uebersetzen, das auch im Strukturbaum         '
+  'verwendet wird (siehe Strukturbaum_MenueIconChange: ImageIndex = Status auf MenueImage,'
+  'Reihenfolge ImGLEIS/ImMODUL/ImHAKEN/ImPUNKT/ImKREUZ/ImDELETE = Status 0..5)            '
+NEU:
+      '**********************************************************************************************
+      '*** Numerischen Modulstatus in dasselbe Icon uebersetzen, das auch im Strukturbaum         ***
+      '*** verwendet wird (siehe Strukturbaum_MenueIconChange: ImageIndex = Status auf MenueImage,***
+      '*** Reihenfolge ImGLEIS/ImMODUL/ImHAKEN/ImPUNKT/ImKREUZ/ImDELETE = Status 0..5)            ***
+      '**********************************************************************************************
+
+=== frmDatenbank.vb:112 ===
+ALT:
+  'Drittes Zeichen der Artikelnummer (ART_NR[2] im Sketch) in den Prozessornamen           '
+  'uebersetzen - siehe VorschlagProzessor in frmProzessorAuswahl.vb fuer dieselbe Zuordnung.'
+  'Die Prozessornamen selbst bleiben unlokalisiert (Hardware-Bezeichner, wie schon bei den '
+  'Radiobuttons in frmProzessorAuswahl).                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Drittes Zeichen der Artikelnummer (ART_NR[2] im Sketch) in den Prozessornamen          ***
+      '*** uebersetzen - siehe VorschlagProzessor in frmProzessorAuswahl.vb fuer dieselbe         ***
+      '*** Zuordnung.                                                                             ***
+      '*** Die Prozessornamen selbst bleiben unlokalisiert (Hardware-Bezeichner, wie schon bei den***
+      '*** Radiobuttons in frmProzessorAuswahl).                                                  ***
+      '**********************************************************************************************
+
+=== frmDatenbank.vb:132 ===
+ALT:
+  'Numerischen Modulstatus in lesbaren, lokalisierten Text uebersetzen (als Tooltip)      '
+NEU:
+      '**********************************************************************************************
+      '*** Numerischen Modulstatus in lesbaren, lokalisierten Text uebersetzen (als Tooltip)      ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1 ===
+ALT:
+  'Nachrichtenauswertung / COM-Protokoll                                                      '
+  'Ausgelagerter Teil von frmMain (Partial Class): Wertet eingehende CAN-Nachrichten aus      '
+  '(Neuanmeldung/Alive/Read/Write/Upgrade-Automat) und formatiert/versendet ausgehende. Reiner'
+  'Quelltext-Umzug ohne Verhaltensaenderung - siehe frmMain.vb fuer UI und Verbindungsschicht.'
+NEU:
+  '**************************************************************************************************
+  '*** Nachrichtenauswertung / COM-Protokoll                                                      ***
+  '*** Ausgelagerter Teil von frmMain (Partial Class): Wertet eingehende CAN-Nachrichten aus      ***
+  '*** (Neuanmeldung/Alive/Read/Write/Upgrade-Automat) und formatiert/versendet ausgehende. Reiner***
+  '*** Quelltext-Umzug ohne Verhaltensaenderung - siehe frmMain.vb fuer UI und Verbindungsschicht.***
+  '**************************************************************************************************
+
+=== frmMain.ComProtocol.vb:16 ===
+ALT:
+  'Nachrichtenauswertung                                                                  '
+  'Funktionen zum Umgang mit den Daten der UDP-/RS232-/BT-Schnittstelle                   '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ Nachrichtenauswertung                                                                  +++
+      '+++ Funktionen zum Umgang mit den Daten der UDP-/RS232-/BT-Schnittstelle                   +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.ComProtocol.vb:26 ===
+ALT:
+  'COM - Threadshared - Trage Nachricht von BT, UDP und RS232 in Register "Modul" ein     '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Threadshared - Trage Nachricht von BT, UDP und RS232 in Register "Modul" ein     ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:93 ===
+ALT:
+  'Register - Trage Nachricht von BT, UDP und RS232 in Register "Monitor" ein             '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Trage Nachricht von BT, UDP und RS232 in Register "Monitor" ein             ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:157 ===
+ALT:
+  'COM - Threadshared - Allgemeine Sendefunktion je nach ausgewaehlter Schnittstelle      '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Threadshared - Allgemeine Sendefunktion je nach ausgewaehlter Schnittstelle      ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:269 ===
+ALT:
+  'COM - Formatiere die gesendete Nachricht fuer die Anzeige im Minitor                   '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Formatiere die gesendete Nachricht fuer die Anzeige im Minitor                   ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:525 ===
+ALT:
+  'COM - Bestimme den Spannungsversorgungstyp                                             '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Bestimme den Spannungsversorgungstyp                                             ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:538 ===
+ALT:
+  'COM - Auswertung s88-Stellung                                                          '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Auswertung s88-Stellung                                                          ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:585 ===
+ALT:
+  'COM - Auswertung Aktor-Stellung                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Auswertung Aktor-Stellung                                                        ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:604 ===
+ALT:
+  'COM - Werte Befehlsnachricht von den Modulen aus                                       '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Werte Befehlsnachricht von den Modulen aus                                       ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:637 ===
+ALT:
+  'MELDEN START                                                                   '
+NEU:
+              '**************************************************************************************
+              '*** MELDEN START                                                                   ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:656 ===
+ALT:
+  'MELDEN ENDE                                                                    '
+NEU:
+              '**************************************************************************************
+              '*** MELDEN ENDE                                                                    ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:662 ===
+ALT:
+  'SCHALTEN START                                                                 '
+NEU:
+              '**************************************************************************************
+              '*** SCHALTEN START                                                                 ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:714 ===
+ALT:
+  'SCHALTEN ENDE                                                                  '
+NEU:
+              '**************************************************************************************
+              '*** SCHALTEN ENDE                                                                  ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:720 ===
+ALT:
+  'ANMELDUNG START                                                                '
+NEU:
+              '**************************************************************************************
+              '*** ANMELDUNG START                                                                ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1052 ===
+ALT:
+  'ANMELDUNG ENDE                                                                 '
+NEU:
+              '**************************************************************************************
+              '*** ANMELDUNG ENDE                                                                 ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1058 ===
+ALT:
+  'ALIVE START                                                                    '
+NEU:
+              '**************************************************************************************
+              '*** ALIVE START                                                                    ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1074 ===
+ALT:
+  'ALIVE ENDE                                                                     '
+NEU:
+              '**************************************************************************************
+              '*** ALIVE ENDE                                                                     ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1080 ===
+ALT:
+  'UPDATE START                                                                   '
+NEU:
+              '**************************************************************************************
+              '*** UPDATE START                                                                   ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1420 ===
+ALT:
+  'UPDATE ENDE                                                                    '
+NEU:
+              '**************************************************************************************
+              '*** UPDATE ENDE                                                                    ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1426 ===
+ALT:
+  'UPGRADE START                                                                  '
+NEU:
+              '**************************************************************************************
+              '*** UPGRADE START                                                                  ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1616 ===
+ALT:
+  'UPGRADE ENDE                                                                   '
+NEU:
+              '**************************************************************************************
+              '*** UPGRADE ENDE                                                                   ***
+              '**************************************************************************************
+
+=== frmMain.ComProtocol.vb:1624 ===
+ALT:
+  'COM - Alive-Meldung des aktuelle Modul erhalten?                                       '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Alive-Meldung des aktuelle Modul erhalten?                                       ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1655 ===
+ALT:
+  'Funktionen fuer das Update von Modulenparametern                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Funktionen fuer das Update von Modulenparametern                                       ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1659 ===
+ALT:
+  'COM - Update-Anfrage an das aktuelle Modul senden                                      '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Update-Anfrage an das aktuelle Modul senden                                      ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1707 ===
+ALT:
+  'COM - Update-Anfrage an das aktuelle Modul stoppen                                     '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Update-Anfrage an das aktuelle Modul stoppen                                     ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1739 ===
+ALT:
+  'Funktionen fuer das Upgrade von Modulen                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Funktionen fuer das Upgrade von Modulen                                                ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1743 ===
+ALT:
+  'COM - Upgrade vorbereiten nach Anfrage auf dem Modul-Register                          '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade vorbereiten nach Anfrage auf dem Modul-Register                          ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1952 ===
+ALT:
+  'COM - Upgrade vorbereiten fuer RP2040 (Raspberry Pi Pico) - Einsprungmethode           '
+  'RP2040 nutzt denselben MbcOta-Mechanismus wie ESP32-C3 (siehe MbcOta.h in MBCANLib -   '
+  'identischer #if-Zweig fuer beide Cores) - daher gemeinsame Implementierung ueber       '
+  'COMUpgradeButtonBinary().                                                              '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade vorbereiten fuer RP2040 (Raspberry Pi Pico) - Einsprungmethode           ***
+      '*** RP2040 nutzt denselben MbcOta-Mechanismus wie ESP32-C3 (siehe MbcOta.h in MBCANLib -   ***
+      '*** identischer #if-Zweig fuer beide Cores) - daher gemeinsame Implementierung ueber       ***
+      '*** COMUpgradeButtonBinary().                                                              ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1967 ===
+ALT:
+  'COM - Upgrade vorbereiten fuer RP2040 Zero - Einsprungmethode                          '
+  'Siehe COMUpgradeButtonRP2040Pico() - gleicher Core, gleicher Mechanismus.              '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade vorbereiten fuer RP2040 Zero - Einsprungmethode                          ***
+      '*** Siehe COMUpgradeButtonRP2040Pico() - gleicher Core, gleicher Mechanismus.              ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1980 ===
+ALT:
+  'COM - Upgrade vorbereiten fuer ESP32-C3 - Einsprungmethode                             '
+  'Siehe COMUpgradeButtonBinary() fuer den eigentlichen Ablauf. Nutzt zusaetzlich die     '
+  'engere, konkret bekannte OTA-Partitionsgroesse (MBC_OTA_ESP32C3_PARTITION_MAX, siehe   '
+  'definitionen.vb) statt nur der generischen Boot-Speicherchip-Kapazitaet - RP2040 kann  '
+  'das mangels bekannter Flash-Size-Auswahl nicht (siehe COMUpgradeButtonRP2040Pico()).   '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade vorbereiten fuer ESP32-C3 - Einsprungmethode                             ***
+      '*** Siehe COMUpgradeButtonBinary() fuer den eigentlichen Ablauf. Nutzt zusaetzlich die     ***
+      '*** engere, konkret bekannte OTA-Partitionsgroesse (MBC_OTA_ESP32C3_PARTITION_MAX, siehe   ***
+      '*** definitionen.vb) statt nur der generischen Boot-Speicherchip-Kapazitaet - RP2040 kann  ***
+      '*** das mangels bekannter Flash-Size-Auswahl nicht (siehe COMUpgradeButtonRP2040Pico()).   ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:1994 ===
+ALT:
+  'COM - Upgrade vorbereiten fuer RP2040/ESP32-C3 (gemeinsame Implementierung)            '
+  'Liest eine von der Arduino-IDE erzeugte .bin-Datei binaer ein (kein Text-/Hex-Format   '
+  'wie beim ATmega644P), verteilt sie auf 256-Byte-Boot-Speicherchip-Pages und haengt     '
+  'zusaetzlich eine MbcOta-Header-Page (Magic/Laenge/CRC32, siehe MbcOta.h in MBCANLib)   '
+  'an, die vom Schritt-2-Automaten in COMCmdReceive nach der letzten Firmware-Page        '
+  'mitgesendet wird.                                                                      '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade vorbereiten fuer RP2040/ESP32-C3 (gemeinsame Implementierung)            ***
+      '*** Liest eine von der Arduino-IDE erzeugte .bin-Datei binaer ein (kein Text-/Hex-Format   ***
+      '*** wie beim ATmega644P), verteilt sie auf 256-Byte-Boot-Speicherchip-Pages und haengt     ***
+      '*** zusaetzlich eine MbcOta-Header-Page (Magic/Laenge/CRC32, siehe MbcOta.h in MBCANLib)   ***
+      '*** an, die vom Schritt-2-Automaten in COMCmdReceive nach der letzten Firmware-Page        ***
+      '*** mitgesendet wird.                                                                      ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2155 ===
+ALT:
+  'COM - Upgrade-Anfrage an das aktuelle Modul senden                                     '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade-Anfrage an das aktuelle Modul senden                                     ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2208 ===
+ALT:
+  'COM - Upgrade-Ende an das aktuelle Modul senden                                        '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade-Ende an das aktuelle Modul senden                                        ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2236 ===
+ALT:
+  'COM - Upgrade-Ende an das aktuelle Modul senden                                        '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Upgrade-Ende an das aktuelle Modul senden                                        ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2272 ===
+ALT:
+  'Funktionen fuer den Refresh von Modulenparametern                                      '
+NEU:
+      '**********************************************************************************************
+      '*** Funktionen fuer den Refresh von Modulenparametern                                      ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2277 ===
+ALT:
+  'COM - Refresh-Anfrage an das aktuelle Modul senden                                     '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Refresh-Anfrage an das aktuelle Modul senden                                     ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2325 ===
+ALT:
+  'COM - Refresh-Anfrage an das aktuelle Modul stoppen                                    '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Refresh-Anfrage an das aktuelle Modul stoppen                                    ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2353 ===
+ALT:
+  'COM - Neue Werte aus der Refresh-Anfrage in das aktuelle Modul uebernehmen und anzeigen'
+NEU:
+      '**********************************************************************************************
+      '*** COM - Neue Werte aus der Refresh-Anfrage in das aktuelle Modul uebernehmen und anzeigen***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2428 ===
+ALT:
+  'COM - Logfile oeffnen                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Logfile oeffnen                                                                  ***
+      '**********************************************************************************************
+
+=== frmMain.ComProtocol.vb:2488 ===
+ALT:
+  'COM - Logfile schließen                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** COM - Logfile schließen                                                                ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1 ===
+ALT:
+  'Parametriersoftware fuer die mbc-Decoder ***                                               '
+  '(c) 2012 by Dr.-Ing. Thomas Wiesner                                                        '
+NEU:
+  '**************************************************************************************************
+  '*** Parametriersoftware fuer die mbc-Decoder ***                                               ***
+  '*** (c) 2012 by Dr.-Ing. Thomas Wiesner                                                        ***
+  '**************************************************************************************************
+
+=== frmMain.vb:14 ===
+ALT:
+  'Hauptprogramm                                                                          '
+  'Allgemeine Funktionen zum Programm                                                     '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ Hauptprogramm                                                                          +++
+      '+++ Allgemeine Funktionen zum Programm                                                     +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:19 ===
+ALT:
+  'Hauptprogramm oeffnen                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Hauptprogramm oeffnen                                                                  ***
+      '**********************************************************************************************
+
+=== frmMain.vb:78 ===
+ALT:
+  'Hauptprogramm schliessen                                                               '
+NEU:
+      '**********************************************************************************************
+      '*** Hauptprogramm schliessen                                                               ***
+      '**********************************************************************************************
+
+=== frmMain.vb:157 ===
+ALT:
+  'Modularray initialisieren                                                              '
+NEU:
+      '**********************************************************************************************
+      '*** Modularray initialisieren                                                              ***
+      '**********************************************************************************************
+
+=== frmMain.vb:170 ===
+ALT:
+  'Modul - Alle Module auf "nicht anwesend" setzen                                        '
+  'Wird beim Trennen der Verbindung (RS232/BT/TCP) aufgerufen: ohne aktive Verbindung ist '
+  'kein Modul mehr erreichbar, das wuerde der Alive-Automat (tm_Alive) sonst erst nach    '
+  'mehreren Zyklen je Modul einzeln erkennen. Geloeschte Module bleiben unangetastet.     '
+NEU:
+      '**********************************************************************************************
+      '*** Modul - Alle Module auf "nicht anwesend" setzen                                        ***
+      '*** Wird beim Trennen der Verbindung (RS232/BT/TCP) aufgerufen: ohne aktive Verbindung ist ***
+      '*** kein Modul mehr erreichbar, das wuerde der Alive-Automat (tm_Alive) sonst erst nach    ***
+      '*** mehreren Zyklen je Modul einzeln erkennen. Geloeschte Module bleiben unangetastet.     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:201 ===
+ALT:
+  'Timer für Neuanmeldung                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Timer für Neuanmeldung                                                                 ***
+      '**********************************************************************************************
+
+=== frmMain.vb:235 ===
+ALT:
+  'Timer für Reset nach Update                                                            '
+NEU:
+      '**********************************************************************************************
+      '*** Timer für Reset nach Update                                                            ***
+      '**********************************************************************************************
+
+=== frmMain.vb:260 ===
+ALT:
+  'Timer für Aliveanmeldung                                                               '
+NEU:
+      '**********************************************************************************************
+      '*** Timer für Aliveanmeldung                                                               ***
+      '**********************************************************************************************
+
+=== frmMain.vb:420 ===
+ALT:
+  'Modul-Registerkarten                                                                   '
+  'Aktionen fuer die Steuerelemente auf den Registerkarten der Module                     '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ Modul-Registerkarten                                                                   +++
+      '+++ Aktionen fuer die Steuerelemente auf den Registerkarten der Module                     +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:425 ===
+ALT:
+  'Register - Modul - mbc-80-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-80-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:463 ===
+ALT:
+  'Register - Modul - mbc-81-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-81-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:474 ===
+ALT:
+  'Register - Modul - mbc-82-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-82-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:490 ===
+ALT:
+  'Register - Modul - mbc-83-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-83-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:542 ===
+ALT:
+  'Register - Modul - mbc-84-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-84-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:618 ===
+ALT:
+  'Register - Modul - mbc-85-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-85-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:682 ===
+ALT:
+  'Register - Modul - mbc-86-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-86-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:726 ===
+ALT:
+  'Register - Modul - mbc-87-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-87-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:734 ===
+ALT:
+  'Register - Modul - mbc-88-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-88-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:810 ===
+ALT:
+  'Register - Modul - mbc-89-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-89-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:858 ===
+ALT:
+  'Register - Modul - mbc-90-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-90-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:932 ===
+ALT:
+  'Register - Modul - mbc-91-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-91-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:964 ===
+ALT:
+  'Register - Modul - mbc-92-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-92-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1013 ===
+ALT:
+  'Register - Modul - mbc-82-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - mbc-82-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1029 ===
+ALT:
+  'Register - Modul - Button-Aktionen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Button-Aktionen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1142 ===
+ALT:
+  'Register - Modul - Stellpult                                                           '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Stellpult                                                           ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1289 ===
+ALT:
+  'Register - Modul - Hilfsfunktion fuer Moduleigenschaften                               '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Hilfsfunktion fuer Moduleigenschaften                               ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1358 ===
+ALT:
+  'Register - Modul - Buttons enablen/disablen                                            '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Buttons enablen/disablen                                            ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1399 ===
+ALT:
+  'Register - Adressen - Loc-ID Tabelle darstellen                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Adressen - Loc-ID Tabelle darstellen                                        ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1408 ===
+ALT:
+  'Register - Adressen - Loc-ID Auswahl als Modul anzeigen                                '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Adressen - Loc-ID Auswahl als Modul anzeigen                                ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1418 ===
+ALT:
+  'Register - Adressen - Rueckmelderbasis Tabelle darstellen                              '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Adressen - Rueckmelderbasis Tabelle darstellen                              ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1428 ===
+ALT:
+  'Register - Adressen - Rueckmelderbasis Auswahl als Modul anzeigen                      '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Adressen - Rueckmelderbasis Auswahl als Modul anzeigen                      ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1439 ===
+ALT:
+  'Register - Allgemein - Registerkarten initialisieren                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Allgemein - Registerkarten initialisieren                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1512 ===
+ALT:
+  'Register - Modul - TabParameter zeigen/verbergen                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - TabParameter zeigen/verbergen                                       ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1566 ===
+ALT:
+  'Register - Modul - TabPage-Aktionen - Eingabe freigeben/sperren                        '
+  'Enable: TRUE = Eingaben sind moeglich, FALSE = Eingaben sind gesperrt                  '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - TabPage-Aktionen - Eingabe freigeben/sperren                        ***
+      '*** Enable: TRUE = Eingaben sind moeglich, FALSE = Eingaben sind gesperrt                  ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1629 ===
+ALT:
+  'Register - Modul - Daten anzeigen entsprechend des ausgewaehlten Moduls                '
+  'Enable: TRUE = Werte werden angezeigt, FALSE = EIn leeres Modul wird angezeigt         '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Daten anzeigen entsprechend des ausgewaehlten Moduls                ***
+      '*** Enable: TRUE = Werte werden angezeigt, FALSE = EIn leeres Modul wird angezeigt         ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1720 ===
+ALT:
+  'Register - Modul - Stellungsbilder MM und s88 anzeigen                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Stellungsbilder MM und s88 anzeigen                                 ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1734 ===
+ALT:
+  'Register - Modul - Modulbild anzeigen entsprechend des ausgewaehlten Moduls            '
+  'ModTyp: Modultyp                                                                       '
+  'LED-PIC01 = ImageOn(1)                                                                 '
+  'LED-PIC02 = ImageOn(9)                                                                 '
+  'LED-PIC03 = ImageOn(2)                                                                 '
+  'LED-PIC04 = ImageOn(10)                                                                '
+  'LED-PIC05 = ImageOn(11)                                                                '
+  'LED-PIC06 = ImageOn(3)                                                                 '
+  'LED-PIC07 = ImageOn(12)                                                                '
+  'LED-PIC08 = ImageOn(4)                                                                 '
+  'LED-PIC09 = ImageOn(17)                                                                '
+  'LED-PIC10 = ImageOn(18)                                                                '
+  'LED-PIC11 = ImageOn(19)                                                                '
+  'LED-PIC12 = ImageOn(5)                                                                 '
+  'LED-PIC13 = ImageOn(13)                                                                '
+  'LED-PIC14 = ImageOn(6)                                                                 '
+  'LED-PIC15 = ImageOn(14)                                                                '
+  'LED-PIC16 = ImageOn(15)                                                                '
+  'LED-PIC17 = ImageOn(7)                                                                 '
+  'LED-PIC18 = ImageOn(16)                                                                '
+  'LED-PIC19 = ImageOn(8)                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Modul - Modulbild anzeigen entsprechend des ausgewaehlten Moduls            ***
+      '*** ModTyp: Modultyp                                                                       ***
+      '*** LED-PIC01 = ImageOn(1)                                                                 ***
+      '*** LED-PIC02 = ImageOn(9)                                                                 ***
+      '*** LED-PIC03 = ImageOn(2)                                                                 ***
+      '*** LED-PIC04 = ImageOn(10)                                                                ***
+      '*** LED-PIC05 = ImageOn(11)                                                                ***
+      '*** LED-PIC06 = ImageOn(3)                                                                 ***
+      '*** LED-PIC07 = ImageOn(12)                                                                ***
+      '*** LED-PIC08 = ImageOn(4)                                                                 ***
+      '*** LED-PIC09 = ImageOn(17)                                                                ***
+      '*** LED-PIC10 = ImageOn(18)                                                                ***
+      '*** LED-PIC11 = ImageOn(19)                                                                ***
+      '*** LED-PIC12 = ImageOn(5)                                                                 ***
+      '*** LED-PIC13 = ImageOn(13)                                                                ***
+      '*** LED-PIC14 = ImageOn(6)                                                                 ***
+      '*** LED-PIC15 = ImageOn(14)                                                                ***
+      '*** LED-PIC16 = ImageOn(15)                                                                ***
+      '*** LED-PIC17 = ImageOn(7)                                                                 ***
+      '*** LED-PIC18 = ImageOn(16)                                                                ***
+      '*** LED-PIC19 = ImageOn(8)                                                                 ***
+      '**********************************************************************************************
+
+=== frmMain.vb:1995 ===
+ALT:
+  'Dashboard - Rueckmelderbasis Auswahl als Modul anzeigen                                '
+NEU:
+      '**********************************************************************************************
+      '*** Dashboard - Rueckmelderbasis Auswahl als Modul anzeigen                                ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2047 ===
+ALT:
+  'Register - Rueckmelderbasis Tabelle darstellen                                         '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Rueckmelderbasis Tabelle darstellen                                         ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2090 ===
+ALT:
+  'Register - Loc-ID Auswahl als Modul anzeigen                                           '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Loc-ID Auswahl als Modul anzeigen                                           ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2145 ===
+ALT:
+  'Register - Loc-ID Tabelle darstellen                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Register - Loc-ID Tabelle darstellen                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2190 ===
+ALT:
+  'Strukturbaum                                                                           '
+  'Allgemeine Funktionen zum Umgang mit dem Strukturbaum                                  '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ Strukturbaum                                                                           +++
+      '+++ Allgemeine Funktionen zum Umgang mit dem Strukturbaum                                  +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:2195 ===
+ALT:
+  'Strukturbaum - Rechte Maustaste zur Namensaenderung des Moduls                         '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Rechte Maustaste zur Namensaenderung des Moduls                         ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2344 ===
+ALT:
+  'Strukturbaum - Strukturbaum initialisieren                                             '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Strukturbaum initialisieren                                             ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2414 ===
+ALT:
+  'Strukturbaum - Anzeige des ausgewaehlten Strukturbaumeintrags                          '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Anzeige des ausgewaehlten Strukturbaumeintrags                          ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2506 ===
+ALT:
+  'Strukturbaum - Bestimme den Modultyp                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Bestimme den Modultyp                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2530 ===
+ALT:
+  'Strukturbaum - Trage neues Modul entsprechend des Modultyps in den Menuebaum ein       '
+  'ModulTyp: Modultyp                                                                     '
+  'ModulNr: Modulnummer                                                                   '
+  'Icon: Status des Moduls                                                                '
+  'Italic: Modulnummer                                                                    '
+  'Change: Modulnummr                                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Trage neues Modul entsprechend des Modultyps in den Menuebaum ein       ***
+      '*** ModulTyp: Modultyp                                                                     ***
+      '*** ModulNr: Modulnummer                                                                   ***
+      '*** Icon: Status des Moduls                                                                ***
+      '*** Italic: Modulnummer                                                                    ***
+      '*** Change: Modulnummr                                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2602 ===
+ALT:
+  'Strukturbaum - Trage neues Modul entsprechend des Modultyps in den Menuebaum ein       '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Trage neues Modul entsprechend des Modultyps in den Menuebaum ein       ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2641 ===
+ALT:
+  'Strukturbaum - Aendere Name im Strukturbaum                                            '
+NEU:
+      '**********************************************************************************************
+      '*** Strukturbaum - Aendere Name im Strukturbaum                                            ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2651 ===
+ALT:
+  'Menue und Statusleiste                                                                 '
+  'Allgemeine Funktionen zum Umgang mit den Menueeintraegen                               '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ Menue und Statusleiste                                                                 +++
+      '+++ Allgemeine Funktionen zum Umgang mit den Menueeintraegen                               +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:2656 ===
+ALT:
+  'Menue - Statusleiste initialisieren                                                    '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Statusleiste initialisieren                                                    ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2672 ===
+ALT:
+  'Menue - Eintraege initialisieren                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Eintraege initialisieren                                                       ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2690 ===
+ALT:
+  'Menue - Eintrag Beenden                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Eintrag Beenden                                                                ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2700 ===
+ALT:
+  'Menue - Moduldatenbank speichern                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Moduldatenbank speichern                                                       ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2712 ===
+ALT:
+  'Menue - Datenbank schreibgeschuetzt anzeigen                                           '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Datenbank schreibgeschuetzt anzeigen                                           ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2719 ===
+ALT:
+  'Menue - Neue Datenbank anlegen                                                         '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Neue Datenbank anlegen                                                         ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2726 ===
+ALT:
+  'Menue - Sprache einstellen - Deutsch                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Sprache einstellen - Deutsch                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2735 ===
+ALT:
+  'Menue - Sprache einstellen - Deutsch                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Sprache einstellen - Deutsch                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2744 ===
+ALT:
+  'Menue - Sprache einstellen - Deutsch                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Sprache einstellen - Deutsch                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2753 ===
+ALT:
+  'Menue - Eintrag Einstellen                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Eintrag Einstellen                                                             ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2763 ===
+ALT:
+  'Menue - RS232 - Menueeintrag Verbinden                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - RS232 - Menueeintrag Verbinden                                                 ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2771 ===
+ALT:
+  'Menue - RS232 - Menueeintrag Trennen                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - RS232 - Menueeintrag Trennen                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2779 ===
+ALT:
+  'Menue - BT - Menueeintrag Verbinden                                                    '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - BT - Menueeintrag Verbinden                                                    ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2788 ===
+ALT:
+  'Menue - BT - Menueeintrag Trennen                                                      '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - BT - Menueeintrag Trennen                                                      ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2797 ===
+ALT:
+  'Menue - TCP - Menueeintrag Verbinden                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - TCP - Menueeintrag Verbinden                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2806 ===
+ALT:
+  'Menue - TCP - Menueeintrag Trennen                                                     '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - TCP - Menueeintrag Trennen                                                     ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2815 ===
+ALT:
+  'Menue - Hilfedatei anzeigen                                                            '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Hilfedatei anzeigen                                                            ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2827 ===
+ALT:
+  'Menue - Bedienungsanleitung anzeigen                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Bedienungsanleitung anzeigen                                                   ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2859 ===
+ALT:
+  'Menue - Info zum Prgramm anzeigen                                                      '
+NEU:
+      '**********************************************************************************************
+      '*** Menue - Info zum Prgramm anzeigen                                                      ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2869 ===
+ALT:
+  'RS232                                                                                  '
+  'Funktionen zum Umgang mit der RS232-Schnittstelle                                      '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ RS232                                                                                  +++
+      '+++ Funktionen zum Umgang mit der RS232-Schnittstelle                                      +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:2874 ===
+ALT:
+  'RS232 - Schnittstelle oeffnen                                                          '
+NEU:
+      '**********************************************************************************************
+      '*** RS232 - Schnittstelle oeffnen                                                          ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2929 ===
+ALT:
+  'RS232 - Schnittstelle schliessen                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** RS232 - Schnittstelle schliessen                                                       ***
+      '**********************************************************************************************
+
+=== frmMain.vb:2981 ===
+ALT:
+  'RS232 - Nachricht verarbeiten                                                          '
+NEU:
+      '**********************************************************************************************
+      '*** RS232 - Nachricht verarbeiten                                                          ***
+      '**********************************************************************************************
+
+=== frmMain.vb:3034 ===
+ALT:
+  'Bluetooth                                                                              '
+  'Funktionen zum Umgang mit der Bluetooth-Schnittstelle                                  '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ Bluetooth                                                                              +++
+      '+++ Funktionen zum Umgang mit der Bluetooth-Schnittstelle                                  +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:3039 ===
+ALT:
+  'BT - Schnittstelle oeffnen                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** BT - Schnittstelle oeffnen                                                             ***
+      '**********************************************************************************************
+
+=== frmMain.vb:3096 ===
+ALT:
+  'BT - Schnittstelle schliessen                                                          '
+NEU:
+      '**********************************************************************************************
+      '*** BT - Schnittstelle schliessen                                                          ***
+      '**********************************************************************************************
+
+=== frmMain.vb:3150 ===
+ALT:
+  'BT - Nachricht verarbeiten                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** BT - Nachricht verarbeiten                                                             ***
+      '**********************************************************************************************
+
+=== frmMain.vb:3203 ===
+ALT:
+  'TCP                                                                                    '
+  'Funktionen zum Umgang mit der TCP-Schnittstelle                                        '
+NEU:
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      '+++ TCP                                                                                    +++
+      '+++ Funktionen zum Umgang mit der TCP-Schnittstelle                                        +++
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=== frmMain.vb:3208 ===
+ALT:
+  'TCP - Schnittstelle oeffnen                                                            '
+NEU:
+      '**********************************************************************************************
+      '*** TCP - Schnittstelle oeffnen                                                            ***
+      '**********************************************************************************************
+
+=== frmMain.vb:3282 ===
+ALT:
+  'TCP - Schnittstelle schliessen                                                         '
+NEU:
+      '**********************************************************************************************
+      '*** TCP - Schnittstelle schliessen                                                         ***
+      '**********************************************************************************************
+
+=== frmMain.vb:3337 ===
+ALT:
+  'TCP - Nachricht verarbeiten                                                            '
+NEU:
+      '**********************************************************************************************
+      '*** TCP - Nachricht verarbeiten                                                            ***
+      '**********************************************************************************************
+
+=== frmProzessorAuswahl.vb:1 ===
+ALT:
+  'Popup zur Auswahl des Zielprozessors vor einem Firmware-Upgrade                            '
+  'ATmega644P nutzt den bestehenden COMUpgradeButton()-Ablauf, die uebrigen drei Zielboards   '
+  '(siehe MBCANLib-Sketches) haben eigene Einsprungmethoden, die aktuell noch als Platzhalter '
+  'eine "Noch nicht implementiert"-Meldung zeigen (siehe frmMain.ComProtocol.vb).             '
+NEU:
+  '**************************************************************************************************
+  '*** Popup zur Auswahl des Zielprozessors vor einem Firmware-Upgrade                            ***
+  '*** ATmega644P nutzt den bestehenden COMUpgradeButton()-Ablauf, die uebrigen drei Zielboards   ***
+  '*** (siehe MBCANLib-Sketches) haben eigene Einsprungmethoden, die aktuell noch als Platzhalter ***
+  '*** eine "Noch nicht implementiert"-Meldung zeigen (siehe frmMain.ComProtocol.vb).             ***
+  '**************************************************************************************************
+
+=== frmWinkel.vb:3 ===
+ALT:
+  'Indizes fuer mbc85-Decoder                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** Indizes fuer mbc85-Decoder                                                             ***
+      '**********************************************************************************************
+
+=== mbc_modul_80.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-80                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-80                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_80.vb:49 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_80.vb:57 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_80.vb:64 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_80.vb:85 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_80.vb:108 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_81.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-81                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-81                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_81.vb:40 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_81.vb:47 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_81.vb:54 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_81.vb:67 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_81.vb:78 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_82.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-82                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-82                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_82.vb:49 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_82.vb:56 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_82.vb:63 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_82.vb:74 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_82.vb:87 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_83.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-83                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-83                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_83.vb:59 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_83.vb:70 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_83.vb:77 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_83.vb:103 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_83.vb:121 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_84.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-84                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-84                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_84.vb:57 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_84.vb:66 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_84.vb:73 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_84.vb:111 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_84.vb:139 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_85.vb:8 ===
+ALT:
+  'Indizes fuer mbc85-Decoder                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** Indizes fuer mbc85-Decoder                                                             ***
+      '**********************************************************************************************
+
+=== mbc_modul_85.vb:108 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_85.vb:117 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_85.vb:124 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_85.vb:159 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_85.vb:185 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_86.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-86                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-86                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_86.vb:54 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_86.vb:62 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_86.vb:69 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_86.vb:94 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_86.vb:114 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_87.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-87                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-87                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_87.vb:30 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_87.vb:36 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_87.vb:43 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_87.vb:55 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_87.vb:65 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_88.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-88                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-88                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_88.vb:46 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_88.vb:54 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_88.vb:61 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_88.vb:86 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_88.vb:106 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_89.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-89                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-89                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_89.vb:88 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_89.vb:98 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_89.vb:105 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_89.vb:128 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_89.vb:149 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_90.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-90                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-90                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_90.vb:44 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_90.vb:51 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_90.vb:58 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_90.vb:89 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_90.vb:116 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_91.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-91                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-91                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_91.vb:54 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_91.vb:63 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_91.vb:70 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_91.vb:94 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_91.vb:111 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_92.vb:9 ===
+ALT:
+  'Sonderbelegung mbc-92                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-92                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_92.vb:56 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_92.vb:66 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_92.vb:73 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_92.vb:97 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_92.vb:115 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_93.vb:8 ===
+ALT:
+  'Sonderbelegung mbc-93                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Sonderbelegung mbc-93                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_93.vb:49 ===
+ALT:
+  'Modul Updatesteuerung                                                                  '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Updatesteuerung                                                                  ***
+      '**********************************************************************************************
+
+=== mbc_modul_93.vb:56 ===
+ALT:
+  'Modul SYS_ARRAY-Indizes                                                                '
+NEU:
+      '**********************************************************************************************
+      '*** Modul SYS_ARRAY-Indizes                                                                ***
+      '**********************************************************************************************
+
+=== mbc_modul_93.vb:63 ===
+ALT:
+  'Modul Bewegungsdaten                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Bewegungsdaten                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_93.vb:81 ===
+ALT:
+  'Modul initialisieren                                                                   '
+NEU:
+      '**********************************************************************************************
+      '*** Modul initialisieren                                                                   ***
+      '**********************************************************************************************
+
+=== mbc_modul_93.vb:94 ===
+ALT:
+  'Modul Funktionen                                                                       '
+NEU:
+      '**********************************************************************************************
+      '*** Modul Funktionen                                                                       ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_80.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_80.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_81.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_81.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_82.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_82.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_83.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_83.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_84.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_84.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_85.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_85.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_86.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_86.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_87.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_87.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_88.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_88.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_89.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_89.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_90.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_90.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_91.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_91.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_92.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_92.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_93.vb:5 ===
+ALT:
+  'Oeffentliche Attribute                                                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Oeffentliche Attribute                                                                 ***
+      '**********************************************************************************************
+
+=== mbc_modul_typ_93.vb:17 ===
+ALT:
+  'Modulverwaltung                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Modulverwaltung                                                                        ***
+      '**********************************************************************************************
+
+=== sprache.vb:1 ===
+ALT:
+  'Register - Modul - Einstellung Sprache                                                     '
+NEU:
+  '**************************************************************************************************
+  '*** Register - Modul - Einstellung Sprache                                                     ***
+  '**************************************************************************************************
+
+=== sprache.vb:7 ===
+ALT:
+  'Variablen                                                                              '
+NEU:
+      '**********************************************************************************************
+      '*** Variablen                                                                              ***
+      '**********************************************************************************************
+
+=== sprache.vb:19 ===
+ALT:
+  'Sprachtext lesen (ersetzt das frueher CSV-befuellte Sprachen(50,100)-Array)            '
+  'Aufrufsyntax bleibt unveraendert Sprachen(Hauptindex, Detailindex) - VB unterscheidet  '
+  'nicht zwischen Array- und Funktionsaufruf, daher keine Aenderung an den ~377           '
+  'Aufrufstellen                                                                          '
+NEU:
+      '**********************************************************************************************
+      '*** Sprachtext lesen (ersetzt das frueher CSV-befuellte Sprachen(50,100)-Array)            ***
+      '*** Aufrufsyntax bleibt unveraendert Sprachen(Hauptindex, Detailindex) - VB unterscheidet  ***
+      '*** nicht zwischen Array- und Funktionsaufruf, daher keine Aenderung an den ~377           ***
+      '*** Aufrufstellen                                                                          ***
+      '**********************************************************************************************
+
+=== sprache.vb:498 ===
+ALT:
+  'Aktualisiere Sprachinhalte                                                             '
+NEU:
+      '**********************************************************************************************
+      '*** Aktualisiere Sprachinhalte                                                             ***
+      '**********************************************************************************************
+
+=== sprache.vb:509 ===
+ALT:
+  'Start MAIN                                                                         '
+NEU:
+          '******************************************************************************************
+          '*** Start MAIN                                                                         ***
+          '******************************************************************************************
+
+=== sprache.vb:586 ===
+ALT:
+  'Ende Main                                                                          '
+NEU:
+          '******************************************************************************************
+          '*** Ende Main                                                                          ***
+          '******************************************************************************************
+
+=== sprache.vb:592 ===
+ALT:
+  'Start mbc-80                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-80                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:606 ===
+ALT:
+  'Ende mbc-80                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-80                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:612 ===
+ALT:
+  'Start mbc-81                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-81                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:626 ===
+ALT:
+  'Ende mbc-81                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-81                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:632 ===
+ALT:
+  'Start mbc-82                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-82                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:646 ===
+ALT:
+  'Ende mbc-82                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-82                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:652 ===
+ALT:
+  'Start mbc-83                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-83                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:688 ===
+ALT:
+  'Ende mbc-83                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-83                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:694 ===
+ALT:
+  'Start mbc-84                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-84                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:725 ===
+ALT:
+  'Ende mbc-84                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-84                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:731 ===
+ALT:
+  'Start mbc-85                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-85                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:745 ===
+ALT:
+  'Ende mbc-85                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-85                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:751 ===
+ALT:
+  'Start mbc-86                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-86                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:761 ===
+ALT:
+  'Ende mbc-86                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-86                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:767 ===
+ALT:
+  'Start mbc-87                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-87                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:773 ===
+ALT:
+  'Ende mbc-87                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-87                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:779 ===
+ALT:
+  'Start mbc-88                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-88                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:791 ===
+ALT:
+  'Ende mbc-88                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-88                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:797 ===
+ALT:
+  'Start mbc-89                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-89                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:813 ===
+ALT:
+  'Ende mbc-89                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-89                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:819 ===
+ALT:
+  'Start mbc-90                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-90                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:828 ===
+ALT:
+  'Ende mbc-90                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-90                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:834 ===
+ALT:
+  'Start mbc-91                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-91                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:868 ===
+ALT:
+  'Ende mbc-91                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-91                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:875 ===
+ALT:
+  'Start mbc-92                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-92                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:909 ===
+ALT:
+  'Ende mbc-91                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-91                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:916 ===
+ALT:
+  'Start mbc-93                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Start mbc-93                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:930 ===
+ALT:
+  'Ende mbc-93                                                                        '
+NEU:
+          '******************************************************************************************
+          '*** Ende mbc-93                                                                        ***
+          '******************************************************************************************
+
+=== sprache.vb:936 ===
+ALT:
+  'Start frmServo                                                                     '
+NEU:
+          '******************************************************************************************
+          '*** Start frmServo                                                                     ***
+          '******************************************************************************************
+
+=== sprache.vb:960 ===
+ALT:
+  'Ende frmServo                                                                      '
+NEU:
+          '******************************************************************************************
+          '*** Ende frmServo                                                                      ***
+          '******************************************************************************************
+
+=== sprache.vb:966 ===
+ALT:
+  'Start frmInit                                                                      '
+NEU:
+          '******************************************************************************************
+          '*** Start frmInit                                                                      ***
+          '******************************************************************************************
+
+=== sprache.vb:976 ===
+ALT:
+  'Ende frmInit                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Ende frmInit                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:982 ===
+ALT:
+  'Start frmLoks                                                                      '
+NEU:
+          '******************************************************************************************
+          '*** Start frmLoks                                                                      ***
+          '******************************************************************************************
+
+=== sprache.vb:999 ===
+ALT:
+  'Ende frmLoks                                                                       '
+NEU:
+          '******************************************************************************************
+          '*** Ende frmLoks                                                                       ***
+          '******************************************************************************************
+
+=== sprache.vb:1005 ===
+ALT:
+  'Start frmWinkel                                                                    '
+NEU:
+          '******************************************************************************************
+          '*** Start frmWinkel                                                                    ***
+          '******************************************************************************************
+
+=== sprache.vb:1016 ===
+ALT:
+  'Ende frmWinkel                                                                     '
+NEU:
+          '******************************************************************************************
+          '*** Ende frmWinkel                                                                     ***
+          '******************************************************************************************
+
+=== sprache.vb:1022 ===
+ALT:
+  'Start frmProzessorAuswahl                                                          '
+NEU:
+          '******************************************************************************************
+          '*** Start frmProzessorAuswahl                                                          ***
+          '******************************************************************************************
+
+=== sprache.vb:1032 ===
+ALT:
+  'Ende frmProzessorAuswahl                                                           '
+NEU:
+          '******************************************************************************************
+          '*** Ende frmProzessorAuswahl                                                           ***
+          '******************************************************************************************
+
+=== sprache.vb:1038 ===
+ALT:
+  'Start frmDatenbank                                                                 '
+NEU:
+          '******************************************************************************************
+          '*** Start frmDatenbank                                                                 ***
+          '******************************************************************************************
+
+=== sprache.vb:1060 ===
+ALT:
+  'Ende frmDatenbank                                                                  '
+NEU:
+          '******************************************************************************************
+          '*** Ende frmDatenbank                                                                  ***
+          '******************************************************************************************
+
+=== utils.vb:1 ===
+ALT:
+  'Allgemeine Funktionen und Init-Routinen zum Programm                                       '
+NEU:
+  '**************************************************************************************************
+  '*** Allgemeine Funktionen und Init-Routinen zum Programm                                       ***
+  '**************************************************************************************************
+
+=== utils.vb:7 ===
+ALT:
+  'HEX-Werte formatieren                                                                  '
+  'Lead = "0" oder "3" je nachdem, was das Programm erwartet                              '
+  'Ziffer = Anzahl der Ziffern des HEX-String ausgenommen des "Lead"                      '
+  'Wert = in einen HEX-String zu wandelnder Wert                                          '
+NEU:
+      '**********************************************************************************************
+      '*** HEX-Werte formatieren                                                                  ***
+      '*** Lead = "0" oder "3" je nachdem, was das Programm erwartet                              ***
+      '*** Ziffer = Anzahl der Ziffern des HEX-String ausgenommen des "Lead"                      ***
+      '*** Wert = in einen HEX-String zu wandelnder Wert                                          ***
+      '**********************************************************************************************
+
+=== utils.vb:64 ===
+ALT:
+  'Timer für Delay                                                                        '
+NEU:
+      '**********************************************************************************************
+      '*** Timer für Delay                                                                        ***
+      '**********************************************************************************************
+
+=== utils.vb:84 ===
+ALT:
+  'Node im Treeview suchen mit der Eigenschaft "Fullpath"                                 '
+NEU:
+      '**********************************************************************************************
+      '*** Node im Treeview suchen mit der Eigenschaft "Fullpath"                                 ***
+      '**********************************************************************************************
+
+=== utils.vb:102 ===
+ALT:
+  'Schluessel=Wert-Zeile(n) parsen (mehrere Paare je Zeile durch ";" getrennt)            '
+  'Basis fuer das selbstmigrierende Speicherformat in datenbanken.vb                      '
+NEU:
+      '**********************************************************************************************
+      '*** Schluessel=Wert-Zeile(n) parsen (mehrere Paare je Zeile durch ";" getrennt)            ***
+      '*** Basis fuer das selbstmigrierende Speicherformat in datenbanken.vb                      ***
+      '**********************************************************************************************
+
+=== utils.vb:118 ===
+ALT:
+  'Wert aus einem KVParse-Dictionary lesen, mit Vorgabewert falls Schluessel fehlt        '
+NEU:
+      '**********************************************************************************************
+      '*** Wert aus einem KVParse-Dictionary lesen, mit Vorgabewert falls Schluessel fehlt        ***
+      '**********************************************************************************************
+
+=== utils.vb:128 ===
+ALT:
+  'Wert fuer die Verwendung in einer KV-Zeile absichern (reservierte Trennzeichen         '
+  'ersetzen)                                                                              '
+NEU:
+      '**********************************************************************************************
+      '*** Wert fuer die Verwendung in einer KV-Zeile absichern (reservierte Trennzeichen         ***
+      '*** ersetzen)                                                                              ***
+      '**********************************************************************************************
+
+=== utils.vb:137 ===
+ALT:
+  'CRC32 (Poly 0xEDB88320, wie zlib/PNG) ueber einen Datenblock berechnen                 '
+  'Muss exakt zum firmwareseitigen MbcOta::crc32Update (MbcOta.cpp in MBCANLib) passen -  '
+  'das Modul rechnet beim Anwenden eines OTA-Updates denselben Wert nach und vergleicht   '
+  'ihn mit dem im Header uebertragenen Wert.                                              '
+NEU:
+      '**********************************************************************************************
+      '*** CRC32 (Poly 0xEDB88320, wie zlib/PNG) ueber einen Datenblock berechnen                 ***
+      '*** Muss exakt zum firmwareseitigen MbcOta::crc32Update (MbcOta.cpp in MBCANLib) passen -  ***
+      '*** das Modul rechnet beim Anwenden eines OTA-Updates denselben Wert nach und vergleicht   ***
+      '*** ihn mit dem im Header uebertragenen Wert.                                              ***
+      '**********************************************************************************************
+
+=== utils.vb:162 ===
+ALT:
+  'Popup-Fenster innerhalb der Grenzen seines Besitzerfensters halten                     '
+  'In Load jedes Popups per AddHandler Me.LocationChanged, AddressOf ClampInnerhalbEltern '
+  'verdrahten, damit es beim Verschieben nicht ueber das Hauptfenster hinaus gezogen wird.'
+  'Ohne Owner (z.B. der Splash-Screen vor dem Start von frmMain) bleibt dies wirkungslos. '
+NEU:
+      '**********************************************************************************************
+      '*** Popup-Fenster innerhalb der Grenzen seines Besitzerfensters halten                     ***
+      '*** In Load jedes Popups per AddHandler Me.LocationChanged, AddressOf ClampInnerhalbEltern ***
+      '*** verdrahten, damit es beim Verschieben nicht ueber das Hauptfenster hinaus gezogen wird.***
+      '*** Ohne Owner (z.B. der Splash-Screen vor dem Start von frmMain) bleibt dies wirkungslos. ***
+      '**********************************************************************************************
+

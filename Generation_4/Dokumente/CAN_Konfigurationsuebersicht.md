@@ -1,8 +1,8 @@
 ﻿# CAN-Nachrichten zur Modulkonfiguration
 
 Diese Dokumentation beschreibt die Konfigurationskommunikation zwischen den
-Modulen `mbc-80`, `mbc-81`, `mbc-83`, `mbc-84`, `mbc-88`, `mbc-90`, `mbc-91`,
-`mbc-92` und einer Maerklin-CS2/CSx.
+Modulen `mbc-80`, `mbc-81`, `mbc-82`, `mbc-83`, `mbc-84`, `mbc-88`, `mbc-89`, `mbc-90`, `mbc-91`,
+`mbc-92`, `mbc-93` und einer Maerklin-CS2/CSx.
 
 ## 1. Befehlsstruktur einer CAN-Nachricht
 
@@ -64,6 +64,28 @@ Bei einem Auswahlkanal wie `09 01 02 00 00 00 00 00` bedeutet die Folge:
 Kanal `9`, Kennung `Auswahlliste`, zwei Auswahlpunkte, aktueller Index `0`,
 danach reservierte bzw. durch Textfelder belegte Bytes.
 
+### Klartext der Initialbytes 1...16 fuer Messwertkanaele (Typ `00`)
+
+Neben `01`/`02` gibt es einen dritten Kopftyp fuer reine Messwertkanaele
+(anzeigend, nicht editierbar) - bisher nur bei `mbc-93` genutzt, alle anderen
+Module dieses Projekts haben `ANZMESSWERTEMODUL=0`:
+
+| Byte | Typ `00 = Messwert` |
+|---:|---|
+| 1 | Konfigurationskanalnummer |
+| 2 | Kennung `00`, Klartext `Messwert`; Byte gleichzeitig "Potenz" (Kommastellen-Exponent, bei mbc-93 immer `0`) |
+| 3..6 | Farbcode je Anzeigebereich 1...4 (siehe `CAN_Befehlssatz_MBCAN.md`/CS2-Protokoll fuer die Farbcodierung) |
+| 7,8 | Nullpunkt Highbyte, Nullpunkt Lowbyte |
+| 9,10 | Bereich 1 Highbyte, Bereich 1 Lowbyte |
+| 11,12 | Bereich 2 Highbyte, Bereich 2 Lowbyte |
+| 13,14 | Bereich 3 Highbyte, Bereich 3 Lowbyte |
+| 15,16 | Bereich 4 Highbyte, Bereich 4 Lowbyte |
+
+Der aktuelle Messwert selbst steht NICHT im Initialblock, sondern wird erst
+bei einer Statusabfrage im `D6:D7`-Wort der Antwort geliefert (siehe
+Abschnitt 3, "Status-/Messwertrueckmeldung"). Hinter Byte 16 folgt wie bei den
+Konfigurationstypen die `Messwertbezeichnung` als Text.
+
 ## 2. Konfigurationsdaten-Initialisierung je Modul
 
 In den folgenden Tabellen sind die festen ersten acht Bytes der jeweiligen
@@ -86,6 +108,22 @@ Keine modulspezifischen Messwerte, zwei Konfigurationskanaele:
 |---:|---|---|
 | `7` | `07 02 00 00 00 3F 00 00` | Kanal 7, `Slider`, `KeyB:`, `0...63`, MM-Adresse `0x3000 + 16*n`, aktuell `Daten[7:8]` |
 | `8` | `08 01 03 00 00 00 00 00` | Kanal 8, `Auswahlliste`, `Nutz:`, 3 Punkte `Switch`/`B0 1..32`/`B0 33..63`, Index `Daten[4]` |
+
+### mbc-82
+
+**Sonderfall wie mbc-93:** mbc-82 hat ebenfalls modulspezifische Messwertkanaele
+(`anzMesswerteModul=2`), siehe die Erklaerung im mbc-93-Abschnitt weiter unten - die
+Kanaele 3/4 (Messwerte) muessen direkt hinter Kanal 1/2 einsortiert werden, die
+Basiskanaele Seriennummer/GUiD/Firmware/Hardware verschieben sich dadurch von `3/4/5/6`
+auf `5/6/7/8`:
+
+| Kanal | Initialbytes | Inhalt und Bereich |
+|---:|---|---|
+| `3` | `03 00 30 30 30 30 00 00 00 00 00 00 00 00 00 01` | Kanal 3, `Messwert`, `ON Track`, Anzeigebereiche grau/gruen, aktueller Wert (0/1) per Statusabfrage |
+| `4` | `04 00 C0 C0 C0 C0 00 00 00 00 00 00 00 00 00 01` | Kanal 4, `Messwert`, `Kurzschluss`, Anzeigebereiche grau/rot, aktueller Wert (0/1) per Statusabfrage |
+| `9` | `09 02 00 01 00 FF 00 00` | Kanal 9, `Slider`, `SW Major:`, `1...255`, aktuell `Daten[7:8]`, simulierte GFP/Booster-Softwareversion (analog mbc-80/L88 bzw. mbc-93) |
+| `10` | `0A 02 00 01 00 FF 00 00` | Kanal 10, `Slider`, `SW Minor:`, `1...255`, aktuell `Daten[7:8]` |
+| `11` | `0B 02 00 01 00 14 00 00` | Kanal 11, `Slider`, `KS x 50 ms:`, `1...20`, aktuell `Daten[7:8]`, entspricht `50...1000` ms in 50-ms-Schritten (ParaCenter zeigt den realen ms-Wert, siehe `nud_mbc82_Latenz` in `frmMain.Designer.vb`) - Original-Firmware validiert diesen Kanal nicht, Port haertet analog mbc-93 |
 
 ### mbc-83
 
@@ -137,6 +175,24 @@ Keine modulspezifischen Messwerte, zwei Konfigurationskanaele:
 | `14` | `0E 02 00 01 00 FA 00 00` | Kanal 14, `Slider`, `K6 x10ms:`, `1...250`, aktuell `Daten[7:8]` |
 | `15` | `0F 02 00 01 00 FA 00 00` | Kanal 15, `Slider`, `K7 x10ms:`, `1...250`, aktuell `Daten[7:8]` |
 | `16` | `10 02 00 01 00 FA 00 00` | Kanal 16, `Slider`, `K8 x10ms:`, `1...250`, aktuell `Daten[7:8]` |
+
+### mbc-89
+
+**Sonderfall:** 69 Konfigkanaele, mit Abstand die meisten aller Module dieses Projekts - 5
+"klassische" Kanaele (7...11) sowie 64 baugleiche "KeyBx GroupY:"-Kanaele (12...75, siehe unten).
+
+| Kanal | Initialbytes 1...8 | Inhalt und Bereich |
+|---:|---|---|
+| `7` | `07 02 00 01 00 FF 00 00` | Kanal 7, `Slider`, `SW Major:`, `1...255`, aktuell `Daten[7:8]`, vorgetaeuschte Connect6021-Softwareversion (analog mbc-80/L88/mbc-82/93) |
+| `8` | `08 02 00 01 00 FF 00 00` | Kanal 8, `Slider`, `SW Minor:`, `1...255`, aktuell `Daten[7:8]` |
+| `9` | `09 01 02 00 00 00 00 00` | Kanal 9, `Auswahlliste`, `Mapping:`, 2 Punkte `Mapping`/`Mapping&Direkt`, Index `Daten[4]` (Zentralentyp: 0=CSx-Mapping per CONNECT6021, 1=MS2-Stil - alle Loks automatisch gemappt) |
+| `10` | `0A 02 00 01 00 04 00 00` | Kanal 10, `Slider`, `Basis:`, `1...4`, aktuell `Daten[7:8]`, Keyboard-Basisadressblock |
+| `11` | `0B 02 00 28 00 64 00 00` | Kanal 11, `Slider`, `I2C:`, `40...100`, aktuell `Daten[7:8]`, CU-Bus-I2C-Takt in kHz |
+| `12...75` | `xx 01 02 00 00 00 00 00` | 64 gleichartige `Auswahlliste`-Kanaele, je 2 Punkte `MM`/`DCC`, Index `Daten[4]`. Kanal `12 + (keyboard-1)*4 + (gruppe-1)` fuer Keyboard `1...16` und Gruppe/Stellpultblock `1...4`, Label `KeyB<keyboard> Group<gruppe>:` (z.B. Kanal 12 = `KeyB1 Group1:`, Kanal 75 = `KeyB16 Group4:`) - legt das Zubehoerprotokoll (Motorola oder DCC) je Stellpultblock fest |
+
+Alle 69 Kanaele liegen als PROGMEM-Vorlage in `initCs2Ex[]` (`Mbc89Com.cpp`), die aktuelle Zeile
+wird bei jeder CSx-Anfrage frisch in einen einzigen `_cs2ScratchRow`-Puffer kopiert statt 69
+dauerhafte 40-Byte-Zeilen im RAM zu halten.
 
 ### mbc-90
 
@@ -191,6 +247,29 @@ Keine modulspezifischen Messwerte, zwei Konfigurationskanaele:
 | `15` | `0F 02 00 01 00 FA 00 00` | Kanal 15, `Slider`, Impulszeit Spule 3, `1...250`, aktuell `Daten[7:8]` |
 | `16` | `10 01 02 00 00 00 00 00` | Kanal 16, `Auswahlliste`, 2 Punkte, Aktorart Spule 4, Index `Daten[4]`, `0=Impuls`, `1=Wechsel`, schreibbar |
 | `17` | `11 02 00 01 00 FA 00 00` | Kanal 17, `Slider`, Impulszeit Spule 4, `1...250`, aktuell `Daten[7:8]` |
+
+### mbc-93
+
+**Sonderfall:** mbc-93 ist das einzige Modul dieses Projekts mit modulspezifischen
+Messwertkanaelen (`anzMesswerteModul=2` statt sonst immer `0`). Die CSx zeigt die ersten
+`Basis-Messwerte + anzMesswerteModul` Kanaele als Messwerte an, unabhaengig von deren eigener
+Kennung - modulspezifische Messwertkanaele muessen deshalb direkt hinter die Basis-Messwerte
+(Kanal 1/2, Versorgungsspannung/Temperatur) einsortiert werden, NICHT hinter Kanal 6 wie bei
+reinen Konfigkanaelen. `MbcCom` erledigt das automatisch (siehe `checkCs2Connection()` in
+`MbcCom.cpp`) und verschiebt dabei die Basiskanaele Seriennummer/GUiD/Firmware/Hardware von
+`3/4/5/6` auf `5/6/7/8`:
+
+| Kanal | Initialbytes | Inhalt und Bereich |
+|---:|---|---|
+| `3` | `03 00 30 30 30 30 00 00 00 00 00 00 00 00 00 01` | Kanal 3, `Messwert`, `ON Track`, Anzeigebereiche grau/gruen, aktueller Wert (0/1) per Statusabfrage |
+| `4` | `04 00 C0 C0 C0 C0 00 00 00 00 00 00 00 00 00 01` | Kanal 4, `Messwert`, `Kurzschluss`, Anzeigebereiche grau/rot, aktueller Wert (0/1) per Statusabfrage |
+| `9` | `09 02 00 01 00 FF 00 00` | Kanal 9, `Slider`, `SW Major:`, `1...255`, aktuell `Daten[7:8]`, simulierte GFP/Booster-Softwareversion (analog mbc-80/L88) |
+| `10` | `0A 02 00 01 00 FF 00 00` | Kanal 10, `Slider`, `SW Minor:`, `1...255`, aktuell `Daten[7:8]` |
+| `11` | `0B 02 00 01 00 14 00 00` | Kanal 11, `Slider`, `KS x 50 ms:`, `1...20`, aktuell `Daten[7:8]`, entspricht `50...1000` ms in 50-ms-Schritten (ParaCenter zeigt den realen ms-Wert, siehe `nud_mbc93_Latenz` in `frmMain.Designer.vb`) |
+
+Die 3 Konfigkanaele (9/10/11) liegen hinter den auf 5/6/7/8 verschobenen Basis-Konfigkanaelen -
+die Gesamtzahl aller Kanaele (2 Basis-Messwerte + 2 Modul-Messwerte + 4 Basis-Konfig + 3
+Modul-Konfig = 11) bestimmt die letzte Kanalnummer.
 
 ## 3. Parameterrueckmeldungen
 

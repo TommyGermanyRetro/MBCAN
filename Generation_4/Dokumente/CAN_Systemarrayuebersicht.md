@@ -1,7 +1,7 @@
 # Systemarray - Aufbau und PC_ARRAY_DATA-Protokoll
 
 Diese Dokumentation beschreibt das Systemarray der Module `mbc-80`, `mbc-81`,
-`mbc-83`, `mbc-84`, `mbc-88`, `mbc-90`, `mbc-91`, `mbc-92` sowie den
+`mbc-82`, `mbc-83`, `mbc-84`, `mbc-88`, `mbc-89`, `mbc-90`, `mbc-91`, `mbc-92`, `mbc-93` sowie den
 CAN-Nachrichtenaustausch, mit dem das ParaCenter dieses Systemarray liest,
 beschreibt und im internen EEPROM persistiert (`PC_ARRAY`/`PC_ARRAY_DATA`).
 Sie ergaenzt `CAN_Konfigurationsuebersicht.md`, die die davon unabhaengige
@@ -87,8 +87,8 @@ Das Modul quittiert `D4`/`D5`/`D6` immer unveraendert und legt bei einem
 Lesezugriff den aktuellen Arraywert in `D7`. Ein Index ausserhalb von
 `0...arrayMax()-1` wird zwar weiterhin quittiert, das eigentliche
 Lesen/Schreiben des Arrays entfaellt dann aber stillschweigend - `arrayMax()`
-ist `MBC_S_GENPURP + genPurpSize` (siehe Abschnitt 3, insbesondere die
-mbc-93-Abweichung am Ende).
+ist `MBC_S_GENPURP + genPurpSize` (siehe Abschnitt 3 fuer die konkrete
+`genPurpSize` je Modul).
 
 Das ParaCenter durchlaeuft fuer einen Block so den kompletten adressierten
 Bereich (typischerweise `MBC_S_GENPURP...MBC_S_GENPURP+genPurpSize-1` fuer
@@ -167,6 +167,23 @@ Zusaetzlich per CS2-Konfigkanal setzbar (Label `KeyB:` fuer MM-Addr, Faktor 16 s
 der bei mbc-83/91/92 ueblichen 4, da mbc-81 16 statt 4 MM-Adressen je Modul belegt;
 Label `Nutz:` fuer die Nutzung-Auswahl) - siehe `CAN_Konfigurationsuebersicht.md`.
 
+### mbc-82
+
+| Offset | Feld | Bytes |
+|---|---|---:|
+| 0 | Status (Bit4=Kurzschluss/`0x10`, Bit5=Booster aktiv/`0x20`, live Wert, nicht EEPROM-persistiert) | 1 |
+| 1 | Simulierte GFP/Booster-SW-Version, Vorkommastelle | 1 |
+| 2 | Simulierte GFP/Booster-SW-Version, Nachkommastellen | 1 |
+| 3 | Kurzschluss-Latenzzeit (0-basierter Rohwert, `(Wert+1)*50` ms) | 1 |
+
+`genPurpSize=4` - baugleiches Layout zu mbc-93 (siehe dort), aber ohne Luefter.
+EEPROM-Blockkonstanten: `EE_82_SW=0x0A` (Offset 1-2), `EE_82_SH=0x0B` (Offset 3). Fuer
+Offset 0 (Status) existiert kein EEPROM-Block, analog zu RM bei mbc-88/90. Offset 1-2
+(SW-Version) zusaetzlich per CS2-Konfigkanal setzbar (Label `SW Major:`/`SW Minor:`,
+analog mbc-80/L88 bzw. mbc-93), Offset 3 (Latenzzeit) ebenso (Label `KS x 50 ms:`) -
+dazu zwei modulspezifische CS2-Messwertkanaele (`ON Track`, `Kurzschluss`) - siehe
+`CAN_Konfigurationsuebersicht.md`.
+
 ### mbc-83
 
 | Offset | Feld | Bytes |
@@ -221,6 +238,29 @@ Label `Nutz:` fuer die Nutzung-Auswahl) - siehe `CAN_Konfigurationsuebersicht.md
 `EE_88_S88TIMING=0x0B` (Offset 4-11), `EE_88_S88MOD=0x0C` (Offset 2). Fuer
 Offset 3 (RM) existiert kein EEPROM-Block.
 
+### mbc-89
+
+| Offset | Feld | Bytes |
+|---|---|---:|
+| 0-1 | Simulierte Connect6021-Softwareversion (SW_1/SW_2) | 2 |
+| 2-811 | Lok-Datenbank (80 MM-Adressen x 10 Byte: Speed/Dir/F0/Fx/GUiD4..1/Mapped/Infra) | 810 |
+| 812-876 | Zubehoerprotokoll je Stellpult (MM/DCC, 65 Byte) | 65 |
+| 877 | Zentralentyp-Mapping (`0`=CSx, `1`=MS2) | 1 |
+| 878 | Basisadressblock (1...4 des 1. Keyboards) | 1 |
+| 879 | I2C-Bus-Frequenz in kHz | 1 |
+
+`genPurpSize=880`. EEPROM-Blockkonstanten: `EE_89_SW=0x0A` (Offset 0-1),
+`EE_89_PROTOKOLL=0x0B` (Offset 812-876), `EE_89_MAPPING=0x0C` (Offset 877),
+`EE_89_BASIS=0x0D` (Offset 878), `EE_89_I2C=0x0E` (Offset 879). Die Offsets
+0-1 sowie 877-879 sind zusaetzlich ueber 5 CS2-Konfigkanaele setzbar, Offset
+812-876 (Zubehoerprotokoll je Stellpult) ueber 64 weitere CS2-Konfigkanaele
+(siehe `CAN_Konfigurationsuebersicht.md`) - daneben bleibt der rohe
+`PC_ARRAY_DATA`-Zugriff wie bei allen Modulen weiterhin moeglich.
+Die Lok-Datenbank selbst wird nicht direkt vom ParaCenter editiert, sondern
+laeuft ausschliesslich ueber das CONNECT6021-Protokoll (CAN-ID 0x44/0x45) und
+den laufenden CU-Bus-/Gleisdecoder-Betrieb mit; kein eigener EEPROM-Block
+dafuer, sie lebt nur im RAM des Moduls.
+
 ### mbc-90
 
 | Offset | Feld | Bytes |
@@ -269,3 +309,21 @@ gesendet.
 `genPurpSize=10`. EEPROM-Blockkonstanten: `EE_92_MMAddr=0x0A`,
 `EE_92_MM_TIMING=0x0B`, `EE_92_MM_ART=0x0C`, `EE_92_AUS=0x0D`,
 `EE_92_RUECK=0x0E`, `EE_92_AKTOR=0x0F`.
+
+### mbc-93
+
+| Offset | Feld | Bytes |
+|---|---|---:|
+| 0 | Status (Bit4=Kurzschluss/`0x10`, Bit5=Booster aktiv/`0x20`, live Wert, nicht EEPROM-persistiert) | 1 |
+| 1 | Simulierte GFP/Booster-SW-Version, Vorkommastelle | 1 |
+| 2 | Simulierte GFP/Booster-SW-Version, Nachkommastellen | 1 |
+| 3 | Kurzschluss-Latenzzeit (0-basierter Rohwert, `(Wert+1)*50` ms) | 1 |
+
+`genPurpSize=4` - das mit Abstand kleinste genPurp-Layout aller portierten
+Module (kein eigener Schaltdecoder). EEPROM-Blockkonstanten: `EE_93_SW=0x0A`
+(Offset 1-2), `EE_93_SH=0x0B` (Offset 3). Fuer Offset 0 (Status) existiert
+kein EEPROM-Block, analog zu RM bei mbc-88/90. Offset 1-2 (SW-Version)
+zusaetzlich per CS2-Konfigkanal setzbar (Label `SW Major:`/`SW Minor:`, analog
+mbc-80/L88), Offset 3 (Latenzzeit) ebenso (Label `KS x 50 ms:`) - dazu zwei
+modulspezifische CS2-Messwertkanaele (`ON Track`, `Kurzschluss`) - siehe
+`CAN_Konfigurationsuebersicht.md`.

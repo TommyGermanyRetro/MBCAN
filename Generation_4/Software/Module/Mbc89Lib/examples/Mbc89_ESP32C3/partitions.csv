@@ -1,0 +1,16 @@
+# MBCAN OTA-Partitionstabelle fuer ESP32-C3, siehe Mbc89Ota.h (Update.h schreibt in die jeweils
+# inaktive ota_0/ota_1-Partition, Mbc89BootStorage/W25Q64 dient nur als Zwischenspeicher davor).
+# Ausgelegt fuer 4-MByte-Flash (Summe aller Groessen = 0x400000 Byte) - bei einer anderen
+# Flash-Groesse die ota_0-/ota_1-Groessen proportional anpassen (Offsets bleiben 0x10000-aligned).
+#
+# Kein Menue-Eintrag noetig: liegt diese Datei im Sketch-Ordner, kopiert der Build-Prozess sie
+# automatisch (recipe.hooks.prebuild in platform.txt) und ignoriert dabei die unter Tools/
+# Werkzeuge -> Partition Scheme gewaehlte Option komplett (verifiziert: auch mit "huge_app"
+# gewaehlt landet exakt diese Datei im Build).
+#
+# Name,     Type, SubType,  Offset,   Size,     Flags
+nvs,        data, nvs,      0x9000,   0x5000,
+otadata,    data, ota,      0xe000,   0x2000,
+ota_0,      app,  ota_0,    0x10000,  0x1F0000,
+ota_1,      app,  ota_1,    0x200000, 0x1F0000,
+coredump,   data, coredump, 0x3F0000, 0x10000,

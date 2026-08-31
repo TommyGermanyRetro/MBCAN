@@ -34,12 +34,15 @@ In der nachfolgenden Tabelle sind die bereits portierten (Generation_4/Module) U
 | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
 | mbc-80              | HW:21-10-01         |                     |                     |                     |
 | mbc-81              | HW:18-02-12<br>HW:24-01-06         |                     |                     |                     |
+| mbc-82              | HW:21-03-01         |                     |                     |                     |
 | mbc-83              | HW:18-02-10<br>HW:24-03-23         |                     |                     |                     |
 | mbc-84              | HW:18-02-03<br>HW:24-01-06         |                     |                     |                     |
-| mbc-88              | HW:18-03-29<br>HW:24-01-06         |                     |                     |                     | 
+| mbc-88              | HW:18-03-29<br>HW:24-01-06         |                     |                     |                     |
+| mbc-89              | HW:22-03-01         |                     |                     |                     | 
 | mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |                     |                     | 
 | mbc-91              | HW:16-10-02<br>HW:24-04-01         |                     |                     |                     | 
 | mbc-92              | HW:24-07-20         |                     |                     |                     | 
+| mbc-93              | HW:24-05-01         |                     |                     |                     |
 
 ## 3.  Parametrierungscenter und Tools
 
@@ -50,6 +53,10 @@ Als weiteres Tool steht ein TCP/CAN-Monitor zum Mitlesen auf dem CAN-Bus zur Ver
 Beide Tools liegen als Projektmappen in Generation_4/Tools zum Download bereit.
 	
 # Tagebuch
+
+## 31.08.2026
+
+Module mbc82, mbc89 und mbc93 ergänzt. BugFixes und RAM-Optimierung bei den anderen Modulen vorgenommen. 
 
 ## 23.08.2026
 

@@ -76,6 +76,21 @@
             static void adcConfigure();
 
             //*************************************************************************************
+            //* ADC-Vollausschlag-Referenzspannung des jeweiligen Prozessors liefern              *
+            //*************************************************************************************
+            //* Haelt Mbc89Utils::adcReadVspg()s Spannungsteiler-Umrechnung (fester Teilerfaktor  *
+            //* 10.2/1.1, unveraendert auf allen drei Zielen) korrekt, unabhaengig von der        *
+            //* tatsaechlichen ADC-Bezugsspannung: ATmega644P wandelt gegen die 5V-AVcc-Referenz  *
+            //* (kein analogReference()-Aufruf im Projekt), ESP32-C3/RP2040 wandeln gegen ihre    *
+            //* 3.3V-Versorgung. Fuer mbc-80 ESP32-C3 HW260805 hardwarebestaetigt (baugleicher    *
+            //* Fix in der gemeinsamen MbcPlatform, siehe dort) - fuer mbc-89 noch nicht.         *
+            //*************************************************************************************
+            //* Return: ADC-Vollausschlagsspannung in Volt                                        *
+            //*************************************************************************************
+
+            static float adcRefVolts();
+
+            //*************************************************************************************
             //* Sofortneustart ueber den Software-Reset des Controllers                           *
             //*************************************************************************************
             //* NICHT auf AVR verfuegbar (dort ohne Wirkung) - der ATmega644P besitzt keinen per  *

@@ -6,6 +6,19 @@
 //* waehlen, damit die mitgelieferte partitions.csv (liegt im selben Sketch-Ordner) verwendet     *
 //* wird - ohne das hat ein OTA-Update keine Zielpartition zum Beschreiben und schlaegt fehl.     *
 //*                                                                                               *
+//* WICHTIG - richtige Datei fuer OTA: Im ParaCenter nur die reine <Sketchname>.ino.bin           *
+//* verwenden, NICHT .merged.bin/.bootloader.bin/*_flashed.bin (das sind Boardpaket-Ausgaben      *
+//* fuer den anfaenglichen USB-Flash bzw. veraltete Zwischenstaende) - nur die reine App-Datei    *
+//* passt zum OTA-Mechanismus (MbcOta.h).                                                         *
+//*                                                                                               *
+//* WICHTIG - USB-Flash nach einem OTA-Test: Arduino/esptool schreiben beim USB-Upload IMMER an   *
+//* die feste Adresse von ota_0 (0x10000) und aendern dabei die otadata-Partition (Boot-Auswahl)  *
+//* NICHT. Zeigt otadata nach einem vorherigen OTA-Update auf ota_1, laeuft nach einem erneuten   *
+//* USB-Flash weiterhin die ALTE, zuletzt per OTA in ota_1 geschriebene Firmware - der neue       *
+//* USB-Stand in ota_0 wird schlicht nicht gebootet. Abhilfe: vor dem naechsten USB-Flash unter   *
+//* Tools/Werkzeuge "Erase All Flash Before Sketch Upload" aktivieren (oder gezielt nur otadata   *
+//* loeschen: esptool.py erase_region 0xE000 0x2000), damit der Bootloader auf ota_0 zurueckfaellt*
+//*                                                                                               *
 //* LED gruen/rot, Steckernetzteil-Erkennung UND die 4 Rueckmelde-Eingaenge haengen an einem      *
 //* gemeinsamen MCP23S17 (GPIOA Bit 0-2 LEDs/Plug, Bit 3-6 Rueckmeldung Relais 1...4, GPIOB       *
 //* unbenutzt - mbc-83 hat keine Positionsanzeige). Ein zweiter MCP23S17 bedient die 8            *

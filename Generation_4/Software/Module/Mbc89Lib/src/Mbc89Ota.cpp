@@ -16,8 +16,9 @@
 #if defined(ESP32)
 
 #include <string.h>
+#include <esp_task_wdt.h>
 
-//------ Start Klasse Mbc89Ota ---------------------------------------------------------------------
+//------ Start Klasse Mbc89Ota --------------------------------------------------------------------
 
     //*********************************************************************************************
     //* Anstehendes OTA-Update pruefen und ggf. anwenden                                          *
@@ -74,6 +75,19 @@
 
             remaining -= chunk;
             otaPage++;
+
+            // Zwei UNABHAENGIGE ESP32-Watchdog-Mechanismen muessen hier bedient werden, da diese
+            // Schleife (bis zu tausende Durchlaeufe fuer ein grosses Image) komplett innerhalb
+            // EINES einzigen Aufrufs von loop() laeuft - siehe MbcOta::apply() (MBCANLib) fuer die
+            // vollstaendige, hardwarebestaetigte Herleitung:
+            //  1) CPU0-Idle-Task-Watchdog - braucht echte Rechenzeit fuer den Idle-Task. Nur
+            //     delay() (nicht yield()/vPortYield()) erzwingt das zuverlaessig.
+            //  2) Der "loopTask"-eigene Watchdog-Eintrag - wird laut arduino-esp32-Core (main.cpp)
+            //     NUR ZWISCHEN zwei Aufrufen von loop() per esp_task_wdt_reset() zurueckgesetzt,
+            //     niemals waehrenddessen - delay()/yield() fuettern ihn NICHT.
+
+            delay(1);
+            esp_task_wdt_reset();
         }
 
         crc ^= 0xFFFFFFFFul;
@@ -132,8 +146,8 @@
         return crc;
     }
 
-//------ Ende Klasse Mbc89Ota -----------------------------------------------------------------------
+//------ Ende Klasse Mbc89Ota ---------------------------------------------------------------------
 
 #endif  /* defined(ESP32) */
 
-//###### Ende Quellcode Mbc89Ota.cpp ###############################################################
+//###### Ende Quellcode Mbc89Ota.cpp ##############################################################

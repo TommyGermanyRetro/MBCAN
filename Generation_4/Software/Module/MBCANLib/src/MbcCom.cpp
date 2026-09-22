@@ -859,17 +859,39 @@
 
                     case PC_BOOT:
                     {
-                        uint8_t *bootArr = arr + O_BOOT + 2;
+                        // NUR AVR (ATmega644P): Page 0 des Boot-Speicherchips mit 0xaa fluten -
+                        // Trigger-Konvention fuer den ATmega-eigenen Bootloader. Auf RP2040/
+                        // ESP32-C3 liegt in genau diesem Speicherchip (W25Q64) das gerade per
+                        // PC_UPGRADE_DATA uebertragene Firmware-Image (MbcOta) - dort wuerde
+                        // dieser Schritt Page 0 des frisch geschriebenen Images vor dem
+                        // Anwenden zerstoeren.
 
-                        for (uint16_t count = 0; count < MBC_BOOT_PGSZ; count++) bootArr[count] = 0xaa;
+                        #if defined(__AVR__)
+                            uint8_t *bootArr = arr + O_BOOT + 2;
 
-                        _bootStorage->write(bootArr, 0, _utils);
+                            for (uint16_t count = 0; count < MBC_BOOT_PGSZ; count++) bootArr[count] = 0xaa;
 
-                        delay(10);
+                            _bootStorage->write(bootArr, 0, _utils);
+
+                            delay(10);
+                        #endif
 
                         moduleBlank();
 
-                        noInterrupts();
+                        // NUR AVR: Interrupts vor dem Reset-Pin-Trick global sperren, damit kein
+                        // Interrupt-Handler waehrend des Sprungs in den Bootloader mehr feuert.
+                        // Auf RP2040/ESP32-C3 wuerde das direkt vor MbcOta::apply() (siehe
+                        // triggerReset()) dessen Update.write()-Aufrufe stoeren - der ESP32-/
+                        // RP2040-Flash-Treiber verwaltet seine eigenen kritischen Abschnitte samt
+                        // Watchdog-/Scheduler-Interaktion selbst und erwartet dafuer laufende
+                        // Interrupts; ein global vorab gesperrter Zustand kann dort zu einem
+                        // Watchdog-Reset MITTEN im Schreibvorgang fuehren, bevor die neue
+                        // Firmware fertig uebernommen ist - das Modul startet dann per Panic statt
+                        // per regulaerem Reset neu und landet unveraendert in der alten Firmware.
+
+                        #if defined(__AVR__)
+                            noInterrupts();
+                        #endif
 
                         triggerReset();
                     }

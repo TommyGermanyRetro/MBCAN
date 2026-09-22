@@ -43,10 +43,17 @@ Partial Class frmMain
 
             COMMsgCount += 1
 
-            ' Nachricht im Monitorfenster ausgeben
+            ' Waehrend einer laufenden Firmwareuebertragung werden die MD_UPGRADE_DATA-
+            ' Quittierungen NICHT im Monitorfenster protokolliert - siehe IsUpgradeDataMsg()
 
-            COMBuildMsgMonitor([text], MsgLine1, MsgLine2)
-            COMMonitorMsgReceived(Microsoft.VisualBasic.TimeString & Format(Now, ".fff") & " R " & MsgLine1, MsgLine2)
+            If Not IsUpgradeDataMsg([text]) Then
+
+                ' Nachricht im Monitorfenster ausgeben
+
+                COMBuildMsgMonitor([text], MsgLine1, MsgLine2)
+                COMMonitorMsgReceived(Microsoft.VisualBasic.TimeString & Format(Now, ".fff") & " R " & MsgLine1, MsgLine2)
+
+            End If
 
             ' CSx-Erkennung: eine Ping-ANFRAGE (CAN_ID = 0x30) wird nur von einer Zentrale
             ' gesendet, nie von einem Zubehoermodul - ihr Empfang allein genuegt als Nachweis.
@@ -154,6 +161,23 @@ Partial Class frmMain
     End Sub
 
     '**********************************************************************************************
+    '*** COM - Prueft ob eine CAN-Nachricht ein PC_UPGRADE_DATA/MD_UPGRADE_DATA-Frame ist (Teil  ***
+    '*** der Firmwareuebertragung) - genutzt um genau diese Frames von der Monitor-Protokollierung***
+    '*** auszunehmen (siehe COMMsgSend()/COMMsgReceived()), da deren RichTextBox-Rebuild bei den  ***
+    '*** hunderttausenden Frames einer Uebertragung sonst zum dominanten Flaschenhals wird.       ***
+    '**********************************************************************************************
+
+    Private Function IsUpgradeDataMsg(ByVal Msg As String) As Boolean
+
+        If Microsoft.VisualBasic.Mid(Msg, MsgD2, 2) <> "18" Then Return False
+
+        Dim D3 As String = Microsoft.VisualBasic.Mid(Msg, MsgD3, 2)
+
+        Return (D3 = PC_UPGRADE_DATA) OrElse (D3 = MD_UPGRADE_DATA)
+
+    End Function
+
+    '**********************************************************************************************
     '*** COM - Threadshared - Allgemeine Sendefunktion je nach ausgewaehlter Schnittstelle      ***
     '**********************************************************************************************
 
@@ -254,10 +278,17 @@ Partial Class frmMain
 
             COMMsgCount += 1
 
-            ' Nachricht im Monitorfenster ausgeben
+            ' Waehrend einer laufenden Firmwareuebertragung werden die PC_UPGRADE_DATA-Frames
+            ' NICHT im Monitorfenster protokolliert - siehe IsUpgradeDataMsg()
 
-            COMBuildMsgMonitor(Msg, MsgLine1, MsgLine2)
-            COMMonitorMsgReceived(Microsoft.VisualBasic.TimeString & Format(Now, ".fff") & " S " & MsgLine1, MsgLine2)
+            If Not IsUpgradeDataMsg(Msg) Then
+
+                ' Nachricht im Monitorfenster ausgeben
+
+                COMBuildMsgMonitor(Msg, MsgLine1, MsgLine2)
+                COMMonitorMsgReceived(Microsoft.VisualBasic.TimeString & Format(Now, ".fff") & " S " & MsgLine1, MsgLine2)
+
+            End If
 
             MsgSend = Msg
 
@@ -1524,7 +1555,7 @@ Partial Class frmMain
                                MBC.ModulTyp(AktTyp).Modul(AktNr).SYS_ARRAY(IOIndex + 2) & " " &
                                MBC.ModulTyp(AktTyp).Modul(AktNr).SYS_ARRAY(IOIndex + 3)
 
-                    COMMsgSend(TxMsgReg)
+                    COMMsgSendAndArm(TxMsgReg)
 
                     ' Verlassse die Funktion da Befehl verarbeitet wurde
 
@@ -1633,7 +1664,7 @@ Partial Class frmMain
                                        MBC.ModulTyp(AktTyp).Modul(AktNr).SYS_ARRAY(IOIndex + 2) & " " &
                                        MBC.ModulTyp(AktTyp).Modul(AktNr).SYS_ARRAY(IOIndex + 3)
 
-                            COMMsgSend(TxMsgReg)
+                            COMMsgSendAndArm(TxMsgReg)
 
                             ' Stripangabe aktualisieren
 
@@ -1645,7 +1676,7 @@ Partial Class frmMain
                                        MBC.ModulTyp(AktTyp).Modul(AktNr).SYS_ARRAY(IOIndex + 1) &
                                         " FF FF"
 
-                            COMMsgSend(TxMsgReg)
+                            COMMsgSendAndArm(TxMsgReg)
 
                             ' Stripangabe aktualisieren
 
@@ -2227,11 +2258,20 @@ Partial Class frmMain
             spb_Refresh.Enabled = True
         End If
 
-        stp_Upgrade.Text = Sprachen(i_MAIN, i_stp_Upgrade_Active) & " " & CStr(UpgradePage + 1) & " / " & CStr(UpgradePageMax + 1)
+        ' MBC_OTA_HEADER_PAGE ist eine Sentinel-Page-Nummer (letzte physische Page eines W25Q64,
+        ' siehe MbcOta.h) ausserhalb der normalen 0..UpgradePageMax-Zaehlung - als "UpgradePage+1"
+        ' angezeigt waere das z.B. "32768 / 4195". Fuer diesen abschliessenden Schritt stattdessen
+        ' die letzte reguläre Pagenummer zeigen, da fuer den Nutzer nichts Neues beginnt.
+
+        If Page = MBC_OTA_HEADER_PAGE Then
+            stp_Upgrade.Text = Sprachen(i_MAIN, i_stp_Upgrade_Active) & " " & CStr(UpgradePageMax + 1) & " / " & CStr(UpgradePageMax + 1)
+        Else
+            stp_Upgrade.Text = Sprachen(i_MAIN, i_stp_Upgrade_Active) & " " & CStr(UpgradePage + 1) & " / " & CStr(UpgradePageMax + 1)
+        End If
 
         ' Sende Zugriffsanfrage zum Upgrade an das Modul
 
-        COMMsgSend(MsgUPRequest & MBC.ModulTyp(AktTyp).Modul(AktNr).MsgGUiD)
+        COMMsgSendAndArm(MsgUPRequest & MBC.ModulTyp(AktTyp).Modul(AktNr).MsgGUiD)
 
         ' Setze Update-Flag und Laufindices auf Anfang und Ende
 

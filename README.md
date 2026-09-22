@@ -13,7 +13,7 @@ Damit der letzte Stand der Unterlagen nicht verloren geht, habe ich:
 
 Durch die Beschäftigung mit moderneren Prozessoren wie ESP32 und RP2040 habe ich neue Motivation für das Projekt gefunden und portiere gerade die 3. Generation Arduino IDE tauglich auf die Prozessoren ATMEGA644P (wie bei der 3. Generation), den ESP32-C3, den Waveshare RP2040 Zero und den RP RP2040 Pi Pico. Diese Versionen bezeichne ich als 4. Generation.
 
-Passend dazu wird es ein erweitertes Parametriercenter geben, welches auch das Firmwareupdate der neuen Prozessoren über den CAN-Bus ermöglicht. Dazu wird die OTA-Funktionalität genutzt. Die Sketche werden hier im Git Stück für Stück veröffentlicht. Reale Umsetzungen werde ich für den ESP32-C3 in Eagle erstellen und gleichfalls hier posten. Nur die Bedienungsanleitungen und Warenkörbe, die ich früher mal geschrieben habe, wird es nicht mehr geben.
+Passend gibt es ein erweitertes Parametriercenter, welches auch das Firmwareupdate der neuen Prozessoren über den CAN-Bus ermöglicht. Dazu wird die OTA-Funktionalität genutzt. Eine reale Umsetzung werde ich für den mbc80 mit dem ESP32-C3 in Eagle erstellen und gleichfalls hier posten. Nur die Bedienungsanleitungen und Warenkörbe, die ich früher mal geschrieben habe, wird es nicht mehr geben.
 
 Solltet ihr Spaß an der Weiterentwicklung auf Basis dieser Sketche haben seid ihr gerne eingeladen, den Sourcecode fleißig zu nutzen und zu experimentieren.
 
@@ -30,19 +30,19 @@ Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus er
 
 In der nachfolgenden Tabelle sind die bereits portierten (Generation_4/Module) UND getesteten Hardwareversionen und Sketches gelistet. D.h. die für die anderen Prozessoren erstellten Sketches sind Vorschläge ohne echte Überprüfung an einer Hardware.
 
-| Modultyp            | ATMEGA644P          | ESP32C3             | RP2040 PI PICO      | WS RP2040 ZERO      |
-| :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
-| mbc-80              | HW:21-10-01         |                     |                     |                     |
-| mbc-81              | HW:18-02-12<br>HW:24-01-06         |                     |                     |                     |
-| mbc-82              | HW:21-03-01         |                     |                     |                     |
-| mbc-83              | HW:18-02-10<br>HW:24-03-23         |                     |                     |                     |
-| mbc-84              | HW:18-02-03<br>HW:24-01-06         |                     |                     |                     |
-| mbc-88              | HW:18-03-29<br>HW:24-01-06         |                     |                     |                     |
-| mbc-89              | HW:22-03-01         |                     |                     |                     | 
-| mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |                     |                     | 
-| mbc-91              | HW:16-10-02<br>HW:24-04-01         |                     |                     |                     | 
-| mbc-92              | HW:24-07-20         |                     |                     |                     | 
-| mbc-93              | HW:24-05-01         |                     |                     |                     |
+| Modultyp            | ATMEGA644P          | ESP32C3             | 
+| :-----------------: | :-----------------: | :-----------------: | 
+| mbc-80              | HW:21-10-01         | HW:26-08-05         |
+| mbc-81              | HW:18-02-12<br>HW:24-01-06         |    |
+| mbc-82              | HW:21-03-01         |                     | 
+| mbc-83              | HW:18-02-10<br>HW:24-03-23         |     |   
+| mbc-84              | HW:18-02-03<br>HW:24-01-06         |      |    
+| mbc-88              | HW:18-03-29<br>HW:24-01-06         |       |     
+| mbc-89              | HW:22-03-01         |                     |           
+| mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |    
+| mbc-91              | HW:16-10-02<br>HW:24-04-01         |                     |                
+| mbc-92              | HW:24-07-20         |                     |                    
+| mbc-93              | HW:24-05-01         |                     |                    
 
 ## 3.  Parametrierungscenter und Tools
 
@@ -53,6 +53,10 @@ Als weiteres Tool steht ein TCP/CAN-Monitor zum Mitlesen auf dem CAN-Bus zur Ver
 Beide Tools liegen als Projektmappen in Generation_4/Tools zum Download bereit.
 	
 # Tagebuch
+
+## 22.09.2026
+
+mbc-80 ESP32-C3 (HW:26-08-05) hardwaregetestet und in der Tabelle ergänzt. Außerdem funktioniert das Firmwareupdate per OTA für den ESP32-C3 zuverlässig.
 
 ## 31.08.2026
 

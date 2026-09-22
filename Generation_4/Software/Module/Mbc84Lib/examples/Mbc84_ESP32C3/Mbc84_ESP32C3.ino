@@ -1,8 +1,9 @@
 //*************************************************************************************************
 //* mbc-84 4-fach Servo-/Weichendecoder - ESP32-C3                                                *
 //*************************************************************************************************
-//* WICHTIG - OTA-Partitionsschema: siehe Mbc93_ESP32C3-Kopfkommentar (identisch) - zwei App-     *
-//* Partitionen (ota_0/ota_1), Tools/Werkzeuge -> Partition Scheme "Custom" waehlen.  LED         *
+//* WICHTIG - OTA-Partitionsschema, zu nutzende OTA-Datei und USB-Flash-Verhalten nach einem      *
+//* OTA-Test: siehe Mbc93_ESP32C3-Kopfkommentar (identisch) - zwei App-Partitionen (ota_0/ota_1), *
+//* Tools/Werkzeuge -> Partition Scheme "Custom" waehlen.  LED                                    *
 //* gruen/rot, Steckernetzteil-Erkennung, Stellpult (8) und Positions-LEDs (8) haengen an ZWEI    *
 //* I2C-MCP23017 (Expander1: LED/Plug auf GPIOA Bit 0-2; Expander2: Stellpult GPIOA, Positions-   *
 //* LEDs GPIOB, exakt 16 Signale) - beide teilen sich den I2C-Bus mit unterschiedlicher Adresse.  *

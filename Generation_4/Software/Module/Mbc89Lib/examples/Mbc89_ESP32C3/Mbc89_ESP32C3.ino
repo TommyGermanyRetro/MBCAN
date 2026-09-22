@@ -1,31 +1,42 @@
 //*************************************************************************************************
 //* mbc-89 Connect6021-Interface - ESP32-C3                                                       *
 //*************************************************************************************************
-//* Board: "ESP32-C3 SuperMini" (China-Modul, Espressif-esp32-Boardpaket "ESP32C3 Dev Module") -   *
-//* dieses Board fuehrt nur 13 GPIOs heraus (GPIO0...10, GPIO20, GPIO21). mbc-89 braucht deutlich   *
-//* mehr Signale (CU-Bus allein 5, dazu Track/SPI/TWAI/LED/ADC/OneWire) - die unkritischen,        *
-//* nicht zeitkritischen Signale (LEDs, Steckernetzteil-Erkennung, CU-STOP/-GO/-EXT) haengen daher *
-//* an einem MCP23S17-SPI-Port-Expander, genau wie bei den anderen ESP32-C3-Sketches dieses        *
-//* Projekts (siehe z.B. Mbc93_ESP32C3.ino). Nur CU-Bus SCL/SDA (Software-I2C) und das             *
-//* Gleisdecoder-Signal (RMT) bleiben auf nativen GPIOs, da zeitkritisch.                          *
-//* WICHTIG - OTA-Partitionsschema: Dieser Sketch benoetigt zwei App-Partitionen (ota_0/ota_1),    *
-//* siehe Mbc89Ota.h. Kein Menue-Eintrag noetig: die mitgelieferte partitions.csv liegt im         *
-//* Sketch-Ordner und wird vom Build-Prozess automatisch uebernommen, unabhaengig von der unter    *
-//* Tools/Werkzeuge -> Partition Scheme gewaehlten Option (es gibt keinen "Custom"-Menueeintrag,   *
-//* verifiziert mit Arduino-ESP32-Core 2.0.17). Wird die partitions.csv-Datei entfernt/verschoben, *
-//* hat ein OTA-Update keine Zielpartition zum Beschreiben und schlaegt fehl.                      *
-//* WICHTIG: Tools/Werkzeuge -> "USB CDC On Boot" auf "Enabled" stellen, sonst bleiben alle        *
-//* Serial-Ausgaben unsichtbar (dadurch werden GPIO20/21 als normale GPIOs frei, siehe unten).     *
-//* SPI wird mit EXPLIZITEN Pins gestartet (SPI.begin(sck,miso,mosi,-1)) statt Boardstandard-Pins. *
-//* GPIO9 (BOOT-Taste/Strapping-Pin) bleibt bewusst frei/unbenutzt (Reserve).                      *
-//* Kein Reset-Pin: ESP32 nutzt den Software-Reset des Cores (Mbc89Platform::resetDevice()), samt  *
-//* OTA-Uebernahme aus dem Boot-Speicher (Mbc89Ota, siehe Mbc89ComBase::triggerReset()).           *
-//* Boot-Speicherchip: W25Q64-SPI-NOR-Flash (8 MByte), siehe Mbc89BootStorage-Kopfkommentar.       *
-//* CU-Bus/Gleisdecoder sind hier ueber eine selbstgeschriebene Software-I2C-Engine                *
-//* (Mbc89I2cSoft) bzw. die RMT-Peripherie umgesetzt (siehe Klassenkommentar in Mbc89Com.h/.cpp) - *
-//* NEUE, in diesem Projekt bisher ungetestete Technik. Vor Dauerbetrieb ausgiebig mit             *
-//* Logic-Analyzer/Oszilloskop verifizieren (siehe README, Abschnitt Verifikation), inkl. Pruefung *
-//* des MCP23S17-Praesenzergebnisses beim Start (siehe Serial-Ausgabe unten).                      *
+//* Board: "ESP32-C3 SuperMini" (China-Modul, Espressif-esp32-Boardpaket "ESP32C3 Dev Module") -  *
+//* dieses Board fuehrt nur 13 GPIOs heraus (GPIO0...10, GPIO20, GPIO21). mbc-89 braucht deutlich *
+//* mehr Signale (CU-Bus allein 5, dazu Track/SPI/TWAI/LED/ADC/OneWire) - die unkritischen,       *
+//* nicht zeitkritischen Signale (LEDs, Steckernetzteil-Erkennung, CU-STOP/-GO/-EXT) haengen daher*
+//* an einem MCP23S17-SPI-Port-Expander, genau wie bei den anderen ESP32-C3-Sketches dieses       *
+//* Projekts (siehe z.B. Mbc93_ESP32C3.ino). Nur CU-Bus SCL/SDA (Software-I2C) und das            *
+//* Gleisdecoder-Signal (RMT) bleiben auf nativen GPIOs, da zeitkritisch.                         *
+//* WICHTIG - OTA-Partitionsschema: Dieser Sketch benoetigt zwei App-Partitionen (ota_0/ota_1),   *
+//* siehe Mbc89Ota.h. Kein Menue-Eintrag noetig: die mitgelieferte partitions.csv liegt im        *
+//* Sketch-Ordner und wird vom Build-Prozess automatisch uebernommen, unabhaengig von der unter   *
+//* Tools/Werkzeuge -> Partition Scheme gewaehlten Option (es gibt keinen "Custom"-Menueeintrag,  *
+//* verifiziert mit Arduino-ESP32-Core 2.0.17). Wird die partitions.csv-Datei entfernt/verschoben,*
+//* hat ein OTA-Update keine Zielpartition zum Beschreiben und schlaegt fehl.                     *
+//* WICHTIG - richtige Datei fuer OTA: Im ParaCenter nur die reine <Sketchname>.ino.bin verwenden,*
+//* NICHT .merged.bin/.bootloader.bin/*_flashed.bin (Boardpaket-Ausgaben fuer den anfaenglichen   *
+//* USB-Flash bzw. veraltete Zwischenstaende) - nur die reine App-Datei passt zum OTA-Mechanismus *
+//* (Mbc89Ota.h).                                                                                 *
+//* WICHTIG - USB-Flash nach einem OTA-Test: Arduino/esptool schreiben beim USB-Upload IMMER an   *
+//* die feste Adresse von ota_0 (0x10000) und aendern dabei die otadata-Partition (Boot-Auswahl)  *
+//* NICHT. Zeigt otadata nach einem vorherigen OTA-Update auf ota_1, laeuft nach einem erneuten   *
+//* USB-Flash weiterhin die ALTE, zuletzt per OTA in ota_1 geschriebene Firmware - der neue       *
+//* USB-Stand in ota_0 wird schlicht nicht gebootet. Abhilfe: vor dem naechsten USB-Flash unter   *
+//* Tools/Werkzeuge "Erase All Flash Before Sketch Upload" aktivieren (oder gezielt nur otadata   *
+//* loeschen: esptool.py erase_region 0xE000 0x2000), damit der Bootloader auf ota_0 zurueckfaellt.*
+//* WICHTIG: Tools/Werkzeuge -> "USB CDC On Boot" auf "Enabled" stellen, sonst bleiben alle       *
+//* Serial-Ausgaben unsichtbar (dadurch werden GPIO20/21 als normale GPIOs frei, siehe unten).    *
+//* SPI wird mit EXPLIZITEN Pins gestartet (SPI.begin(sck,miso,mosi,-1)) statt Boardstandard-Pins.*
+//* GPIO9 (BOOT-Taste/Strapping-Pin) bleibt bewusst frei/unbenutzt (Reserve).                     *
+//* Kein Reset-Pin: ESP32 nutzt den Software-Reset des Cores (Mbc89Platform::resetDevice()), samt *
+//* OTA-Uebernahme aus dem Boot-Speicher (Mbc89Ota, siehe Mbc89ComBase::triggerReset()).          *
+//* Boot-Speicherchip: W25Q64-SPI-NOR-Flash (8 MByte), siehe Mbc89BootStorage-Kopfkommentar.      *
+//* CU-Bus/Gleisdecoder sind hier ueber eine selbstgeschriebene Software-I2C-Engine               *
+//* (Mbc89I2cSoft) bzw. die RMT-Peripherie umgesetzt (siehe Klassenkommentar in Mbc89Com.h/.cpp) -*
+//* NEUE, in diesem Projekt bisher ungetestete Technik. Vor Dauerbetrieb ausgiebig mit            *
+//* Logic-Analyzer/Oszilloskop verifizieren (siehe README, Abschnitt Verifikation), inkl. Pruefung*
+//* des MCP23S17-Praesenzergebnisses beim Start (siehe Serial-Ausgabe unten).                     *
 //* | Funktion                                | GPIO    | Anmerkung                               *
 //* |------------------------------------------|---------|----------------------------------------*
 //* | SPI SCK / MISO / MOSI                   | 4/5/6   | fest, wie in allen ESP32-C3-Sketches    *
@@ -59,7 +70,7 @@
 #include <Mbc89DigitalIn.h>
 #include <Mbc89DigitalOut.h>
 
-//------ Pinbelegung --------------------------------------------------------------------------------
+//------ Pinbelegung ------------------------------------------------------------------------------
 
     const uint8_t PIN_SPI_SCK         = 4;
     const uint8_t PIN_SPI_MISO        = 5;
@@ -74,7 +85,7 @@
     const uint8_t PIN_CU_SDA          = 20;
     const uint8_t PIN_TRACK           = 21;
 
-//------ Modulidentitaet (ASCII-Ziffern) -----------------------------------------------------------
+//------ Modulidentitaet (ASCII-Ziffern) ----------------------------------------------------------
 
     // [2]=Prozessor: 0=ATmega644P/1=ESP32-C3
 
@@ -82,7 +93,7 @@
     const uint8_t SW_VER[3] = { '1', '0', '0' };
     const uint8_t HW_VER[6] = { '2', '2', '0', '3', '0', '1' };   // Hardware 22.03.01
 
-//------ Objekte ------------------------------------------------------------------------------------
+//------ Objekte ----------------------------------------------------------------------------------
 
     Mbc89Mcp23x17 expander(PIN_CS_EXPANDER);   // LEDs/Plug/CU-STOP/GO/EXT
 
@@ -111,11 +122,11 @@
     Mbc89Com         com(utils, can, bootStorage, PIN_CU_SCL, PIN_CU_SDA, cuStopIn, cuStopOut,
                          cuGoIn, cuGoOut, cuExt, PIN_TRACK);
 
-//------ Status der CAN-Initialisierung (fuer die wiederkehrende Fehlermeldung in loop()) -----------
+//------ Status der CAN-Initialisierung (fuer die wiederkehrende Fehlermeldung in loop()) ---------
 
     bool canOk = false;
 
-//------ setup()/loop() -----------------------------------------------------------------------------
+//------ setup()/loop() ---------------------------------------------------------------------------
 
 void setup()
 {

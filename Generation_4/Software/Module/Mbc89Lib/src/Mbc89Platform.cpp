@@ -62,6 +62,20 @@
     }
 
     //*********************************************************************************************
+    //* ADC-Vollausschlag-Referenzspannung des jeweiligen Prozessors liefern - siehe Kommentar in *
+    //* Mbc89Platform.h.                                                                          *
+    //*********************************************************************************************
+
+    float Mbc89Platform::adcRefVolts()
+    {
+        #if defined(__AVR__)
+            return 5.0f;
+        #else
+            return 3.3f;
+        #endif
+    }
+
+    //*********************************************************************************************
     //* Sofortneustart ueber den Software-Reset des Controllers (No-Op auf AVR)                   *
     //*********************************************************************************************
 

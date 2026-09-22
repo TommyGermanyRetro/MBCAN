@@ -445,7 +445,8 @@ Public Class frmMain
         ' durch normales Timing auch nach einem laengst abgeschlossenen Zyklus noch feuern
 
         If Not (FLAG_Read_Request Or FLAG_Read_IO Or FLAG_Write_Request Or
-                FLAG_Write_IO Or FLAG_Write_Program Or FLAG_Write_Refresh) Then Exit Sub
+                FLAG_Write_IO Or FLAG_Write_Program Or FLAG_Write_Refresh Or
+                FLAG_Upgrade_Request Or FLAG_Upgrade_IO) Then Exit Sub
 
         IOTimeoutRetryCount += 1
 
@@ -455,6 +456,8 @@ Public Class frmMain
 
             If FLAG_Write_Request Or FLAG_Write_IO Or FLAG_Write_Program Or FLAG_Write_Refresh Then
                 COMUpdateStop()
+            ElseIf FLAG_Upgrade_Request Or FLAG_Upgrade_IO Then
+                COMUpgradeStop()
             Else
                 COMRefreshStop()
             End If
@@ -1691,9 +1694,12 @@ Public Class frmMain
     '*** betroffen, die folgen ausschliesslich FLAG_Edit_Enable. Ausnahme mbc84 (AktTyp=5):     ***
     '*** tab_Module bleibt von der CSx-Sperre ausgenommen, damit die Wegdiagramm-Buttons        ***
     '*** erreichbar bleiben - stattdessen werden dort die Eingabefelder einzeln gesperrt.       ***
-    '*** Ausnahme mbc89 (AktTyp=10): tab_Module bleibt ebenfalls ausgenommen, damit der         ***
-    '*** Lokeigenschaften-Button (btn_mbc89_Loks) bei CSx-Anwesenheit erreichbar bleibt -        ***
-    '*** stattdessen werden nur die 5 Konfig-Gruppenboxen gesperrt.                             ***
+    '*** Ausnahme mbc85 (AktTyp=6): tab_Module bleibt ebenfalls ausgenommen, damit              ***
+    '*** btn_mbc85_Winkel erreichbar bleibt - stattdessen werden die 3 Konfig-Gruppenboxen      ***
+    '*** sowie die S88-Modulnummer einzeln gesperrt. Ausnahme mbc89 (AktTyp=10): tab_Module     ***
+    '*** bleibt ebenfalls ausgenommen, damit der Lokeigenschaften-Button (btn_mbc89_Loks) bei   ***
+    '*** CSx-Anwesenheit erreichbar bleibt - stattdessen werden nur die 5 Konfig-Gruppenboxen   ***
+    '*** gesperrt.                                                                              ***
     '**********************************************************************************************
 
     Public Sub Register_Modul_CSxLock_Apply()
@@ -1721,6 +1727,22 @@ Public Class frmMain
             nud_mbc84_Links_CH4.Enabled = locked
             nud_mbc84_Rechts_CH4.Enabled = locked
             nud_mbc84_Step_CH4.Enabled = locked
+
+        ElseIf AktTyp = 6 Then
+
+            ' mbc85: tab_Module bleibt von der CSx-Sperre unberuehrt, damit btn_mbc85_Winkel
+            ' (liegt direkt auf dem Tab, nicht in einer der Gruppenboxen) erreichbar bleibt -
+            ' stattdessen werden die 3 Konfig-Gruppenboxen sowie die S88-Modulnummer (liegt
+            ' ebenfalls direkt auf dem Tab, nicht in einer Gruppenbox) einzeln gesperrt
+
+            Dim locked As Boolean = FLAG_Edit_Enable AndAlso Not FLAG_CSxPingEmpfangen
+
+            tab_Module.Enabled = FLAG_Edit_Enable
+
+            gb_mbc85_Integrator.Enabled = locked
+            gb_mbc85_DS_Integrator.Enabled = locked
+            gb_mbc85_MMLok.Enabled = locked
+            nud_mbc85_S88ModNr.Enabled = locked
 
         ElseIf AktTyp = 10 Then
 

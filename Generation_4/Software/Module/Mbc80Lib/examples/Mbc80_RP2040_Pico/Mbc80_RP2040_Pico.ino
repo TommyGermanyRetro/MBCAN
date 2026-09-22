@@ -143,9 +143,21 @@ void loop()
     // aber ohne diese Erinnerung waere davon ausserhalb der Status-LED (MBC_LED_MCP_ERROR)
     // nichts mehr zu sehen. Einmal je Sekunde wiederholen, damit der Fehler auch bemerkt wird,
     // wenn das Serial-Monitor-Fenster erst nach dem Start geoeffnet wurde.
+    //
+    // WICHTIG: eigene, unabhaengige millis()-Zeitbasis statt utils.eventSekunde() - letzteres
+    // ist ein einmalig auslesendes Flag, das Mbc80Com::bridge() intern selbst fuer die
+    // zyklische Rueckmeldeaufforderung auf dem MBCAN-Bus abfragt (1x/s, siehe dortigen
+    // Kopfkommentar). Wuerde hier zusaetzlich utils.eventSekunde() abgefragt, wird das Flag
+    // vor bridge() verbraucht und die Rueckmeldeaufforderung feuert nie mehr - genau dieser
+    // Bug war hardwarebestaetigt vorhanden (siehe Mbc80_ESP32C3_HW260805.ino), bevor auf
+    // millis() umgestellt wurde.
 
-    if (utils.eventSekunde())
+    static unsigned long lastErrorReminder = 0;
+
+    if ((unsigned long) (millis() - lastErrorReminder) >= 1000)
     {
+        lastErrorReminder = millis();
+
         if (!canCs2Ok)   Serial.println("[Mbc80] FEHLER: CS2-Bus (MCP2515) weiterhin nicht gefunden!");
         if (!canMbcanOk) Serial.println("[Mbc80] FEHLER: MBCAN-Bus (MCP2515) weiterhin nicht gefunden!");
     }

@@ -24,10 +24,13 @@
 //* in den Konvertierungsfunktionen (statische Puffer, nicht rekursions-/threadsicher, aber auf   *
 //* einem Single-Thread-Polling-System unproblematisch).                                          *
 //*                                                                                               *
-//* Die Formel/Schwellwerte in adcReadVspg()/adcReadPlugged() sind auf einen 10-Bit-ADC mit       *
-//* 5-V-Referenz (ATmega644P) kalibriert. Auf RP2040/ESP32-C3 (12-Bit-ADC, 3,3-V-Referenz)        *
-//* muessen sowohl die Aufloesung (siehe Mbc89Platform::adcConfigure(), in begin() aufgerufen) als*
-//* auch die Spannungsteiler-Formel noch gegen die reale Platine verifiziert werden.              *
+//* Die Formel in adcReadVspg() ist auf einen 10-Bit-ADC kalibriert (siehe                        *
+//* Mbc89Platform::adcConfigure(), in begin() aufgerufen). Die ADC-Referenzspannung liefert       *
+//* Mbc89Platform::adcRefVolts() (5V AVR-AVcc, 3.3V ESP32-C3/RP2040) - analog zum baugleichen,    *
+//* fuer mbc-80 ESP32-C3 HW260805 hardwarebestaetigten Fix in der gemeinsamen                     *
+//* MbcUtils/MbcPlatform (Teilerfaktor 10.2/1.1 unveraendert). Fuer mbc-89 selbst noch nicht      *
+//* hardwaregetestet. adcReadPlugged()s Rohwert-Schwellwerte (340/243) gelten nur fuer die native *
+//* Analogauswertung.                                                                             *
 //*************************************************************************************************
 //* Datei: Mbc89Utils.h                                                                           *
 //*************************************************************************************************
@@ -254,22 +257,22 @@
                 void waitFilled();
 
                 //*********************************************************************************
-                //* Status-LED-Ausgaenge optional auf einen Mbc89DigitalOut umleiten (z.B. ein     *
-                //* Mbc89Mcp23x17-Bit, siehe ESP32-C3-Beispiel) statt der nativen pinLedGruen/      *
-                //* pinLedRot-Pins aus dem Konstruktor. nullptr (Default) belaesst es beim          *
-                //* jeweiligen nativen Pin.                                                         *
+                //* Status-LED-Ausgaenge optional auf einen Mbc89DigitalOut umleiten (z.B. ein    *
+                //* Mbc89Mcp23x17-Bit, siehe ESP32-C3-Beispiel) statt der nativen pinLedGruen/    *
+                //* pinLedRot-Pins aus dem Konstruktor. nullptr (Default) belaesst es beim        *
+                //* jeweiligen nativen Pin.                                                       *
                 //*********************************************************************************
-                //* gruen/rot: Zielausgang oder nullptr fuer den nativen Pin                        *
+                //* gruen/rot: Zielausgang oder nullptr fuer den nativen Pin                      *
                 //*********************************************************************************
 
                 void setLedDrivers(Mbc89DigitalOut *gruen, Mbc89DigitalOut *rot);
 
                 //*********************************************************************************
-                //* Steckernetzteil-Erkennung optional auf einen Mbc89DigitalIn umleiten (z.B. ein  *
-                //* Mbc89Mcp23x17-Bit) statt der nativen analogen Auswertung ueber pinAdcPlug aus   *
-                //* dem Konstruktor. nullptr (Default) belaesst es bei der nativen Auswertung.      *
+                //* Steckernetzteil-Erkennung optional auf einen Mbc89DigitalIn umleiten (z.B. ein*
+                //* Mbc89Mcp23x17-Bit) statt der nativen analogen Auswertung ueber pinAdcPlug aus *
+                //* dem Konstruktor. nullptr (Default) belaesst es bei der nativen Auswertung.    *
                 //*********************************************************************************
-                //* detector: Zielquelle oder nullptr fuer die native analoge Auswertung            *
+                //* detector: Zielquelle oder nullptr fuer die native analoge Auswertung          *
                 //*********************************************************************************
 
                 void setPlugDetector(Mbc89DigitalIn *detector);

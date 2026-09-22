@@ -24,10 +24,14 @@
 //* in den Konvertierungsfunktionen (statische Puffer, nicht rekursions-/threadsicher, aber auf   *
 //* einem Single-Thread-Polling-System unproblematisch).                                          *
 //*                                                                                               *
-//* Die Formel/Schwellwerte in adcReadVspg()/adcReadPlugged() sind auf einen 10-Bit-ADC mit       *
-//* 5-V-Referenz (ATmega644P) kalibriert. Auf RP2040/ESP32-C3 (12-Bit-ADC, 3,3-V-Referenz)        *
-//* muessen sowohl die Aufloesung (siehe MbcPlatform::adcConfigure(), in begin() aufgerufen) als  *
-//* auch die Spannungsteiler-Formel noch gegen die reale Platine verifiziert werden.              *
+//* Die Formel in adcReadVspg() ist auf einen 10-Bit-ADC kalibriert (siehe                        *
+//* MbcPlatform::adcConfigure(), in begin() aufgerufen). Die ADC-Referenzspannung liefert         *
+//* MbcPlatform::adcRefVolts() (5V AVR-AVcc, 3.3V ESP32-C3/RP2040) - fuer mbc-80 ESP32-C3         *
+//* HW260805 hardwarebestaetigt (Spannungsteiler-Faktor 10.2/1.1 gegenueber dem AVR-Board         *
+//* unveraendert, 3.3V-Referenz lieferte auf Anhieb einen korrekten Messwert, keine weitere       *
+//* Trimmung noetig). RP2040 noch ungetestet. adcReadPlugged()s Rohwert-Schwellwerte (340/243)    *
+//* gelten nur fuer die native Analogauswertung - beim Umleiten per setPlugDetector() (z.B.       *
+//* mbc-80 ESP32-C3) entfallen sie ohnehin.                                                       *
 //*************************************************************************************************
 //* Datei: MbcUtils.h                                                                             *
 //*************************************************************************************************

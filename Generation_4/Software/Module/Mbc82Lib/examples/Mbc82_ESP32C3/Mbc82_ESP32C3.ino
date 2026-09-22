@@ -5,6 +5,20 @@
 //* siehe MbcOta.h. In der Arduino-IDE unter Tools/Werkzeuge -> Partition Scheme "Custom"         *
 //* waehlen, damit die mitgelieferte partitions.csv (liegt im selben Sketch-Ordner) verwendet     *
 //* wird - ohne das hat ein OTA-Update keine Zielpartition zum Beschreiben und schlaegt fehl.     *
+//*                                                                                               *
+//* WICHTIG - richtige Datei fuer OTA: Im ParaCenter nur die reine <Sketchname>.ino.bin           *
+//* verwenden, NICHT .merged.bin/.bootloader.bin/*_flashed.bin (das sind Boardpaket-Ausgaben      *
+//* fuer den anfaenglichen USB-Flash bzw. veraltete Zwischenstaende) - nur die reine App-Datei    *
+//* passt zum OTA-Mechanismus (MbcOta.h).                                                         *
+//*                                                                                               *
+//* WICHTIG - USB-Flash nach einem OTA-Test: Arduino/esptool schreiben beim USB-Upload IMMER an   *
+//* die feste Adresse von ota_0 (0x10000) und aendern dabei die otadata-Partition (Boot-Auswahl)  *
+//* NICHT. Zeigt otadata nach einem vorherigen OTA-Update auf ota_1, laeuft nach einem erneuten   *
+//* USB-Flash weiterhin die ALTE, zuletzt per OTA in ota_1 geschriebene Firmware - der neue       *
+//* USB-Stand in ota_0 wird schlicht nicht gebootet. Abhilfe: vor dem naechsten USB-Flash unter   *
+//* Tools/Werkzeuge "Erase All Flash Before Sketch Upload" aktivieren (oder gezielt nur otadata   *
+//* loeschen: esptool.py erase_region 0xE000 0x2000), damit der Bootloader auf ota_0 zurueckfaellt*
+//*                                                                                               *
 //* LED gruen/rot UND die Steckernetzteil-Erkennung haengen an einem MCP23S17 (GPIOA Bit 0-2) -   *
 //* analog zum etablierten Muster in den anderen ESP32-C3-Sketches dieses Projekts (siehe z.B.    *
 //* Mbc91_ESP32C3). mbc-82 hat nur einen CAN-Kanal, hier ueber die interne TWAI (externer CAN-    *
@@ -48,7 +62,7 @@
 #include <MbcDigitalIn.h>
 #include <MbcDigitalOut.h>
 
-//------ Pinbelegung --------------------------------------------------------------------------------
+//------ Pinbelegung ------------------------------------------------------------------------------
 
     const uint8_t PIN_SPI_SCK         = 4;
     const uint8_t PIN_SPI_MISO        = 5;
@@ -63,7 +77,7 @@
     const uint8_t PIN_BOOSTER_SHORT   = 21;
     const uint8_t PIN_SHORT_DETECT    = 7;
 
-//------ Modulidentitaet (ASCII-Ziffern) -----------------------------------------------------------
+//------ Modulidentitaet (ASCII-Ziffern) ----------------------------------------------------------
 
     // [2]=Prozessor: 0=ATmega644P/1=ESP32-C3/2=RP2040-Pico/3=RP2040-Zero
 
@@ -71,7 +85,7 @@
     const uint8_t SW_VER[3] = { '1', '0', '0' };
     const uint8_t HW_VER[6] = { '2', '1', '0', '3', '0', '1' };   // Hardware 21.03.01
 
-//------ Objekte ------------------------------------------------------------------------------------
+//------ Objekte ----------------------------------------------------------------------------------
 
     MbcMcp23x17 ledExpander(PIN_CS_MCP23S17_LED);   // auch Steckernetzteil-Erkennung
 
@@ -101,7 +115,7 @@
 
     bool canOk = false;
 
-//------ setup()/loop() -----------------------------------------------------------------------------
+//------ setup()/loop() ---------------------------------------------------------------------------
 
 void setup()
 {

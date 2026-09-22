@@ -17,6 +17,10 @@
 
 #include <string.h>
 
+#if defined(ESP32)
+    #include <esp_task_wdt.h>
+#endif
+
 //------ Start Klasse MbcOta ----------------------------------------------------------------------
 
     //*********************************************************************************************
@@ -74,6 +78,27 @@
 
             remaining -= chunk;
             otaPage++;
+
+            // Zwei UNABHAENGIGE ESP32-Watchdog-Mechanismen muessen hier bedient werden, da diese
+            // Schleife (bis zu ~4200 Durchlaeufe fuer ein grosses Image) komplett innerhalb EINES
+            // einzigen Aufrufs von loop() laeuft:
+            //  1) CPU0-Idle-Task-Watchdog - braucht echte Rechenzeit fuer den Idle-Task. Nur
+            //     delay() (nicht yield()/vPortYield(), das nur zu einem bereits lauffaehigen Task
+            //     wechselt) erzwingt das zuverlaessig. Hardwarebestaetigt: ohne dieses delay(1)
+            //     stuerzte das Modul mitten in crc32Update() per Panic ab.
+            //  2) Der "loopTask"-eigene Watchdog-Eintrag - der wird laut arduino-esp32-Core
+            //     (main.cpp) NUR ZWISCHEN zwei Aufrufen von loop() per esp_task_wdt_reset()
+            //     zurueckgesetzt, niemals waehrenddessen - delay()/yield() fuettern ihn NICHT.
+            //     Hardwarebestaetigt: mit delay(1) allein stuerzte das Modul weiterhin ab
+            //     ("loopTask (CPU 0) did not reset the watchdog in time", Crash-PC in
+            //     spi_flash_enable_interrupts_caches_and_other_cpu). Beide Mechanismen sind
+            //     unabhaengig konfiguriert, beide werden deshalb explizit bedient.
+
+            delay(1);
+
+            #if defined(ESP32)
+                esp_task_wdt_reset();
+            #endif
         }
 
         crc ^= 0xFFFFFFFFul;

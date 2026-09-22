@@ -4,6 +4,19 @@
 //* WICHTIG - OTA-Partitionsschema: zwei App-Partitionen (ota_0/ota_1) noetig, Tools/Werkzeuge -> *
 //* Partition Scheme "Custom" waehlen.                                                            *
 //*                                                                                               *
+//* WICHTIG - richtige Datei fuer OTA: Im ParaCenter nur die reine <Sketchname>.ino.bin           *
+//* verwenden, NICHT .merged.bin/.bootloader.bin/*_flashed.bin (das sind Boardpaket-Ausgaben      *
+//* fuer den anfaenglichen USB-Flash bzw. veraltete Zwischenstaende) - nur die reine App-Datei    *
+//* passt zum OTA-Mechanismus (MbcOta.h).                                                         *
+//*                                                                                               *
+//* WICHTIG - USB-Flash nach einem OTA-Test: Arduino/esptool schreiben beim USB-Upload IMMER an   *
+//* die feste Adresse von ota_0 (0x10000) und aendern dabei die otadata-Partition (Boot-Auswahl)  *
+//* NICHT. Zeigt otadata nach einem vorherigen OTA-Update auf ota_1, laeuft nach einem erneuten   *
+//* USB-Flash weiterhin die ALTE, zuletzt per OTA in ota_1 geschriebene Firmware - der neue       *
+//* USB-Stand in ota_0 wird schlicht nicht gebootet. Abhilfe: vor dem naechsten USB-Flash unter   *
+//* Tools/Werkzeuge "Erase All Flash Before Sketch Upload" aktivieren (oder gezielt nur otadata   *
+//* loeschen: esptool.py erase_region 0xE000 0x2000), damit der Bootloader auf ota_0 zurueckfaellt*
+//*                                                                                               *
 //* LED gruen/rot UND die Steckernetzteil-Erkennung haengen an einem I2C-MCP23017 (GPIOA Bit      *
 //* 0-2). Die 16 Stellungs-LEDs haengen an einem ZWEITEN I2C-MCP23017 (GPIOA/GPIOB, exakt 16      *
 //* Signale). Die 4 PCF8574 der Tastermatrix teilen sich denselben I2C-Bus mit allen 3 Expandern  *

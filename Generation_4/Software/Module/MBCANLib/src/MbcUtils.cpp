@@ -677,7 +677,7 @@
         {
             uint16_t adc = analogRead(_pinAdcVspg);
 
-            double dadc = ((double) adc) / 1024.0 * 5.0 * 10.2 / 1.1;
+            double dadc = ((double) adc) / 1024.0 * MbcPlatform::adcRefVolts() * 10.2 / 1.1;
 
             char sadc[5];
             dtostrf(dadc, 4, 1, sadc);
@@ -771,7 +771,7 @@
 
             _eventCnt100ms++;
 
-            //*********** Traffic-LED ***********
+            //*********** Traffic-LED **********                                                  *
 
             if (_trafficCnt > TIMER_TRAFFIC_START)
             {
@@ -796,7 +796,7 @@
                 }
             }
 
-            //*********** LED-Blinken ***********
+            //*********** LED-Blinken **********                                                  *
 
             if (_blinktaktCnt == TIMER_BLINKEN_MAX)
             {
@@ -832,7 +832,7 @@
                 }
             }
 
-            //*********** Event-Zaehler ***********
+            //*********** Event-Zaehler **********                                                *
 
             if (_eventCnt100ms == TIMER_EVENT_SEKUNDE)
             {
@@ -964,9 +964,11 @@
         //*****************************************************************************************
         //* Sendet den 1-Wire-Reset-Impuls und wertet den Praesenzpuls aus. Auf AVR ueber rohe    *
         //* Portregister statt digitalWrite()/digitalRead()/pinMode() (siehe _owiDdr/_owiPort/    *
-        //* _owiPinReg in MbcUtils.h), da deren Aufrufoverhead die engen 1-Wire-Zeitfenster       *
-        //* (wenige Mikrosekunden) sprengen und den Sensor desynchronisieren wuerde -             *
-        //* hardwarebestaetigt (ATmega644P).                                                      *
+        //* _owiPinReg in MbcUtils.h), auf ESP32 ueber ein permanent OUTPUT_OPEN_DRAIN|PULLUP     *
+        //* gesetztes Pin (siehe owiInit()) ohne pinMode() im Ablauf - in beiden Faellen, weil    *
+        //* deren Aufrufoverhead die engen 1-Wire-Zeitfenster (wenige Mikrosekunden) sprengen und *
+        //* den Sensor desynchronisieren wuerde. Beide Varianten hardwarebestaetigt (ATmega644P   *
+        //* bzw. mbc-80 ESP32-C3 HW260805).                                                       *
         //*****************************************************************************************
         //* Return: true, wenn ein Praesenzpuls erkannt wurde (kein Fehler)                       *
         //*****************************************************************************************
@@ -990,6 +992,34 @@
                 delayMicroseconds(480 - 66);
 
                 if ((*_owiPinReg & _owiMask) == 0) present = false;   // Kurzschluss
+
+                return present;
+            }
+
+        #elif defined(ESP32)
+
+            // Pin steht permanent auf OUTPUT_OPEN_DRAIN|PULLUP (siehe owiInit()) - im
+            // zeitkritischen Pfad NIE pinMode() aufrufen (GPIO-Matrix-Rekonfiguration kostet auf
+            // ESP32-C3 mehrere Mikrosekunden und sprengt die 1-Wire-Zeitfenster, exakt wie beim
+            // urspruenglich AVR-seitig hardwarebestaetigten Bug oben, siehe Klassenkommentar).
+            // digitalWrite(HIGH) gibt im Open-Drain-Modus lediglich den Bus frei (Transistor aus,
+            // PULLUP zieht hoch) - entspricht dem AVR-INPUT_PULLUP-Aequivalent.
+
+            bool MbcUtils::owiReset()
+            {
+                digitalWrite(_pinOneWire, LOW);
+
+                delayMicroseconds(480);
+
+                digitalWrite(_pinOneWire, HIGH);
+
+                delayMicroseconds(66);
+
+                bool present = (digitalRead(_pinOneWire) == 0);
+
+                delayMicroseconds(480 - 66);
+
+                if (digitalRead(_pinOneWire) == 0) present = false;   // Kurzschluss
 
                 return present;
             }
@@ -1021,7 +1051,7 @@
 
         //*****************************************************************************************
         //* Kommunikationsschicht BIT auf dem 1-Wire-Bus (siehe owiReset() zum Hintergrund der    *
-        //* AVR-Portregister-Variante)                                                            *
+        //* AVR-Portregister- bzw. ESP32-Open-Drain-Variante)                                     *
         //*****************************************************************************************
         //* b: zu schreibendes Bit                                                                *
         //*****************************************************************************************
@@ -1051,6 +1081,30 @@
 
                 *_owiPort |= _owiMask;
                 *_owiDdr  &= (uint8_t) ~_owiMask;   // PULL-UP aktivieren
+
+                return b;
+            }
+
+        #elif defined(ESP32)
+
+            // Siehe owiReset() - Pin bleibt permanent OUTPUT_OPEN_DRAIN|PULLUP, kein pinMode()
+            // im zeitkritischen Pfad.
+
+            uint8_t MbcUtils::owiBitIo(uint8_t b)
+            {
+                digitalWrite(_pinOneWire, LOW);
+
+                delayMicroseconds(1);
+
+                if (b) digitalWrite(_pinOneWire, HIGH);
+
+                delayMicroseconds(14);
+
+                if (digitalRead(_pinOneWire) == 0) b = 0;
+
+                delayMicroseconds(45);
+
+                digitalWrite(_pinOneWire, HIGH);   // Bus wieder freigeben (PULLUP aktiv)
 
                 return b;
             }
@@ -1235,6 +1289,18 @@
 
         bool MbcUtils::owiInit()
         {
+            #if defined(ESP32)
+
+                // Einmalig hier statt in jedem owiReset()/owiBitIo()-Aufruf - siehe Kommentar dort.
+                // PULLUP wird zusaetzlich zu OUTPUT_OPEN_DRAIN gesetzt, da dieses Projekt (wie im
+                // AVR-Original) auf den internen Pull-up des Controllers setzt, kein externer
+                // Pull-up-Widerstand am 1-Wire-Pin vorausgesetzt wird.
+
+                pinMode(_pinOneWire, (uint8_t) (OUTPUT_OPEN_DRAIN | PULLUP));
+                digitalWrite(_pinOneWire, HIGH);   // Bus freigeben (Ruhezustand)
+
+            #endif
+
             _owiPresent = false;
             _owiType = MBC_OWI_DS18S20;
 

@@ -52,18 +52,6 @@ Als weiteres Tool steht ein TCP/CAN-Monitor zum Mitlesen auf dem CAN-Bus zur Ver
 
 Beide Tools liegen als Projektmappen in Generation_4/Tools zum Download bereit.
 	
-## 4.  Lizenz
-
-Soweit nicht ausdrücklich anders angegeben, gelten für dieses Repository folgende Lizenzen (Einzelheiten in [LICENSE.txt](LICENSE.txt)):
-
-| Inhalt | Lizenz |
-| --- | --- |
-| Software: Sketches, Bibliotheken, Firmware, HEX-Dateien, Parametriercenter, CANMON | [MIT](LICENSE.txt) |
-| Hardware: Schaltpläne und Layouts (Eagle), Gerber- und Bohrdaten, Stücklisten, 3D-Druck-Dateien | [CERN-OHL-S-2.0](LICENSE-CERN-OHL-S-2.0.txt) |
-| Dokumentation und Bilder: READMEs, Bedienungsanleitungen, Übersichten, Flyer, Fotos | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/legalcode.de) |
-
-Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Treibers, Arduino-Kerne in den HEX-Dateien) behalten ihre eigenen Lizenzen. Märklin, Central Station, Connect 6021 und Mobile Station sind Marken ihrer Inhaber; MBCAN ist kein Produkt dieser Firmen.
-
 # Tagebuch
 
 ## 22.09.2026

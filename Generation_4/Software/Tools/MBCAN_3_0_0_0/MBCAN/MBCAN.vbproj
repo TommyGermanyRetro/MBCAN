@@ -81,13 +81,19 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
+    <ManifestCertificateThumbprint>2C8CA8F9CEF5194CF73089616CB2FF1A571DB16B</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>MBCAN_10_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -273,6 +279,14 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="bin\Debug\Inifiles\sprachen.csv" />
+    <None Include="MBCAN_10_TemporaryKey.pfx" />
+    <None Include="MBCAN_2_TemporaryKey.pfx" />
+    <None Include="MBCAN_4_TemporaryKey.pfx" />
+    <None Include="MBCAN_5_TemporaryKey.pfx" />
+    <None Include="MBCAN_6_TemporaryKey.pfx" />
+    <None Include="MBCAN_7_TemporaryKey.pfx" />
+    <None Include="MBCAN_8_TemporaryKey.pfx" />
+    <None Include="MBCAN_9_TemporaryKey.pfx" />
     <None Include="My Project\app.manifest">
       <SubType>Designer</SubType>
     </None>

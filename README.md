@@ -64,7 +64,13 @@ Soweit nicht ausdrücklich anders angegeben, gelten für dieses Repository folge
 
 Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Treibers, Arduino-Kerne in den HEX-Dateien) behalten ihre eigenen Lizenzen. Märklin, Central Station, Connect 6021 und Mobile Station sind Marken ihrer Inhaber; MBCAN ist kein Produkt dieser Firmen.
 
+**Haftungsausschluss:** Alle Inhalte dieses Repositorys werden ohne Mängelgewähr ("wie besehen") und ohne jede Gewährleistung bereitgestellt. Nachbau, Anschluss und Nutzung der Hardware und Software erfolgen auf eigene Gefahr. Soweit gesetzlich zulässig, übernimmt der Autor keine Haftung für Schäden an Modellbahnanlagen, Zentralen, Decodern, Fahrzeugen, Rechnern, sonstigen Geräten oder Daten sowie für sonstige Verluste, die aus der Nutzung entstehen. Die Haftungsausschlüsse in [LICENSE.txt](LICENSE.txt) und [LICENSE-CERN-OHL-S-2.0.txt](LICENSE-CERN-OHL-S-2.0.txt) gelten uneingeschränkt.
+
 # Tagebuch
+
+## 02.11.2026
+
+Haftungsausschluss im Abschnitt Lizenz ergänzt.
 
 ## 22.09.2026
 

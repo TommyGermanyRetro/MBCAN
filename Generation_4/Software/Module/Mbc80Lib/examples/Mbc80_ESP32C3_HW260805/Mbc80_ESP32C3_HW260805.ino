@@ -74,6 +74,7 @@
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
 //* V1.0.1 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients ueber MbcWifiBridge (MBCANLib 1.1.0) *
+//* V1.0.2 - 04.11.2026 - MBCAN-TWAI mit nonBlockingTx (MBCANLib 1.1.1)                           *
 //*************************************************************************************************
 
 #include <SPI.h>
@@ -103,7 +104,7 @@
 //------ Modulidentitaet (ASCII-Ziffern) ----------------------------------------------------------
 
     const uint8_t ART_NR[4] = { '8', '0', '1', '1' };   // [2]=Prozessor: 0=ATmega644P/1=ESP32-C3/2=RP2040-Pico/3=RP2040-Zero
-    const uint8_t SW_VER[3] = { '1', '0', '0' };
+    const uint8_t SW_VER[3] = { '1', '0', '2' };
     const uint8_t HW_VER[6] = { '2', '6', '0', '8', '0', '5' };   // Hardware 26.08.05
 
 //------ Objekte ----------------------------------------------------------------------------------

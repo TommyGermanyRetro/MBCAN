@@ -37,6 +37,7 @@
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
 //* V1.1.0 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients (alle Nachrichten an alle Clients),  *
 //*                       Setup-Webportal zentriert                                               *
+//* V1.1.1 - 04.11.2026 - WLAN-Modem-Sleep aus, TCP_NODELAY je Client                             *
 //*************************************************************************************************
 
 #pragma once
@@ -46,7 +47,7 @@
 #if defined(ESP32)
 
 #ifndef _MBCWIFIBRIDGE_H_
-#define _MBCWIFIBRIDGE_H_     "V1.1.0 - 03.11.2026"
+#define _MBCWIFIBRIDGE_H_     "V1.1.1 - 04.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 

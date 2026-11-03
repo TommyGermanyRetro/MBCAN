@@ -50,7 +50,7 @@ Die Module müssen grundsätzlich durch das <b>Parametriercenter</b> basisparame
 
 Als weiteres Tool steht ein TCP/CAN-Monitor zum Mitlesen auf dem CAN-Bus zur Verfügung.
 
-Beide Tools liegen als Projektmappen in Generation_4/Tools zum Download bereit.
+Beide Tools liegen als Projektmappen in Generation_4/Software/Tools zum Download bereit.
 	
 ## 4.  Lizenz
 
@@ -70,7 +70,7 @@ Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Tr
 
 ## 04.11.2026
 
-MBCANLib 1.1.1 und Mbc80Lib 1.1.1: Ein Android-Tablet-Modul (Mbc89-Portierung, über die CAN-TCP-Bridge des mbc-80 ESP32-C3) meldet sich an der Märklin CS3 als Connect6021 an und liefert 76 Konfigkanäle. Der Konfigwalk brach dabei ab. Ursache war der Versand auf den MBCAN-Bus über die interne TWAI: `twai_transmit` wartete bis zu 10 ms je Frame, solange kein Busteilnehmer quittierte, und bremste so die gesamte Bridge. Ein echter mbc89 liefert den Walk in ca. 1,3 s, die Bridge brauchte ohne Teilnehmer rund 100 ms je Kanal. Mit einem angeschlossenen MBCAN-Teilnehmer lief der Walk durch (alle 76 Kanäle sichtbar). `MbcCan` hat dafür den optionalen Konstruktorparameter `nonBlockingTx` (Default `false`, Verhalten aller anderen Module unverändert); er schaltet den Versand auf nicht blockierend mit Sendewarteschlange 32 um. Gesetzt wird er nur im ESP32-C3-Sketch des mbc-80. Zusätzlich schaltet `MbcWifiBridge` den WLAN-Energiesparmodus ab und setzt `TCP_NODELAY` je Client; ein Nutzen davon ist nicht belegt. Hardwaregetestet: Mit der neuen Firmware (`nonBlockingTx = true`) und ohne Teilnehmer am MBCAN-Bus meldet sich das Android-Modul an der CS3 mit allen Konfigkanälen an; die Bibliotheken und der Sketch ließen sich dafür kompilieren und flashen. Offen: Anzeige der Messwerte auf der CS3. Die READMEs von MBCANLib und Mbc80Lib sind angepasst (Bus-Zuordnung beim ESP32-C3: MBCAN über TWAI, CS2 über MCP2515).
+MBCANLib 1.1.1 und Mbc80Lib 1.1.1: Ein Android-Tablet-Modul (Mbc89-Portierung, über die CAN-TCP-Bridge des mbc-80 ESP32-C3) meldet sich an der Märklin CS3 als Connect6021 an und liefert 76 Konfigkanäle. Der Konfigwalk brach dabei ab. Ursache war der Versand auf den MBCAN-Bus über die interne TWAI: `twai_transmit` wartete bis zu 10 ms je Frame, solange kein Busteilnehmer quittierte, und bremste so die gesamte Bridge. Ein echter mbc89 liefert den Walk in ca. 1,3 s, die Bridge brauchte ohne Teilnehmer rund 100 ms je Kanal. Mit einem angeschlossenen MBCAN-Teilnehmer lief der Walk durch (alle 76 Kanäle sichtbar). `MbcCan` hat dafür den optionalen Konstruktorparameter `nonBlockingTx` (Default `false`, Verhalten aller anderen Module unverändert); er schaltet den Versand auf nicht blockierend mit Sendewarteschlange 32 um. Gesetzt wird er nur im ESP32-C3-Sketch des mbc-80. Zusätzlich schaltet `MbcWifiBridge` den WLAN-Energiesparmodus ab und setzt `TCP_NODELAY` je Client; ein Nutzen davon ist nicht belegt. Hardwaregetestet: Mit der neuen Firmware (`nonBlockingTx = true`) und ohne Teilnehmer am MBCAN-Bus meldet sich das Android-Modul an der CS3 mit allen Konfigkanälen an; die Bibliotheken und der Sketch ließen sich dafür kompilieren und flashen. Die Messwerte an der CS3 stimmen. Der ESP32-C3-Sketch des mbc-80 steht auf V1.0.2. Die READMEs von MBCANLib und Mbc80Lib sind angepasst (Bus-Zuordnung beim ESP32-C3: MBCAN über TWAI, CS2 über MCP2515).
 
 ## 03.11.2026
 

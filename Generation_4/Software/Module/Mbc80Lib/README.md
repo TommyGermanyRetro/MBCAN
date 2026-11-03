@@ -12,7 +12,8 @@ Kommunikationswegen und leitet CAN-Nachrichten zwischen ihnen weiter.
   `MbcCom`-Modulidentitäts-/Parametrierkommunikation läuft.
 - **Austauschbare Nachrichten-Brücke** (`MbcMsgBridge`-Interface) — `MbcWlanBridge` für ein externes
   WLAN-Modul per UART, oder `MbcWifiBridge` für natives WLAN auf dem ESP32; welche Implementierung
-  verwendet wird, entscheidet allein der Sketch.
+  verwendet wird, entscheidet allein der Sketch. Beim ESP32-C3 (`MbcWifiBridge`) können bis zu 3 TCP-Clients
+  gleichzeitig verbunden sein (z. B. Parametriercenter und weitere Tools); Nachrichten gehen an alle Clients.
 
 Dabei simuliert das Modul ein Märklin-L88-Gerät (feste CS2-Kennung `0x0040`) inklusive
 S88-Automatik-Kenner-Anfrage/-Verwaltung.
@@ -38,7 +39,9 @@ board-spezifischen Annahmen im Kopfkommentar:
 | `Mbc80_ESP32C3` | ESP32-C3 | CS2-Bus über die interne TWAI, MBCAN-Bus weiterhin über externen MCP2515; LED/Plug ebenfalls über MCP23S17 |
 
 Alle vier nutzen `MbcWlanBridge` (UART zu einem externen WLAN-Modul) außer dem ESP32-C3-Sketch, der
-stattdessen `MbcWifiBridge` (natives WLAN/TCP inkl. Setup-Webportal) einsetzt.
+stattdessen `MbcWifiBridge` (natives WLAN/TCP inkl. Setup-Webportal) einsetzt. Dieser Sketch
+akzeptiert bis zu 3 gleichzeitige TCP-Clients (ab Mbc80Lib 1.1.0 / MBCANLib 1.1.0); alle Nachrichten
+gehen an alle Clients.
 
 **Wichtig:** Die exakten Pin-Zuordnungen und alle ANNAHME-Vermerke stehen im Kopfkommentar jedes
 Sketches — vor dem Verdrahten/Flashen dort nachsehen, nicht hier.

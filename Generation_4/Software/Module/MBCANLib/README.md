@@ -94,7 +94,7 @@ gebraucht) zeigen beide Enden dieses Spektrums.
 
 **Nachrichten-Brücken** (austauschbar über das `MbcMsgBridge`-Interface)
 - `MbcWlanBridge` — ASCII-Hex-Rahmenprotokoll über UART zu einem externen WLAN-Modul
-- `MbcWifiBridge` — natives WLAN/TCP auf ESP32 inkl. Setup-Webportal mit Access-Point-Fallback
+- `MbcWifiBridge` — natives WLAN/TCP auf ESP32 inkl. Setup-Webportal mit Access-Point-Fallback; ab V1.1.0 bis zu 3 gleichzeitige TCP-Clients (`MBC_WIFI_MAX_CLIENTS`, Default 3, per `#define` vor dem Include änderbar). Jede Nachricht geht an alle Clients, eine empfangene Nachricht wird zusätzlich an alle anderen Clients weitergereicht; ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen. Die Verbindungs-LED leuchtet, sobald mindestens ein Client verbunden ist.
 
 **Digitale Ein-/Ausgänge**
 - `MbcDigitalOut` / `MbcDigitalIn` — ein einzelner digitaler Aus-/Eingang, wahlweise natives GPIO

@@ -68,6 +68,10 @@ Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Tr
 
 # Tagebuch
 
+## 03.11.2026
+
+MBCANLib 1.1.0 und Mbc80Lib 1.1.0: `MbcWifiBridge` (ESP32) nimmt jetzt bis zu 3 TCP-Clients gleichzeitig an (`MBC_WIFI_MAX_CLIENTS`). Jede CAN-Nachricht geht an alle verbundenen Clients, Nachrichten eines Clients werden zusätzlich an die übrigen Clients weitergereicht. Damit können z. B. ein Parametriercenter und ein Android-Tablet-Modul gleichzeitig am selben mbc-80 ESP32-C3 hängen; bisher hat ein neuer Client den bestehenden getrennt. Ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen. Außerdem ist das WLAN-Setup-Webportal jetzt zentriert und für schmale Displays angepasst. Der ESP32-C3-Sketch des mbc-80 steht auf V1.0.1; der ATmega-Sketch ist unverändert. Hardwaregetestet: Anmeldung und Auslesen des Systemarrays zwischen Parametriercenter und einem zweiten Client am selben ESP32.
+
 ## 02.11.2026
 
 Haftungsausschluss im Abschnitt Lizenz ergänzt.

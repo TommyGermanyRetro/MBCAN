@@ -8,7 +8,10 @@
 //* werden die MBC_CAN_MSG_LEN Rohbytes je Nachricht direkt uebertragen (TCP liefert Bytes        *
 //* bereits zuverlaessig und in Reihenfolge, eine Rahmenkennung ist daher nicht erforderlich).    *
 //*                                                                                               *
-//* Verwendet TCP-Port 15731.                                                                     *
+//* Verwendet TCP-Port 15731. Es sind bis zu MBC_WIFI_MAX_CLIENTS (3) Clients gleichzeitig        *
+//* moeglich; jede Nachricht geht an alle Clients, Nachrichten eines Clients werden zusaetzlich   *
+//* an die uebrigen Clients weitergereicht. Ist die Zahl erreicht, ersetzt ein neuer Client den   *
+//* am laengsten verbundenen.                                                                     *
 //*                                                                                               *
 //* Bringt ein eigenes WLAN-Setup-Webportal mit: Ohne hinterlegte Zugangsdaten (oder wenn die     *
 //* Verbindung zum gespeicherten Netz fehlschlaegt) wird ein eigener Access-Point "MBCAN Setup    *
@@ -32,6 +35,8 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.1.0 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients (alle Nachrichten an alle Clients),  *
+//*                       Setup-Webportal zentriert                                               *
 //*************************************************************************************************
 
 #pragma once
@@ -41,7 +46,7 @@
 #if defined(ESP32)
 
 #ifndef _MBCWIFIBRIDGE_H_
-#define _MBCWIFIBRIDGE_H_     "V1.0.0 - 05.08.2026"
+#define _MBCWIFIBRIDGE_H_     "V1.1.0 - 03.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -59,6 +64,12 @@
     // Sentinel fuer den optionalen pinConnLed-Konstruktorparameter: keine Verbindungs-LED verbaut
 
     #define MBC_WIFI_NO_LED   0xff
+
+    // Maximale Anzahl gleichzeitiger TCP-Clients
+
+    #ifndef MBC_WIFI_MAX_CLIENTS
+    #define MBC_WIFI_MAX_CLIENTS   3
+    #endif
 
 //------ Ende globale Deklarationen ---------------------------------------------------------------
 
@@ -102,7 +113,7 @@
             void begin(MbcUtils *utils = nullptr);
 
             //*************************************************************************************
-            //* Nachricht an den verbundenen Client senden (kein Client verbunden: verworfen)     *
+            //* Nachricht an alle verbundenen Clients senden (kein Client verbunden: verworfen)   *
             //*************************************************************************************
             //* msg: MBC_CAN_MSG_LEN Byte (siehe MbcCan MBC_CAN_*-Indexkonstanten)                *
             //*************************************************************************************
@@ -111,8 +122,9 @@
 
             //*************************************************************************************
             //* Webportal-Anfragen bedienen, neue Client-Verbindungen annehmen und eingehende     *
-            //* Bytes nicht-blockierend einlesen; bei vollstaendiger Nachricht dekodieren. Wird   *
-            //* jeden loop()-Durchlauf aufgerufen.                                                *
+            //* Bytes aller Clients nicht-blockierend einlesen; bei vollstaendiger Nachricht      *
+            //* dekodieren und an die uebrigen Clients weiterreichen. Wird jeden loop()-Durchlauf *
+            //* aufgerufen.                                                                       *
             //*************************************************************************************
             //* msg: MBC_CAN_MSG_LEN Byte, bei Return true mit der empfangenen Nachricht gefuellt *
             //*************************************************************************************
@@ -132,17 +144,26 @@
                 String dns;
             };
 
+            struct ClientSlot
+            {
+                WiFiClient    client;
+                bool          wasConnected = false;
+                uint8_t       rxFrame[MBC_CAN_MSG_LEN];
+                uint8_t       rxIndex = 0;
+                unsigned long connectedAt = 0;
+            };
+
             uint16_t   _port;
             WiFiServer _server;
-            WiFiClient _client;
+            ClientSlot _slots[MBC_WIFI_MAX_CLIENTS];
+            uint8_t    _nextSlot;
             WebServer  _webServer;
             bool       _isStation;
             uint8_t    _pinConnLed;
             MbcDigitalOut *_connLedDriver;
-            bool       _clientWasConnected;
 
-            uint8_t _rxFrame[MBC_CAN_MSG_LEN];
-            uint8_t _rxIndex;
+            void acceptClients();
+            void sendToAll(const uint8_t msg[MBC_CAN_MSG_LEN], int8_t exceptSlot);
 
             void loadSettings(Settings &settings);
             void saveSettings(const Settings &settings);

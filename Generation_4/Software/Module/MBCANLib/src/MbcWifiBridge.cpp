@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.1.0 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients, Setup-Webportal zentriert           *
 //*************************************************************************************************
 
 //###### Start Quellcode MbcWifiBridge.cpp ########################################################
@@ -24,9 +25,10 @@
     static const char *PREFS_NS    = "mbcwifi";
 
     static const char *PAGE_STYLE =
-        "<style>body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,"
+        "<style>body{max-width:420px;margin:0 auto;padding:1rem;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,"
         "'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;"
-        "color:#212529;background-color:#f5f5f5}</style>";
+        "color:#212529;background-color:#f5f5f5}h1{text-align:center;font-size:1.5rem}"
+        "input,button{width:100%;box-sizing:border-box;margin-bottom:.5rem;padding:.4rem;font-size:1rem}</style>";
 
     // Wartezeit auf die Verbindung zum gespeicherten Netz, bevor auf den Setup-Access-Point
     // zurueckgefallen wird
@@ -48,8 +50,8 @@
     //*********************************************************************************************
 
     MbcWifiBridge::MbcWifiBridge(uint16_t port, uint8_t pinConnLed, MbcDigitalOut *connLedDriver)
-        : _port(port), _server(port), _webServer(80), _isStation(false), _pinConnLed(pinConnLed),
-          _connLedDriver(connLedDriver), _clientWasConnected(false), _rxIndex(0)
+        : _port(port), _server(port), _nextSlot(0), _webServer(80), _isStation(false), _pinConnLed(pinConnLed),
+          _connLedDriver(connLedDriver)
     {
     }
 
@@ -152,19 +154,82 @@
     }
 
     //*********************************************************************************************
-    //* Nachricht an den verbundenen Client senden (kein Client verbunden: verworfen)             *
+    //* Nachricht an alle verbundenen Clients senden (kein Client verbunden: verworfen)           *
     //*********************************************************************************************
-    //* msg: MBC_CAN_MSG_LEN Byte (siehe MbcCan MBC_CAN_*-Indexkonstanten)                        *
+    //* msg: MBC_CAN_MSG_LEN Byte (siehe MbcCan MBC_CAN_*-Indexkonstanten)                      *
     //*********************************************************************************************
 
     void MbcWifiBridge::send(const uint8_t msg[MBC_CAN_MSG_LEN])
     {
-        if (_client.connected()) _client.write(msg, MBC_CAN_MSG_LEN);
+        sendToAll(msg, -1);
+    }
+
+    //*********************************************************************************************
+    //* Nachricht an alle verbundenen Clients ausser einem Slot senden                            *
+    //*********************************************************************************************
+    //* msg:        MBC_CAN_MSG_LEN Byte                                                          *
+    //* exceptSlot: Slot, der uebersprungen wird (Absender); -1: keiner                           *
+    //*********************************************************************************************
+
+    void MbcWifiBridge::sendToAll(const uint8_t msg[MBC_CAN_MSG_LEN], int8_t exceptSlot)
+    {
+        for (int8_t i = 0; i < MBC_WIFI_MAX_CLIENTS; i++)
+        {
+            if ((i != exceptSlot) && _slots[i].client.connected())
+            {
+                _slots[i].client.write(msg, MBC_CAN_MSG_LEN);
+            }
+        }
+    }
+
+    //*********************************************************************************************
+    //* Wartende TCP-Verbindungen annehmen: freien Slot nutzen, sonst den am laengsten            *
+    //* verbundenen Client ersetzen                                                               *
+    //*********************************************************************************************
+
+    void MbcWifiBridge::acceptClients()
+    {
+        while (_server.hasClient())
+        {
+            WiFiClient incoming = _server.available();
+
+            if (!incoming) break;
+
+            int8_t target = -1;
+
+            for (int8_t i = 0; i < MBC_WIFI_MAX_CLIENTS; i++)
+            {
+                if (!_slots[i].client.connected()) { target = i; break; }
+            }
+
+            if (target < 0)
+            {
+                target = 0;
+
+                for (int8_t i = 1; i < MBC_WIFI_MAX_CLIENTS; i++)
+                {
+                    if ((long) (_slots[target].connectedAt - _slots[i].connectedAt) < 0) continue;
+                    target = i;
+                }
+
+                _slots[target].client.stop();
+            }
+
+            _slots[target].client      = incoming;
+            _slots[target].rxIndex     = 0;
+            _slots[target].connectedAt = millis();
+
+            Serial.print("[MbcWifiBridge] TCP-Client ");
+            Serial.print(target);
+            Serial.print(" verbunden: ");
+            Serial.println(_slots[target].client.remoteIP());
+        }
     }
 
     //*********************************************************************************************
     //* Webportal-Anfragen bedienen, neue Client-Verbindungen annehmen und eingehende Bytes       *
-    //* nicht-blockierend einlesen; bei vollstaendiger Nachricht dekodieren                       *
+    //* aller Clients nicht-blockierend einlesen; bei vollstaendiger Nachricht dekodieren und an  *
+    //* die uebrigen Clients weiterreichen                                                        *
     //*********************************************************************************************
     //* msg: MBC_CAN_MSG_LEN Byte, bei Return true mit der empfangenen Nachricht gefuellt         *
     //*********************************************************************************************
@@ -177,47 +242,56 @@
 
         if (!_isStation) return false;
 
-        if (_server.hasClient())
+        acceptClients();
+
+        bool anyConnected = false;
+
+        for (int8_t i = 0; i < MBC_WIFI_MAX_CLIENTS; i++)
         {
-            WiFiClient incoming = _server.available();
+            bool connected = _slots[i].client.connected();
 
-            if (_client.connected()) _client.stop();
+            if (_slots[i].wasConnected && !connected)
+            {
+                Serial.print("[MbcWifiBridge] TCP-Client ");
+                Serial.print(i);
+                Serial.println(" getrennt.");
+            }
 
-            _client = incoming;
-            _rxIndex = 0;
-
-            Serial.print("[MbcWifiBridge] TCP-Client verbunden: ");
-            Serial.println(_client.remoteIP());
+            _slots[i].wasConnected = connected;
+            anyConnected = anyConnected || connected;
         }
 
         if (_connLedDriver != nullptr)
         {
-            _connLedDriver->write(_client.connected());
+            _connLedDriver->write(anyConnected);
         }
         else if (_pinConnLed != MBC_WIFI_NO_LED)
         {
-            digitalWrite(_pinConnLed, _client.connected() ? LOW : HIGH);
+            digitalWrite(_pinConnLed, anyConnected ? LOW : HIGH);
         }
 
-        if (_clientWasConnected && !_client.connected())
+        // Reihum pro Aufruf hoechstens eine Nachricht liefern; Restbytes bleiben im Socket-Puffer
+
+        for (uint8_t n = 0; n < MBC_WIFI_MAX_CLIENTS; n++)
         {
-            Serial.println("[MbcWifiBridge] TCP-Client getrennt.");
-        }
+            int8_t i = (int8_t) ((_nextSlot + n) % MBC_WIFI_MAX_CLIENTS);
+            ClientSlot &s = _slots[i];
 
-        _clientWasConnected = _client.connected();
+            if (!s.client.connected()) continue;
 
-        if (!_client.connected()) return false;
-
-        while (_client.available() > 0)
-        {
-            _rxFrame[_rxIndex] = (uint8_t) _client.read();
-            _rxIndex++;
-
-            if (_rxIndex == MBC_CAN_MSG_LEN)
+            while (s.client.available() > 0)
             {
-                memcpy(msg, _rxFrame, MBC_CAN_MSG_LEN);
-                _rxIndex = 0;
-                return true;
+                s.rxFrame[s.rxIndex] = (uint8_t) s.client.read();
+                s.rxIndex++;
+
+                if (s.rxIndex == MBC_CAN_MSG_LEN)
+                {
+                    memcpy(msg, s.rxFrame, MBC_CAN_MSG_LEN);
+                    s.rxIndex = 0;
+                    _nextSlot = (uint8_t) ((i + 1) % MBC_WIFI_MAX_CLIENTS);
+                    sendToAll(msg, i);
+                    return true;
+                }
             }
         }
 
@@ -287,6 +361,7 @@
             Serial.println("\" - Neustart in 5s.");
 
             String page = "<!doctype html><html lang='de'><head><meta charset='utf-8'>"
+                          "<meta name='viewport' content='width=device-width, initial-scale=1'>"
                           "<title>Wifi Setup</title>" + String(PAGE_STYLE) + "</head><body>"
                           "<h1>MBCAN mbc-80 Wifi-Setup</h1>"
                           "<p>Die Einstellungen wurden gespeichert.<br>"

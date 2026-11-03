@@ -6,9 +6,9 @@ Kommunikationswegen und leitet CAN-Nachrichten zwischen ihnen weiter.
 
 ## Was mbc-80 tut
 
-- **Modulinterner MBCAN-Bus** — eigener CAN-Kanal (MCP2515), das interne CAN-Netz der übrigen
-  MBCAN-Zubehörmodule.
-- **Echter Märklin-CS2-Bus** — zweiter CAN-Kanal, gleichzeitig auch der Kanal, über den die normale
+- **Modulinterner MBCAN-Bus** — eigener CAN-Kanal (MCP2515; beim ESP32-C3 die interne TWAI), das
+  interne CAN-Netz der übrigen MBCAN-Zubehörmodule.
+- **Echter Märklin-CS2-Bus** — zweiter CAN-Kanal (beim ESP32-C3 der externe MCP2515), gleichzeitig auch der Kanal, über den die normale
   `MbcCom`-Modulidentitäts-/Parametrierkommunikation läuft.
 - **Austauschbare Nachrichten-Brücke** (`MbcMsgBridge`-Interface) — `MbcWlanBridge` für ein externes
   WLAN-Modul per UART, oder `MbcWifiBridge` für natives WLAN auf dem ESP32; welche Implementierung
@@ -36,12 +36,18 @@ board-spezifischen Annahmen im Kopfkommentar:
 | `Mbc80_ATmega644P_HW211001` | ATmega644P (MightyCore) | feste Pinbelegung (reale Hardware, keine freie Pinwahl) |
 | `Mbc80_RP2040_Pico` | Raspberry Pi Pico | freie Pinwahl, alles nativ (genug GPIOs) |
 | `Mbc80_RP2040_Zero` | Waveshare RP2040-Zero | freie Pinwahl, alles nativ (genug GPIOs) |
-| `Mbc80_ESP32C3` | ESP32-C3 | CS2-Bus über die interne TWAI, MBCAN-Bus weiterhin über externen MCP2515; LED/Plug ebenfalls über MCP23S17 |
+| `Mbc80_ESP32C3_HW260805` | ESP32-C3 | MBCAN-Bus über die interne TWAI, CS2-Bus weiterhin über externen MCP2515; LED/Plug ebenfalls über MCP23S17 |
 
 Alle vier nutzen `MbcWlanBridge` (UART zu einem externen WLAN-Modul) außer dem ESP32-C3-Sketch, der
 stattdessen `MbcWifiBridge` (natives WLAN/TCP inkl. Setup-Webportal) einsetzt. Dieser Sketch
 akzeptiert bis zu 3 gleichzeitige TCP-Clients (ab Mbc80Lib 1.1.0 / MBCANLib 1.1.0); alle Nachrichten
 gehen an alle Clients.
+
+Ab Mbc80Lib 1.1.1 / MBCANLib 1.1.1 legt der ESP32-C3-Sketch die TWAI-Instanz `canMbcan` mit
+`MbcCan(PIN_TWAI_TX, PIN_TWAI_RX, utils, true)` an (`nonBlockingTx`). Der Versand auf diesen Bus
+wartet damit nicht mehr bis zu 10 ms je Frame, solange kein Busteilnehmer quittiert; sonst wäre der
+CS3-Konfigwalk zu langsam und würde abbrechen. Ein volles Sendefach verwirft das Frame. Dafür ist
+MBCANLib 1.1.1 nötig, sonst kompiliert der Sketch nicht.
 
 **Wichtig:** Die exakten Pin-Zuordnungen und alle ANNAHME-Vermerke stehen im Kopfkommentar jedes
 Sketches — vor dem Verdrahten/Flashen dort nachsehen, nicht hier.

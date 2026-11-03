@@ -95,6 +95,9 @@
 
             WiFi.begin(settings.ssid.c_str(), settings.password.c_str());
 
+            // Modem-Sleep verzoegert eingehende Frames bis zum naechsten Beacon (~100 ms) und
+            // bremst damit den CS3-Konfigwalk
+            WiFi.setSleep(false);
             unsigned long start = millis();
 
             while ((WiFi.status() != WL_CONNECTED) && ((unsigned long) (millis() - start) < CONNECT_TIMEOUT_MS))
@@ -216,6 +219,7 @@
             }
 
             _slots[target].client      = incoming;
+            _slots[target].client.setNoDelay(true);
             _slots[target].rxIndex     = 0;
             _slots[target].connectedAt = millis();
 

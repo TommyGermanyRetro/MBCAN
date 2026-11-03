@@ -150,7 +150,7 @@
     //*********************************************************************************************
 
     MbcCan::MbcCan(uint8_t pinCs, MbcUtils &utils, SPIClass &spi, uint32_t spiClockHz)
-        : _backend(MBC_CAN_BACKEND_MCP2515), _utils(&utils), _initialized(false),
+        : _backend(MBC_CAN_BACKEND_MCP2515), _utils(&utils), _initialized(false), _nonBlockingTx(false),
           _spiDevice(pinCs, spiClockHz, spi), _bothRx(false)
           #if defined(ESP32)
               , _pinTx(0), _pinRx(0)
@@ -168,8 +168,8 @@
         //* utils: MbcUtils-Instanz fuer die Traffic-LED-Anzeige                                  *
         //*****************************************************************************************
 
-        MbcCan::MbcCan(uint8_t pinTx, uint8_t pinRx, MbcUtils &utils)
-            : _backend(MBC_CAN_BACKEND_TWAI), _utils(&utils), _initialized(false),
+        MbcCan::MbcCan(uint8_t pinTx, uint8_t pinRx, MbcUtils &utils, bool nonBlockingTx)
+            : _backend(MBC_CAN_BACKEND_TWAI), _utils(&utils), _initialized(false), _nonBlockingTx(nonBlockingTx),
               _spiDevice(255), _bothRx(false),
               _pinTx(pinTx), _pinRx(pinRx)
         {
@@ -524,6 +524,11 @@
                 twai_general_config_t gConfig = TWAI_GENERAL_CONFIG_DEFAULT(
                     (gpio_num_t) _pinTx, (gpio_num_t) _pinRx, TWAI_MODE_NORMAL);
 
+                // Optional laengere Sendewarteschlange, damit der nicht-blockierende Versand in
+                // sendTwai() Bursts (z.B. 6 Pakete je CS3-Konfigkanal) aufnimmt
+
+                if (_nonBlockingTx) gConfig.tx_queue_len = 32;
+
                 // 250 kBit/s (analog zur MCP2515-Konfiguration ueber CAN_CNF1/2/3VALUE)
 
                 twai_timing_config_t tConfig = TWAI_TIMING_CONFIG_250KBITS();
@@ -583,10 +588,12 @@
 
                 _utils->ledTraffic();
 
-                // Wie beim MCP2515-Backend: nach kurzer Wartezeit ohne weiteren
-                // Busteilnehmer abbrechen statt endlos zu blockieren.
+                // Optional nicht blockieren: ohne weiteren Busteilnehmer (kein ACK) bleibt der
+                // Sendepuffer voll, und jede Wartezeit bremst die gesamte Bridge-Schleife
+                // (10 ms je Frame). Ein voller Puffer verwirft das Frame. Sonst wie beim
+                // MCP2515-Backend nach kurzer Wartezeit abbrechen.
 
-                return (twai_transmit(&message, pdMS_TO_TICKS(10)) == ESP_OK);
+                return (twai_transmit(&message, _nonBlockingTx ? 0 : pdMS_TO_TICKS(10)) == ESP_OK);
             }
 
             //*************************************************************************************

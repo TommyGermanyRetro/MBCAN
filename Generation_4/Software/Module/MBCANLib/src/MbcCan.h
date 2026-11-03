@@ -100,9 +100,12 @@
                 //* pinTx: TX-Pin zum externen CAN-Transceiver (z.B. SN65HVD230)                  *
                 //* pinRx: RX-Pin vom externen CAN-Transceiver                                    *
                 //* utils: MbcUtils-Instanz fuer die Traffic-LED-Anzeige                          *
+                //* nonBlockingTx: true -> sendTwai() wartet nicht auf freien Sendepuffer         *
+                //*                (Warteschlange 32 Frames, volles Fach verwirft das Frame);    *
+                //*                false (Default) -> bis zu 10 ms warten, Warteschlange 5       *
                 //*********************************************************************************
 
-                MbcCan(uint8_t pinTx, uint8_t pinRx, MbcUtils &utils);
+                MbcCan(uint8_t pinTx, uint8_t pinRx, MbcUtils &utils, bool nonBlockingTx = false);
 
             #endif
 
@@ -145,6 +148,7 @@
             MbcCanBackend _backend;
             MbcUtils     *_utils;
             bool          _initialized;
+            bool          _nonBlockingTx;
 
             //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //+ MCP2515-Backend (SPI)                                                             +

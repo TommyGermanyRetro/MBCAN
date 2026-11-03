@@ -129,7 +129,7 @@
                                                                              // setPlugDetector()/
                                                                              // setLedDrivers()
     MbcCan         canCs2(PIN_CS_CAN_CS2, utils);                // externer MCP2515
-    MbcCan         canMbcan(PIN_TWAI_TX, PIN_TWAI_RX, utils);    // interner TWAI-Controller
+    MbcCan         canMbcan(PIN_TWAI_TX, PIN_TWAI_RX, utils, true);    // interner TWAI-Controller, nicht-blockierender Versand
     MbcBootStorage bootStorage(PIN_CS_BOOT_STORAGE, MbcBootStorageBackend::FLASH_W25Q64);
     MbcWifiBridge  wifiBridge(WLAN_TCP_PORT, MBC_WIFI_NO_LED, &tcpLedOut);
     Mbc80Com       com(utils, canCs2, canMbcan, bootStorage, wifiBridge);

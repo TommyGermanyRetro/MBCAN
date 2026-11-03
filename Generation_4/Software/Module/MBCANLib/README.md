@@ -19,6 +19,8 @@ bedingter Kompilierung (`#if defined(__AVR__)` / `#if defined(ESP32)`) gekapselt
 ## Installation
 
 1. Diesen Ordner (`MBCANLib`) nach `<Arduino-Sketchbook>/libraries/MBCANLib` kopieren.
+   **Bei jeder Änderung an der Bibliothek erneut kopieren:** Die Arduino-IDE baut immer aus dem
+   `libraries`-Ordner, nicht aus diesem Quellordner. Ohne erneutes Kopieren läuft die alte Version.
 2. Arduino-IDE neu starten.
 3. Für ein konkretes Modul zusätzlich die passende Modulbibliothek installieren (z. B. `Mbc80Lib`
    oder `Mbc91Lib`) — diese hängen per `depends=MBCANLib` in `library.properties` von dieser
@@ -34,7 +36,7 @@ static uint8_t sysArray[MBC_SYSARRAY_SIZE(genPurpSize)];   // vom Sketch angeleg
 
 MbcUtils      utils(sysArray, genPurpSize, pinAdcVspg, pinAdcPlug, pinLedGruen, pinLedRot,
                      pinOneWire);
-MbcCan        can(pinCsMbcan, utils);           // oder: MbcCan(pinTx, pinRx, utils) auf ESP32
+MbcCan        can(pinCsMbcan, utils);           // oder: MbcCan(pinTx, pinRx, utils[, nonBlockingTx]) auf ESP32
 MbcBootStorage bootStorage(pinCsBootStorage);   // Backend waehlbar, siehe MbcBootStorage-Kopfkommentar
 MeinModulCom  com(utils, can, bootStorage, ...);  // Unterklasse von MbcCom, siehe unten
 
@@ -80,7 +82,11 @@ gebraucht) zeigen beide Enden dieses Spektrums.
 
 **CAN**
 - `MbcCan` — CAN-Anbindung, wahlweise MCP2515 (SPI) oder ESP32-interne TWAI, mit dem
-  Märklin-CS2-29-Bit-Header-Mapping
+  Märklin-CS2-29-Bit-Header-Mapping; das TWAI-Backend sendet auf Wunsch nicht-blockierend
+  (Konstruktor-Parameter `nonBlockingTx`, ab V1.1.1; nur der MBC80 setzt ihn). Der Default
+  ist unverändert: bis zu 10 ms Wartezeit je Frame, solange kein Busteilnehmer quittiert.
+  Mit `nonBlockingTx = true` hat die Sendewarteschlange 32 Frames, und ein volles Fach verwirft
+  das Frame, statt die Bridge-Schleife zu bremsen (z. B. den CS3-Konfigwalk).
 - `MbcCom` — PC-/CS2-Protokoll-Zustandsautomat (Anmeldung, Datentransfer, Parametrierung),
   Basisklasse für modulspezifische Unterklassen
 
@@ -94,7 +100,7 @@ gebraucht) zeigen beide Enden dieses Spektrums.
 
 **Nachrichten-Brücken** (austauschbar über das `MbcMsgBridge`-Interface)
 - `MbcWlanBridge` — ASCII-Hex-Rahmenprotokoll über UART zu einem externen WLAN-Modul
-- `MbcWifiBridge` — natives WLAN/TCP auf ESP32 inkl. Setup-Webportal mit Access-Point-Fallback; ab V1.1.0 bis zu 3 gleichzeitige TCP-Clients (`MBC_WIFI_MAX_CLIENTS`, Default 3, per `#define` vor dem Include änderbar). Jede Nachricht geht an alle Clients, eine empfangene Nachricht wird zusätzlich an alle anderen Clients weitergereicht; ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen. Die Verbindungs-LED leuchtet, sobald mindestens ein Client verbunden ist.
+- `MbcWifiBridge` — natives WLAN/TCP auf ESP32 inkl. Setup-Webportal mit Access-Point-Fallback; ab V1.1.0 bis zu 3 gleichzeitige TCP-Clients (`MBC_WIFI_MAX_CLIENTS`, Default 3, per `#define` vor dem Include änderbar). Jede Nachricht geht an alle Clients, eine empfangene Nachricht wird zusätzlich an alle anderen Clients weitergereicht; ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen. Die Verbindungs-LED leuchtet, sobald mindestens ein Client verbunden ist. Ab V1.1.1 ist das WLAN-Modem-Sleep abgeschaltet (`WiFi.setSleep(false)`) und `TCP_NODELAY` für jeden Client gesetzt, damit Frames ohne Beacon-/Nagle-Verzögerung weitergereicht werden.
 
 **Digitale Ein-/Ausgänge**
 - `MbcDigitalOut` / `MbcDigitalIn` — ein einzelner digitaler Aus-/Eingang, wahlweise natives GPIO
@@ -114,7 +120,27 @@ gebraucht) zeigen beide Enden dieses Spektrums.
 
 ## Abhängigkeiten
 
-Nur Arduino-Core-Bibliotheken: `SPI`, `Wire`, `EEPROM`.
+Nur Arduino-Core-Bibliotheken: `SPI`, `Wire`, `EEPROM`. Auf dem ESP32 zusätzlich die im Core
+enthaltenen Bibliotheken `WiFi`, `WebServer` und `Preferences` (für `MbcWifiBridge`).
+
+## Änderungen
+
+**V1.1.1**
+- `MbcCan` (ESP32/TWAI): neuer optionaler Konstruktor-Parameter `nonBlockingTx`
+  (`MbcCan(pinTx, pinRx, utils, nonBlockingTx = false)`). Mit `true` wartet `send()` nicht auf
+  einen freien Sendepuffer (Warteschlange 32 statt 5 Frames, ein volles Fach verwirft das Frame).
+  Hintergrund: Ohne quittierenden Busteilnehmer blieb der TX-Puffer voll, und jedes Frame
+  blockierte bis zu 10 ms. Das bremste die gesamte Bridge-Schleife und damit den CS3-Konfigwalk.
+  Der Default `false` lässt das bisherige Verhalten unverändert. Nur der MBC80 setzt `true`.
+- `MbcWifiBridge`: WLAN-Modem-Sleep abgeschaltet (`WiFi.setSleep(false)`) und `TCP_NODELAY` für
+  jeden TCP-Client, damit Frames nicht auf Beacon oder Nagle warten.
+- `MbcCan`, `MbcWifiBridge`, `library.properties` und Mbc80-Sketch sind zusammen zu kopieren und neu
+  zu flashen, sonst läuft die alte Version.
+
+**V1.1.0**
+- `MbcWifiBridge`: bis zu 3 gleichzeitige TCP-Clients (`MBC_WIFI_MAX_CLIENTS`, Default 3). Jede Nachricht
+  geht an alle Clients, eine empfangene Nachricht wird zusätzlich an alle anderen Clients
+  weitergereicht; ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen.
 
 ## Verwandte Bibliotheken
 

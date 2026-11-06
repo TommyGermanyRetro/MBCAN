@@ -9,6 +9,7 @@
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
 //* V1.1.0 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients, Setup-Webportal zentriert           *
 //* V1.1.1 - 04.11.2026 - WLAN-Modem-Sleep aus, TCP_NODELAY je Client                             *
+//* V1.1.2 - 07.11.2026 - Nicht blockierendes Senden, saeumige Clients nach 2 s getrennt          *
 //*************************************************************************************************
 
 //###### Start Quellcode MbcWifiBridge.cpp ########################################################
@@ -18,6 +19,7 @@
 #if defined(ESP32)
 
 #include <string.h>
+#include <lwip/sockets.h>
 
 //------ Start interne Konstanten -----------------------------------------------------------------
 
@@ -35,6 +37,12 @@
     // zurueckgefallen wird
 
     static const unsigned long CONNECT_TIMEOUT_MS = 30000;
+
+    // Ein Client, dessen Sendepuffer so lange ununterbrochen voll ist, wird getrennt. WiFiClient::
+    // write() wuerde sonst je Nachricht bis zu 10 x 1 s warten und loop() ueber die 8 s des
+    // Task-Watchdogs hinaus blockieren (z. B. Smartphone mit ausgeschaltetem Display).
+
+    static const unsigned long CLIENT_STALL_MS = 2000;
 
 //------ Ende interne Konstanten ------------------------------------------------------------------
 
@@ -179,11 +187,55 @@
     {
         for (int8_t i = 0; i < MBC_WIFI_MAX_CLIENTS; i++)
         {
-            if ((i != exceptSlot) && _slots[i].client.connected())
+            ClientSlot &s = _slots[i];
+
+            if ((i == exceptSlot) || !s.client.connected()) continue;
+
+            // Nur schreiben, wenn der Socket sofort Platz hat; sonst Nachricht fuer diesen
+            // Client verwerfen und ihn nach CLIENT_STALL_MS trennen
+
+            if (socketWritable(s.client))
             {
-                _slots[i].client.write(msg, MBC_CAN_MSG_LEN);
+                s.client.write(msg, MBC_CAN_MSG_LEN);
+                s.stalledSince = 0;
+            }
+            else if (s.stalledSince == 0)
+            {
+                s.stalledSince = millis() | 1UL;
+            }
+            else if (millis() - s.stalledSince > CLIENT_STALL_MS)
+            {
+                Serial.print("[MbcWifiBridge] TCP-Client ");
+                Serial.print(i);
+                Serial.println(" nimmt keine Daten mehr an - getrennt.");
+
+                s.client.stop();
+                s.stalledSince = 0;
             }
         }
+    }
+
+    //*********************************************************************************************
+    //* Prueft ohne Wartezeit, ob der Socket eines Clients Daten aufnehmen kann                   *
+    //*********************************************************************************************
+    //* client: TCP-Client                                                                        *
+    //*********************************************************************************************
+    //* Return: true, wenn sofort geschrieben werden kann                                         *
+    //*********************************************************************************************
+
+    bool MbcWifiBridge::socketWritable(WiFiClient &client)
+    {
+        int fd = client.fd();
+
+        if (fd < 0) return false;
+
+        fd_set set;
+        FD_ZERO(&set);
+        FD_SET(fd, &set);
+
+        struct timeval tv = { 0, 0 };
+
+        return (select(fd + 1, nullptr, &set, nullptr, &tv) > 0) && FD_ISSET(fd, &set);
     }
 
     //*********************************************************************************************
@@ -221,8 +273,9 @@
 
             _slots[target].client      = incoming;
             _slots[target].client.setNoDelay(true);
-            _slots[target].rxIndex     = 0;
-            _slots[target].connectedAt = millis();
+            _slots[target].rxIndex      = 0;
+            _slots[target].connectedAt  = millis();
+            _slots[target].stalledSince = 0;
 
             Serial.print("[MbcWifiBridge] TCP-Client ");
             Serial.print(target);

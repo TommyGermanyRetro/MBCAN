@@ -12,6 +12,8 @@
 //* moeglich; jede Nachricht geht an alle Clients, Nachrichten eines Clients werden zusaetzlich   *
 //* an die uebrigen Clients weitergereicht. Ist die Zahl erreicht, ersetzt ein neuer Client den   *
 //* am laengsten verbundenen.                                                                     *
+//* Gesendet wird nicht blockierend: Nimmt ein Client laenger als 2 s keine Daten an (z. B.       *
+//* Smartphone mit ausgeschaltetem Display), wird er getrennt, statt loop() aufzuhalten.          *
 //*                                                                                               *
 //* Bringt ein eigenes WLAN-Setup-Webportal mit: Ohne hinterlegte Zugangsdaten (oder wenn die     *
 //* Verbindung zum gespeicherten Netz fehlschlaegt) wird ein eigener Access-Point "MBCAN Setup    *
@@ -38,6 +40,7 @@
 //* V1.1.0 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients (alle Nachrichten an alle Clients),  *
 //*                       Setup-Webportal zentriert                                               *
 //* V1.1.1 - 04.11.2026 - WLAN-Modem-Sleep aus, TCP_NODELAY je Client                             *
+//* V1.1.2 - 07.11.2026 - Nicht blockierendes Senden, saeumige Clients nach 2 s getrennt          *
 //*************************************************************************************************
 
 #pragma once
@@ -47,7 +50,7 @@
 #if defined(ESP32)
 
 #ifndef _MBCWIFIBRIDGE_H_
-#define _MBCWIFIBRIDGE_H_     "V1.1.1 - 04.11.2026"
+#define _MBCWIFIBRIDGE_H_     "V1.1.2 - 07.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -152,6 +155,7 @@
                 uint8_t       rxFrame[MBC_CAN_MSG_LEN];
                 uint8_t       rxIndex = 0;
                 unsigned long connectedAt = 0;
+                unsigned long stalledSince = 0;
             };
 
             uint16_t   _port;
@@ -165,6 +169,7 @@
 
             void acceptClients();
             void sendToAll(const uint8_t msg[MBC_CAN_MSG_LEN], int8_t exceptSlot);
+            static bool socketWritable(WiFiClient &client);
 
             void loadSettings(Settings &settings);
             void saveSettings(const Settings &settings);

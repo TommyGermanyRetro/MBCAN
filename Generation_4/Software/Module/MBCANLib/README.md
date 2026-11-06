@@ -125,6 +125,21 @@ enthaltenen Bibliotheken `WiFi`, `WebServer` und `Preferences` (für `MbcWifiBri
 
 ## Änderungen
 
+**V1.1.2**
+- `MbcCom`: CAN-Hash nach Märklin-CS2-Protokoll 2.0, Abschnitt 1.2.4: UID-High XOR UID-Low,
+  danach Bit 8 und 9 gesetzt und Bit 7 gelöscht. Bisher (wie Original `mbc_com.c`) wurden die
+  Bytes des XOR-Werts getauscht und nur 0x0300 gesetzt; dadurch fielen Bit 0/1 des unteren Bytes
+  auf die festen Bits 8/9, und GUiDs, die sich nur darin unterscheiden (z. B. Modulnummer #0/#1
+  derselben Modulart), bekamen denselben Hash. Alle Module mit MBCANLib ändern damit ihren Hash.
+- `MbcWifiBridge`: Schreiben an die TCP-Clients blockiert nicht mehr. Vor jedem Schreiben wird
+  ohne Wartezeit geprüft, ob der Socket Platz hat; sonst wird die Nachricht für diesen Client
+  verworfen, und ein Client, der länger als 2 s nichts annimmt, wird getrennt. Bisher wartete
+  `WiFiClient::write()` (ESP32-Core 3.3.12) je Nachricht bis zu 10 × 1 s, wenn ein Client nicht
+  mehr las (z. B. Smartphone mit ausgeschaltetem Display); `loop()` hing dann über die 8 s des
+  Task-Watchdogs hinaus, und die mbc-80 startete neu.
+- `MbcCom`, `MbcWifiBridge` und `library.properties` sind zusammen zu kopieren; vor dem
+  Neukompilieren den Kompilier-Cache der Arduino-IDE löschen.
+
 **V1.1.1**
 - `MbcCan` (ESP32/TWAI): neuer optionaler Konstruktor-Parameter `nonBlockingTx`
   (`MbcCan(pinTx, pinRx, utils, nonBlockingTx = false)`). Mit `true` wartet `send()` nicht auf

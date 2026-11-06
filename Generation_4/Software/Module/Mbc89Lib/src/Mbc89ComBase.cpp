@@ -7,6 +7,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 02.08.2026 - Nullversion                                                             *
+//* V1.1.1 - 07.11.2026 - CAN-Hash nach Maerklin-CS2-Protokoll 2.0, Abschnitt 1.2.4               *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc89ComBase.cpp #########################################################
@@ -355,10 +356,11 @@
 
         uint16_t uidH = ((uint16_t) (arr[O_CS2GER] << 8)) | (uint16_t) arr[O_UID + 1];
         uint16_t uidL = ((uint16_t) (arr[O_UID + 2] << 8)) | (uint16_t) arr[O_UID + 3];
-        uint16_t uidHashG = uidH ^ uidL;
-        uint16_t uidHashH = (uidHashG >> 8) & 0x00ff;
-        uint16_t uidHashL = (uidHashG & 0x00ff) << 8;
-        uint16_t uidHash  = (uidHashL | uidHashH) | 0x0300;
+
+        // Maerklin-CS2-Protokoll 2.0, Abschnitt 1.2.4: UID-High XOR UID-Low, danach Bit 8 und 9
+        // gesetzt und Bit 7 geloescht (Unterscheidung zum CS1-Protokoll)
+
+        uint16_t uidHash = (uint16_t) (((uidH ^ uidL) | 0x0300) & 0xff7f);
 
         for (uint8_t index = 0; index < MBC_COM_MSG_ANZAHL; index++)
         {

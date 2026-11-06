@@ -131,6 +131,14 @@ die offizielle CS2-Protokolldokumentation geprüft: die universelle Broadcast-Fo
 0), über die CS2 System-Stopp/Go in der Praxis überwiegend sendet, ist davon nicht betroffen.
 Dieses Projekt ändert Sicherheitslogik in gefertigter Original-Firmware nicht ungefragt.
 
+## Korrektur gegenüber dem Original: CAN-Hash (V1.1.1)
+
+`Mbc89ComBase` berechnet den CAN-Hash nach dem Märklin-CS2-Protokoll 2.0, Abschnitt 1.2.4:
+UID-High XOR UID-Low, danach Bit 8 und 9 gesetzt und Bit 7 gelöscht. Das Original (`mbc_com.c`)
+tauschte die Bytes des XOR-Werts und setzte nur 0x0300; dadurch bekamen GUiDs, die sich nur in
+Bit 0/1 des letzten Bytes unterscheiden (z. B. „m89“ #0 und #1), denselben Hash. Gleichlautend in
+`MBCANLib` (`MbcCom`, V1.1.2).
+
 ## Korrektur gegenüber dem Original: Gleisdecoder-Impulslängenfenster
 
 `mbc_defs.h` definiert `F_CPU 18432000UL`, die reale mbc-89-Hardware hat aber 16 MHz. Die

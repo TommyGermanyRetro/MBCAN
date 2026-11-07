@@ -28,21 +28,21 @@ Im folgenden Bild ist die Systemarchitektur von MBCAN abgebildet. Der CAN-Bus er
 
 ## 2.  Portierungshistorie
 
-In der nachfolgenden Tabelle sind die bereits portierten (Generation_4/Module) UND getesteten Hardwareversionen und Sketches gelistet. D.h. die für die anderen Prozessoren erstellten Sketches sind Vorschläge ohne echte Überprüfung an einer Hardware.
+In der nachfolgenden Tabelle sind die bereits portierten (Generation_4/Module) UND getesteten Hardwareversionen und Sketches gelistet. D.h. die für die anderen Prozessoren erstellten Sketches sind Vorschläge ohne echte Überprüfung an einer Hardware. Die Spalte Android nennt Module, die als App auf einem Android-Tablet oder -Smartphone nachgebildet sind (Generation_4/Software/Android).
 
-| Modultyp            | ATMEGA644P          | ESP32C3             | 
-| :-----------------: | :-----------------: | :-----------------: | 
-| mbc-80              | HW:21-10-01         | HW:26-08-05         |
-| mbc-81              | HW:18-02-12<br>HW:24-01-06         |    |
-| mbc-82              | HW:21-03-01         |                     | 
-| mbc-83              | HW:18-02-10<br>HW:24-03-23         |     |   
-| mbc-84              | HW:18-02-03<br>HW:24-01-06         |      |    
-| mbc-88              | HW:18-03-29<br>HW:24-01-06         |       |     
-| mbc-89              | HW:22-03-01         |                     |           
-| mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |    
-| mbc-91              | HW:16-10-02<br>HW:24-04-01         |                     |                
-| mbc-92              | HW:24-07-20         |                     |                    
-| mbc-93              | HW:24-05-01         |                     |                    
+| Modultyp            | ATMEGA644P          | ESP32C3             | Android             |
+| :-----------------: | :-----------------: | :-----------------: | :-----------------: |
+| mbc-80              | HW:21-10-01         | HW:26-08-05         |                     |
+| mbc-81              | HW:18-02-12<br>HW:24-01-06         |    |                     |
+| mbc-82              | HW:21-03-01         |                     |                     |
+| mbc-83              | HW:18-02-10<br>HW:24-03-23         |     |                     |
+| mbc-84              | HW:18-02-03<br>HW:24-01-06         |      |                     |
+| mbc-88              | HW:18-03-29<br>HW:24-01-06         |       |                     |
+| mbc-89              | HW:22-03-01         |                     | [mbc89-APP](Generation_4/Software/Android/mbc89_APP) |
+| mbc-90              | HW:18-03-04<br>HW:23-11-25         |                     |                     |
+| mbc-91              | HW:16-10-02<br>HW:24-04-01         |                     |                     |
+| mbc-92              | HW:24-07-20         |                     |                     |
+| mbc-93              | HW:24-05-01         |                     |                     |
 
 ## 3.  Parametrierungscenter und Tools
 
@@ -67,6 +67,12 @@ Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Tr
 **Haftungsausschluss:** Alle Inhalte dieses Repositorys werden ohne Mängelgewähr ("wie besehen") und ohne jede Gewährleistung bereitgestellt. Nachbau, Anschluss und Nutzung der Hardware und Software erfolgen auf eigene Gefahr. Soweit gesetzlich zulässig, übernimmt der Autor keine Haftung für Schäden an Modellbahnanlagen, Zentralen, Decodern, Fahrzeugen, Rechnern, sonstigen Geräten oder Daten sowie für sonstige Verluste, die aus der Nutzung entstehen. Die Haftungsausschlüsse in [LICENSE.txt](LICENSE.txt) und [LICENSE-CERN-OHL-S-2.0.txt](LICENSE-CERN-OHL-S-2.0.txt) gelten uneingeschränkt.
 
 # Tagebuch
+
+## 07.11.2026
+
+Neu: **mbc89-APP** für Android (Version 1.0.0) unter Generation_4/Software/Android/mbc89_APP mit Quellcode, fertiger APK und Anleitung. Die App bildet das mbc-89 mit Control Unit 6021, Control 80f, Keyboard 6040 und Memory 6043 auf Tablet oder Smartphone nach und verbindet sich per WLAN über einen mbc-80 (ESP32-C3) mit dem CAN-Bus. Hardwaregetestet an einer CS3, auch mit zwei Geräten gleichzeitig.
+
+MBCANLib 1.1.2 / Mbc89Lib 1.1.1: CAN-Hash nach CS2-Protokoll 2.0 (bisher bekamen Module derselben Art mit Modulnummer #0/#1 denselben Hash). `MbcWifiBridge` sendet nicht mehr blockierend und trennt einen Client, der nichts mehr annimmt, statt durch den Watchdog neu zu starten. Hardwaregetestet mit dem mbc-80 ESP32-C3.
 
 ## 04.11.2026
 

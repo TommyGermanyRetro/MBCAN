@@ -1,0 +1,16 @@
+# Gradle and Android Studio
+.gradle/
+.kotlin/
+build/
+.idea/
+*.iml
+local.properties
+
+# Release signing (private key and passwords stay local)
+*.jks
+*.keystore
+keystore.properties
+
+# Build outputs; the published APK lives in Release/
+*.apk
+!Release/*.apk

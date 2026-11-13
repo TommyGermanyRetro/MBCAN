@@ -10,6 +10,11 @@ Parametriercenter als MBCAN-Modul mbc-89 auf.
 
 - Control Unit 6021 / Control 80f: Lokadresse 01–80, Fahrstufe, Richtung, Funktionen, L/F mit
   eigener Funktionsdecoder-Adresse, stop/go.
+- Bedienung in beide Richtungen: Fahrstufe, Richtung und f0–f4, die an CS3, MS2 oder einer anderen
+  App eingestellt werden, erscheinen in der Anzeige der App.
+- „Mapping“ und „Mapping & Direkt“ wie beim mbc-89: Mit „Mapping & Direkt“ fährt eine Adresse ohne
+  von der CS3 zugeordnete Lok die MM-Lok mit derselben Adresse, auch an einer MS2 mit Gleisbox ohne
+  CS3. Entfernt oder ändert die CS3 eine Zuordnung, gilt der frei gewordene Platz sofort wieder.
 - Keyboard 6040: 16 Magnetartikel je Keyboard, MM oder DCC je Tastengruppe, LED-Nachführung vom Bus.
 - Memory 6043: 24 Fahrstraßen je Memory mit Schaltdauer je Befehl, Folgefahrstraßen,
   Kreuzungsprüfung, Verriegelung und s88-Automatik nach dem Märklin-Handbuch; Zustand bleibt über
@@ -45,11 +50,13 @@ Reiter Verbindung mit Status und Geräteeinstellungen sowie die eingebaute Anlei
 - mbc-80 mit ESP32-C3 als WLAN-Bridge, Firmware ab **MBCANLib 1.1.2** (siehe
   [MBCANLib](../../Module/MBCANLib) und [Mbc80Lib](../../Module/Mbc80Lib)).
 - Android 8.0 oder neuer, Tablet oder Smartphone, Querformat.
-- Getestet mit Samsung Galaxy Tab S6 Lite (SM-P620) und Galaxy S23 (SM-S911B) an einer CS3.
+- Getestet mit Samsung Galaxy Tab S6 Lite (SM-P620) und Galaxy S23 (SM-S911B) an einer CS3 plus
+  sowie an einer MS2 mit Gleisbox.
 
 ## Fertige App installieren
 
-1. [Release/mbc89-APP-1.0.0.apk](Release/mbc89-APP-1.0.0.apk) auf das Gerät laden.
+1. [Release/mbc89-APP-1.0.1.apk](Release/mbc89-APP-1.0.1.apk) auf das Gerät laden. Eine
+   installierte 1.0.0 wird dabei aktualisiert, Einstellungen und Seriennummer bleiben erhalten.
 2. Die Installation aus dieser Quelle erlauben (Android fragt beim Öffnen der Datei nach).
 3. App starten, im Reiter **Verbindung** die IP-Adresse der mbc-80 und den Port 15731 eintragen und
    **Verbinden** tippen.
@@ -102,6 +109,15 @@ an CS3 und Parametriercenter als neues Modul.
 | `Bilder` | Bildschirmansichten für dieses README |
 
 ## Version
+
+**1.0.1** (13.11.2026)
+
+- Fahrbefehle anderer Geräte (CS3, MS2, andere Apps) erscheinen in der Anzeige der App, auch für
+  Loks, die die CS3 der Connect6021 zugeordnet hat.
+- Betrieb an MS2 mit Gleisbox ohne CS3 über „Mapping & Direkt“.
+- Entfernt oder ändert die CS3 eine Lokzuordnung, wird der frei gewordene Platz sofort wieder zur
+  MM-Adresse (Fahrstufe 0, vorwärts, Funktionen aus); bisher erst nach einem Neustart.
+- Anleitung: neuer Abschnitt „Mapping und Mapping & Direkt“ mit Tabelle.
 
 **1.0.0** (07.11.2026) – erste veröffentlichte Fassung.
 

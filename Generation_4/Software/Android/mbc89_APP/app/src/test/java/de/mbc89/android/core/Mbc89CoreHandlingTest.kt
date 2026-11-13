@@ -231,6 +231,75 @@ class Mbc89CoreHandlingTest {
         assertEquals(1, core.processDetailed(CanPacket.create(0, 0x08, 0x03, 0x00, loco)).responses.size)
     }
 
+    @Test
+    fun followsDriveCommandsOfOtherDevicesForDirectlyAddressedLocomotives() {
+        val systemArray = ByteArray(Mbc89SystemArrayLayout.SIZE).apply { this[Mbc89SystemArrayLayout.MAPPING_OFFSET] = 1 }
+        val core = Mbc89Core(guidList, systemArray)
+        val loco = byteArrayOf(0, 0, 0, 8)
+
+        assertTrue(core.processDetailed(CanPacket.create(0, 0x08, 0x5f, 0x16, loco + byteArrayOf(0x01, 0x54))).responses.isEmpty())
+        assertEquals(5, core.locomotiveState(8).speed)
+        core.process(CanPacket.create(0, 0x09, 0x6b, 0x3d, loco + byteArrayOf(0x03, 0xe8.toByte())))
+        assertEquals(15, core.locomotiveState(8).speed)
+        core.process(CanPacket.create(0, 0x08, 0x5f, 0x16, loco + byteArrayOf(0x00, 0x0a)))
+        assertEquals(1, core.locomotiveState(8).speed)
+
+        core.process(CanPacket.create(0, 0x0a, 0x5f, 0x16, loco + byteArrayOf(2)))
+        assertFalse(core.locomotiveState(8).forward)
+        core.process(CanPacket.create(0, 0x0b, 0x6b, 0x3d, loco + byteArrayOf(3)))
+        assertTrue(core.locomotiveState(8).forward)
+
+        core.process(CanPacket.create(0, 0x0c, 0x5f, 0x16, loco + byteArrayOf(0, 1)))
+        core.process(CanPacket.create(0, 0x0d, 0x6b, 0x3d, loco + byteArrayOf(2, 1)))
+        core.process(CanPacket.create(0, 0x0c, 0x5f, 0x16, loco + byteArrayOf(7, 1)))
+        assertTrue(core.locomotiveState(8).f0)
+        assertEquals(0b0010, core.locomotiveState(8).functions)
+        assertEquals(LocomotiveState(0, true, false, 0, true), core.locomotiveState(9))
+    }
+
+    @Test
+    fun followsDriveCommandsOfOtherDevicesForConnect6021Locomotives() {
+        val core = Mbc89Core(guidList)
+        val loco = byteArrayOf(0, 0, 0x40, 0x05)
+        core.process(slotAssignment(slot = 5, locoGuid = loco))
+
+        assertTrue(core.processDetailed(CanPacket.create(0, 0x08, 0x87, 0x67, loco + byteArrayOf(0x01, 0x54))).responses.isEmpty())
+        core.process(CanPacket.create(0, 0x0a, 0x87, 0x67, loco + byteArrayOf(2)))
+        core.process(CanPacket.create(0, 0x0c, 0x87, 0x67, loco + byteArrayOf(0, 1)))
+
+        assertEquals(LocomotiveState(5, false, true, 0, true), core.locomotiveState(5))
+    }
+
+    @Test
+    fun releasesSlotsMissingFromTheNextAssignmentBlock() {
+        val systemArray = ByteArray(Mbc89SystemArrayLayout.SIZE).apply { this[Mbc89SystemArrayLayout.MAPPING_OFFSET] = 1 }
+        val core = Mbc89Core(guidList, systemArray)
+        val first = byteArrayOf(0, 0, 0x40, 0x05)
+        val second = byteArrayOf(0, 0, 0, 0x18)
+        core.process(assignmentBlock(0x00))
+        core.process(slotAssignment(slot = 1, locoGuid = first))
+        core.process(slotAssignment(slot = 2, locoGuid = second))
+        core.process(assignmentBlock(0xff))
+        core.markLocomotiveCommandSent(LocomotiveCommand.Speed(1, 4))
+        core.markLocomotiveCommandSent(LocomotiveCommand.Speed(2, 6))
+
+        core.process(assignmentBlock(0x00))
+        core.process(slotAssignment(slot = 5, locoGuid = first))
+        core.process(slotAssignment(slot = 2, locoGuid = second))
+        core.process(assignmentBlock(0xff))
+
+        assertEquals(listOf(0, 0, 0, 1), core.locomotiveMapping(1).guid)
+        assertEquals(LocomotiveState(0, true, false, 0, true), core.locomotiveState(1))
+        assertEquals(6, core.locomotiveState(2).speed)
+        core.process(CanPacket.create(0, 0x08, 0x5f, 0x16, byteArrayOf(0, 0, 0, 1, 0x01, 0x54)))
+        assertEquals(5, core.locomotiveState(1).speed)
+        core.process(CanPacket.create(0, 0x08, 0x5f, 0x16, second + byteArrayOf(0x01, 0x54)))
+        assertEquals(5, core.locomotiveState(2).speed)
+    }
+
+    private fun assignmentBlock(state: Int): CanPacket =
+        CanPacket.create(0, 0x44, 0x03, 0x00, guid + byteArrayOf(state.toByte(), state.toByte()))
+
     private fun configurationWrite(channel: Int, value: Int, target: ByteArray = guid): CanPacket =
         CanPacket.create(
             priority = 0,

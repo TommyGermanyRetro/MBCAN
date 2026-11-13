@@ -81,7 +81,22 @@ Die Control Unit und bis zu acht Control 80f haben dasselbe Pult. Mit ihnen werd
 - Der Knopf wird gezogen oder angetippt statt gedreht.
 - Eine Lok kann nur auf einem Pult der App gleichzeitig gefahren werden. Wer die Adresse zuerst vollständig eingibt, behält sie, das andere Pult blinkt und sendet nichts.
 - Ohne Verbindung bleibt die Anzeige dunkel.
-- Fahrbefehle anderer Geräte (CS3, MS2, andere Apps) übernimmt die App nicht in ihre Anzeige – wie beim Original.
+- Fahrstufe, Richtung und f0–f4, die an anderen Geräten (CS3, MS2, andere Apps) für eine Lok der App eingestellt werden, übernimmt die App in ihre Anzeige – auch für Loks, die die CS3 der Connect6021 zugeordnet hat.
+
+**Mapping und Mapping & Direkt**
+
+Die Einstellung „Mapping“ oder „Mapping & Direkt“ gehört zum mbc89 und wird an der CS3 (Einstellungen des mbc89) oder im ParaCenter gewählt. Sie legt fest, was mit den Adressen 01–80 geschieht, denen die CS3 keine Lok zugeordnet hat.
+
+| Fall | Mapping | Mapping & Direkt |
+|---|---|---|
+| Adresse mit einer Lok, die die CS3 der Connect6021 zugeordnet hat | fährt diese Lok | fährt diese Lok |
+| Adresse ohne zugeordnete Lok | blinkt, nicht steuerbar | fährt die MM-Lok mit derselben Adresse (08 = MM-Lok 8) |
+| Lok an der CS3 entfernt oder umadressiert | alte Adresse blinkt sofort wieder | alte Adresse fährt sofort wieder die MM-Lok: Fahrstufe 0, vorwärts, Funktionen aus |
+| Bedienung derselben Lok an CS3, MS2 oder einer anderen App | erscheint in der Anzeige der App | erscheint in der Anzeige der App |
+
+- Ein Neustart ist beim Entfernen oder Umadressieren einer Lok nicht nötig.
+- Umstellen an der CS3 wirkt sofort. Adressen mit einer von der CS3 zugeordneten Lok bleiben dabei unverändert.
+- **Ohne CS3 (MS2 mit Gleisbox):** Die MS2 ordnet keine Loks zu, nur „Mapping & Direkt“ ist sinnvoll. Nach dem Umstellen im ParaCenter alle Geräte (mbc80, Gleisbox, MS2, App) kalt neu starten.
 
 ## 7. Memory 6043
 

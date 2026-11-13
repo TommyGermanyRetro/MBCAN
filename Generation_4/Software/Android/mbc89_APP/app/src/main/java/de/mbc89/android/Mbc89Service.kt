@@ -18,6 +18,8 @@ import android.util.Log
 import de.mbc89.android.core.LocomotiveCommand
 import de.mbc89.android.core.LedState
 import de.mbc89.android.core.Mbc89Core
+import de.mbc89.android.core.Mbc89Locomotives
+import de.mbc89.android.core.Mbc89SystemArrayLayout
 import de.mbc89.android.core.Mbc89Memory
 import de.mbc89.android.core.MemoryCommand
 import de.mbc89.android.core.MemoryRoutePlay
@@ -192,7 +194,8 @@ class Mbc89Service : Service() {
                         var autoPlays = emptyList<MemoryRoutePlay>()
                         val result = try {
                             coreMutex.withLock {
-                                core.processDetailed(packet).also { processed ->
+                                val before = if (debugLog) core.systemArraySnapshot else null
+                                core.processDetailed(packet).also { logLocomotiveChanges("rx", before) }.also { processed ->
                                     memory.systemStopped = core.systemStopped
                                     processed.switchedAccessory?.let { command ->
                                         memory.noteSwitch(command)
@@ -270,6 +273,34 @@ class Mbc89Service : Service() {
     // CAN traffic goes to the Android log only in debuggable builds; errors are in the message tab.
     private val debugLog: Boolean by lazy {
         applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+    }
+
+    // Debug builds only: every changed record of the locomotive database (Mbc89Locomotives layout:
+    // speed, dir, f0, fx, Loc-ID, mapped, infra), old and new.
+    private fun logLocomotiveChanges(source: String, before: ByteArray?) {
+        if (before == null) return
+        val after = core.systemArraySnapshot
+        for (index in 0 until Mbc89Locomotives.COUNT) {
+            val start = Mbc89SystemArrayLayout.LOCOMOTIVE_OFFSET + index * Mbc89Locomotives.RECORD_LENGTH
+            val end = start + Mbc89Locomotives.RECORD_LENGTH
+            if ((start until end).all { before[it] == after[it] }) continue
+            Log.d(
+                LOG_TAG,
+                "loco %s slot=%02d %s -> %s".format(
+                    source,
+                    if (index == 0) Mbc89Locomotives.SLOT_80 else index,
+                    describeLocomotive(before, start),
+                    describeLocomotive(after, start),
+                ),
+            )
+        }
+    }
+
+    private fun describeLocomotive(array: ByteArray, start: Int): String {
+        fun b(offset: Int) = array[start + offset].toInt() and 0xff
+        return "[id=%02X%02X%02X%02X map=%02X spd=%d dir=%d f0=%d fx=%X inf=%d]".format(
+            b(4), b(5), b(6), b(7), b(8), b(0), b(1), b(2), b(3), b(9),
+        )
     }
 
     private fun logPacket(direction: String, packet: CanPacket) {
@@ -616,7 +647,9 @@ class Mbc89Service : Service() {
                 return@launch
             }
             coreMutex.withLock {
+                val before = if (debugLog) core.systemArraySnapshot else null
                 core.markLocomotiveCommandSent(command)
+                logLocomotiveChanges("ui", before)
                 publishCoreState()
             }
         }

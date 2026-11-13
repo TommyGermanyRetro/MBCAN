@@ -263,7 +263,16 @@ class Mbc89Core(
             CAN_ID_CONFIGURATION -> processCs2Configuration(packet)
             Mbc89Locomotives.CAN_ID_SPEED,
             Mbc89Locomotives.CAN_ID_DIRECTION,
-            Mbc89Locomotives.CAN_ID_FUNCTION -> locomotives.answerQuery(packet)
+            Mbc89Locomotives.CAN_ID_FUNCTION -> {
+                locomotives.followForeignCommand(packet)
+                locomotives.answerQuery(packet)
+            }
+            Mbc89Locomotives.CAN_ID_SPEED + 1,
+            Mbc89Locomotives.CAN_ID_DIRECTION + 1,
+            Mbc89Locomotives.CAN_ID_FUNCTION + 1 -> {
+                locomotives.followForeignCommand(packet)
+                emptyList()
+            }
             else -> listOfNotNull(processPacket(packet))
         }
         return Mbc89CoreResult(
@@ -1023,9 +1032,10 @@ class Mbc89Core(
         foreignStreamOpen = false
         if (start) {
             connect6021Streaming = true
-            locomotives.resetAddresses()
+            locomotives.beginAssignmentBlock()
         } else if (end) {
             connect6021Streaming = false
+            locomotives.endAssignmentBlock(byte(Mbc89SystemArrayLayout.MAPPING_OFFSET))
         }
         return packet.withCanId(CAN_ID_CONNECT6021_RESPONSE)
     }

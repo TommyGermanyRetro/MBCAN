@@ -68,6 +68,10 @@ Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Tr
 
 # Tagebuch
 
+## 13.11.2026
+
+**mbc89-APP 1.0.1** für Android: Fahrbefehle anderer Geräte (CS3, MS2, andere Apps) erscheinen in der Anzeige der App, auch für Loks, die die CS3 der Connect6021 zugeordnet hat. Mit „Mapping & Direkt“ steuert die App MM-Loks direkt über die Adresse, auch an einer MS2 mit Gleisbox ohne CS3. Entfernt oder ändert die CS3 eine Lokzuordnung, gilt der frei gewordene Platz sofort wieder als MM-Adresse, ohne Neustart. Die Anleitung erklärt „Mapping“ und „Mapping & Direkt“ in einer Tabelle. Hardwaregetestet an einer CS3 plus und an einer MS2 mit Gleisbox.
+
 ## 07.11.2026
 
 Neu: **mbc89-APP** für Android (Version 1.0.0) unter Generation_4/Software/Android/mbc89_APP mit Quellcode, fertiger APK und Anleitung. Die App bildet das mbc-89 mit Control Unit 6021, Control 80f, Keyboard 6040 und Memory 6043 auf Tablet oder Smartphone nach und verbindet sich per WLAN über einen mbc-80 (ESP32-C3) mit dem CAN-Bus. Hardwaregetestet an einer CS3, auch mit zwei Geräten gleichzeitig.

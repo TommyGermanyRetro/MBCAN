@@ -21,6 +21,9 @@ sealed interface LocomotiveCommand {
 // Loco database inside the system array (Mbc89Com::lokAt(): 80 records of 10 bytes from offset
 // MBC_89_S_LOKS); address 80 is stored in record 0.
 class Mbc89Locomotives(private val array: ByteArray) {
+    private val assignedInBlock = BooleanArray(COUNT)
+    private var assignmentBlockOpen = false
+
     fun reset(mapping: Int) {
         for (index in 0 until COUNT) {
             val base = recordOffset(index)
@@ -49,10 +52,34 @@ class Mbc89Locomotives(private val array: ByteArray) {
         array[recordOffset(0) + ADDR1] = SLOT_80.toByte()
     }
 
+    fun beginAssignmentBlock() {
+        resetAddresses()
+        assignedInBlock.fill(false)
+        assignmentBlockOpen = true
+    }
+
+    // The CS sends the complete list of assignments in every block. A slot that was handed over before
+    // but is missing from the list returns to its MM address with the configured mapping and an idle state.
+    fun endAssignmentBlock(mapping: Int) {
+        if (!assignmentBlockOpen) return
+        assignmentBlockOpen = false
+        for (index in 0 until COUNT) {
+            val base = recordOffset(index)
+            if (assignedInBlock[index] || byte(base + MAPPED) and MAPPED_ECHT == 0) continue
+            array[base + SPEED] = 0
+            array[base + DIR] = DIR_FORWARD.toByte()
+            array[base + F0] = 0
+            array[base + FX] = 0
+            array[base + MAPPED] = mapping.toByte()
+        }
+    }
+
     fun assign(slot: Int, guid: ByteArray) {
-        val base = recordOffset(if (slot == SLOT_80) 0 else slot)
+        val index = if (slot == SLOT_80) 0 else slot
+        val base = recordOffset(index)
         guid.copyInto(array, destinationOffset = base + ADDR4, endIndex = GUID_LENGTH)
         array[base + MAPPED] = (MAPPED_ON or MAPPED_ECHT).toByte()
+        assignedInBlock[index] = true
     }
 
     fun applyMapping(mapping: Int) {
@@ -180,6 +207,56 @@ class Mbc89Locomotives(private val array: ByteArray) {
         return responses
     }
 
+    // Speed, direction and function commands of other devices (CSx, MS2, other apps) and the answers of the
+    // track format processor for the Loc-ID of a mapped slot are taken over into the state, for slots handed
+    // over by the CS as well as for directly addressed ones. Nothing is sent.
+    fun followForeignCommand(packet: CanPacket): Boolean {
+        val command = packet.canId and 0xfe
+        val data = packet.data
+        val valid = when (command) {
+            CAN_ID_SPEED -> packet.dataLength == SPEED_DLC
+            CAN_ID_DIRECTION -> packet.dataLength == DIRECTION_DLC
+            CAN_ID_FUNCTION -> packet.dataLength == FUNCTION_DLC || packet.dataLength == FUNCTION_VALUE_DLC
+            else -> false
+        }
+        if (!valid) return false
+        var changed = false
+        for (index in 0 until COUNT) {
+            val base = recordOffset(index)
+            val matches = (0 until GUID_LENGTH).all { array[base + ADDR4 + it] == data[it] } &&
+                byte(base + MAPPED) != 0
+            if (!matches) continue
+            when (command) {
+                CAN_ID_SPEED -> {
+                    val value = ((data[4].toInt() and 0xff) shl 8) or (data[5].toInt() and 0xff)
+                    var step = ((value + MM_SPEED_STEP / 2) / MM_SPEED_STEP).coerceIn(0, MAX_SPEED_STEP)
+                    if (value > 0 && step == 0) step = 1
+                    array[base + SPEED] = step.toByte()
+                }
+                CAN_ID_DIRECTION -> when (data[4].toInt() and 0xff) {
+                    DIR_FORWARD, DIR_BACKWARD -> array[base + DIR] = data[4]
+                    DIR_TOGGLE -> array[base + DIR] =
+                        (if (byte(base + DIR) == DIR_FORWARD) DIR_BACKWARD else DIR_FORWARD).toByte()
+                    else -> continue
+                }
+                else -> {
+                    val function = data[4].toInt() and 0xff
+                    if (function !in 0..FUNCTION_MAX) continue
+                    val on = data[5].toInt() != 0
+                    if (function == 0) {
+                        array[base + F0] = if (on) 1 else 0
+                    } else {
+                        val bit = 1 shl (function - 1)
+                        val fx = byte(base + FX)
+                        array[base + FX] = (if (on) fx or bit else fx and bit.inv()).toByte()
+                    }
+                }
+            }
+            changed = true
+        }
+        return changed
+    }
+
     private fun isControllable(base: Int): Boolean =
         byte(base + MAPPED) != 0 && byte(base + INFRA) == 0
 
@@ -232,7 +309,7 @@ class Mbc89Locomotives(private val array: ByteArray) {
         const val CAN_ID_SPEED = 0x08
         const val CAN_ID_DIRECTION = 0x0a
         const val CAN_ID_FUNCTION = 0x0c
-        private const val RECORD_LENGTH = 10
+        const val RECORD_LENGTH = 10
         private const val SPEED = 0
         private const val DIR = 1
         private const val F0 = 2
@@ -247,11 +324,13 @@ class Mbc89Locomotives(private val array: ByteArray) {
         private const val MAPPED_ECHT = 0x02
         private const val DIR_FORWARD = 1
         private const val DIR_BACKWARD = 2
+        private const val DIR_TOGGLE = 3
         private const val MM_SPEED_STEP = 68
         private const val GUID_LENGTH = 4
         private const val SPEED_DLC = 6
         private const val DIRECTION_DLC = 5
         private const val FUNCTION_DLC = 6
+        private const val FUNCTION_VALUE_DLC = 8
         private const val ADDRESS_QUERY_DLC = 4
         private const val FUNCTION_QUERY_DLC = 5
         private const val COMMAND_HASH_HIGH = 0x03

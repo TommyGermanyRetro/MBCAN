@@ -1,6 +1,7 @@
 package de.mbc89.android
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +26,21 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 // The user manual (assets/anleitung.md) with the Markdown subset it uses: headings #/##/###, bullets
-// "- ", numbered steps "1. ", paragraphs and **bold**.
+// "- ", numbered steps "1. ", tables ("| a | b |", header row above a "|---|" separator), paragraphs
+// and **bold**.
 @Composable
 fun ManualScreen() {
     val context = LocalContext.current
-    val lines = remember {
-        context.assets.open(MANUAL_ASSET).bufferedReader(Charsets.UTF_8).use { it.readLines() }
+    val entries = remember {
+        val lines = context.assets.open(MANUAL_ASSET).bufferedReader(Charsets.UTF_8).use { it.readLines() }
+            .filter { it.isNotBlank() }
+        lines.mapIndexedNotNull { index, line ->
+            if (TABLE_SEPARATOR.matches(line)) {
+                null
+            } else {
+                line to (line.startsWith("|") && lines.getOrNull(index + 1)?.let(TABLE_SEPARATOR::matches) == true)
+            }
+        }
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         LazyColumn(
@@ -38,15 +49,16 @@ fun ManualScreen() {
                 .fillMaxSize()
                 .padding(horizontal = 24.dp, vertical = 12.dp),
         ) {
-            items(lines.filter { it.isNotBlank() }) { line -> ManualLine(line) }
+            items(entries) { (line, tableHeader) -> ManualLine(line, tableHeader) }
         }
     }
 }
 
 @Composable
-private fun ManualLine(line: String) {
+private fun ManualLine(line: String, tableHeader: Boolean) {
     val typography = MaterialTheme.typography
     when {
+        line.startsWith("|") -> TableRow(line, tableHeader)
         line.startsWith("### ") -> Text(
             inline(line.removePrefix("### ")),
             style = typography.titleSmall,
@@ -80,6 +92,24 @@ private fun Marked(mark: String, text: String) {
     }
 }
 
+@Composable
+private fun TableRow(line: String, header: Boolean) {
+    val cells = line.trim().removePrefix("|").removeSuffix("|").split("|").map { it.trim() }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+            cells.forEach { cell ->
+                Text(
+                    inline(cell),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (header) FontWeight.Bold else null,
+                    modifier = Modifier.weight(1f).padding(horizontal = 6.dp),
+                )
+            }
+        }
+        HorizontalDivider()
+    }
+}
+
 private fun inline(text: String): AnnotatedString = buildAnnotatedString {
     text.split("**").forEachIndexed { index, part ->
         if (index % 2 == 1) withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(part) } else append(part)
@@ -88,5 +118,6 @@ private fun inline(text: String): AnnotatedString = buildAnnotatedString {
 
 private const val MANUAL_ASSET = "anleitung.md"
 private val NUMBERED = Regex("""^(\d+)\.\s+(.*)$""")
+private val TABLE_SEPARATOR = Regex("""^\|[\s:|-]+\|\s*$""")
 private val MANUAL_MAX_WIDTH = 900.dp
 private val MARK_WIDTH = 24.dp

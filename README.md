@@ -70,6 +70,8 @@ Fremdbestandteile (MightyCore-Dateien, die 8x8-Zeichensatztabelle des SSD1306-Tr
 
 ## 13.11.2026
 
+**mbc89-APP 1.0.2** für Android: An einer MS2 mit Gleisbox ohne CS3 folgt die App jetzt auch dem Einschalten der Anlage an der MS2. Die MS2 sendet dabei kein „Go“, das die App erreicht; die App wertet stattdessen die Quittung „Stopp/Go an alle“ der Gleisbox aus. Zusammen mit 1.0.1 sind ohne CS3 Anmeldung, Fahren, Zubehör, Stopp/Go und s88 mit Memory-Automatik hardwaregetestet.
+
 **mbc89-APP 1.0.1** für Android: Fahrbefehle anderer Geräte (CS3, MS2, andere Apps) erscheinen in der Anzeige der App, auch für Loks, die die CS3 der Connect6021 zugeordnet hat. Mit „Mapping & Direkt“ steuert die App MM-Loks direkt über die Adresse, auch an einer MS2 mit Gleisbox ohne CS3. Entfernt oder ändert die CS3 eine Lokzuordnung, gilt der frei gewordene Platz sofort wieder als MM-Adresse, ohne Neustart. Die Anleitung erklärt „Mapping“ und „Mapping & Direkt“ in einer Tabelle. Hardwaregetestet an einer CS3 plus und an einer MS2 mit Gleisbox.
 
 ## 07.11.2026

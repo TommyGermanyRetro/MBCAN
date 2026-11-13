@@ -306,6 +306,10 @@ class Mbc89Core(
             }
             return null
         }
+        if (packet.canId == CAN_ID_SYSTEM_COMMAND_RESPONSE) {
+            processStopGoAcknowledge(packet)
+            return null
+        }
         if (packet.canId == CAN_ID_SYSTEM_COMMAND) {
             return when (packet.dataLength) {
                 STOP_GO_DLC -> processSystemStopGo(packet.data)
@@ -360,6 +364,18 @@ class Mbc89Core(
 
     fun markSystemStopGoSent(go: Boolean) {
         systemStopped = !go
+    }
+
+    // The track format processor acknowledges "stop/go to all" with the response bit (cs2CAN 2.0, 2.1/2.2).
+    // An MS2 switching on is seen here only by this acknowledgement of the Gleisbox; nothing is sent.
+    private fun processStopGoAcknowledge(packet: CanPacket) {
+        if (packet.dataLength != STOP_GO_DLC) return
+        val data = packet.data
+        if ((0 until GUID_LENGTH).any { data[it] != 0.toByte() }) return
+        when (data[STOP_GO_STATE_INDEX].toInt() and 0xff) {
+            0 -> systemStopped = true
+            1 -> systemStopped = false
+        }
     }
 
     private fun processSystemStopGo(data: ByteArray): CanPacket? {

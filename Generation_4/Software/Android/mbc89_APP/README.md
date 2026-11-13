@@ -55,8 +55,8 @@ Reiter Verbindung mit Status und Geräteeinstellungen sowie die eingebaute Anlei
 
 ## Fertige App installieren
 
-1. [Release/mbc89-APP-1.0.1.apk](Release/mbc89-APP-1.0.1.apk) auf das Gerät laden. Eine
-   installierte 1.0.0 wird dabei aktualisiert, Einstellungen und Seriennummer bleiben erhalten.
+1. [Release/mbc89-APP-1.0.2.apk](Release/mbc89-APP-1.0.2.apk) auf das Gerät laden. Eine
+   installierte ältere Fassung wird dabei aktualisiert, Einstellungen und Seriennummer bleiben erhalten.
 2. Die Installation aus dieser Quelle erlauben (Android fragt beim Öffnen der Datei nach).
 3. App starten, im Reiter **Verbindung** die IP-Adresse der mbc-80 und den Port 15731 eintragen und
    **Verbinden** tippen.
@@ -109,6 +109,12 @@ an CS3 und Parametriercenter als neues Modul.
 | `Bilder` | Bildschirmansichten für dieses README |
 
 ## Version
+
+**1.0.2** (13.11.2026)
+
+- Stopp und Go an der MS2 mit Gleisbox (ohne CS3) erscheinen in der App: Die MS2 sendet beim
+  Einschalten kein „Go“, das die App erreicht; die App wertet dafür die Quittung „Stopp/Go an alle“
+  der Gleisbox aus. Hardwaregetestet an MS2 mit Gleisbox.
 
 **1.0.1** (13.11.2026)
 

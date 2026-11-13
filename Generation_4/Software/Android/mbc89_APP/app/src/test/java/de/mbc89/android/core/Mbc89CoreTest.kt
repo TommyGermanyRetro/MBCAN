@@ -409,6 +409,23 @@ class Mbc89CoreTest {
     }
 
     @Test
+    fun takesStopAndGoToAllAcknowledgedByTheTrackProcessorWithoutAnswering() {
+        val core = registeredCore()
+        val acknowledge = { state: Int, uid: ByteArray ->
+            CanPacket.create(0, 0x01, 0x6b, 0x3d, uid + byteArrayOf(state.toByte()))
+        }
+
+        assertNull(core.process(acknowledge(0, byteArrayOf(0, 0, 0, 0))))
+        assertTrue(core.systemStopped)
+        assertNull(core.process(acknowledge(1, byteArrayOf(0x6d, 0x38, 0x39, 0x01))))
+        assertTrue(core.systemStopped)
+        assertNull(core.process(CanPacket.create(0, 0x01, 0x6b, 0x3d, byteArrayOf(0, 0, 0, 0, 9, 0, 1))))
+        assertTrue(core.systemStopped)
+        assertNull(core.process(acknowledge(1, byteArrayOf(0, 0, 0, 0))))
+        assertFalse(core.systemStopped)
+    }
+
+    @Test
     fun matchesModuleStopWithD2ComparedAgainstGuidByte1LikeMbc89Com() {
         val core = registeredCore()
         val referenceAddress = byteArrayOf(0x22, '8'.code.toByte(), '8'.code.toByte(), 0x55)

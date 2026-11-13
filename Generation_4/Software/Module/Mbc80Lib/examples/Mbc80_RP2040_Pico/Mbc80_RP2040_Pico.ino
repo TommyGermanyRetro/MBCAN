@@ -41,6 +41,8 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.0.1 - 13.11.2026 - Messungen ruhen im Datenstrom, Stopp/Go/Halt im Strom (Mbc80Lib 1.2.0)  *
+//*                       Dual Core: Kern 1 liest beide MCP2515 in Empfangswarteschlangen         *
 //*************************************************************************************************
 
 #include <SPI.h>
@@ -61,7 +63,7 @@
 //------ Modulidentitaet (ASCII-Ziffern) ----------------------------------------------------------
 
     const uint8_t ART_NR[4] = { '8', '0', '2', '1' };   // [2]=Prozessor: 0=ATmega644P/1=ESP32-C3/2=RP2040-Pico/3=RP2040-Zero
-    const uint8_t SW_VER[3] = { '1', '0', '0' };
+    const uint8_t SW_VER[3] = { '1', '0', '1' };
     const uint8_t HW_VER[6] = { '2', '1', '1', '0', '0', '1' };   // Hardware 21.10.01
 
 //------ Objekte ----------------------------------------------------------------------------------
@@ -83,6 +85,10 @@
 
     bool canCs2Ok   = false;
     bool canMbcanOk = false;
+
+//------ Dual Core: Kern 1 liest beide MCP2515 aus, sobald setup() fertig ist ---------------------
+
+    volatile bool core1Run = false;
 
 //------ setup()/loop() ---------------------------------------------------------------------------
 
@@ -108,6 +114,7 @@ void setup()
     Serial.println("[Mbc80] SPI gestartet");
     Serial.println("[Mbc80] MbcUtils initialisiert");
 
+    Serial1.setFIFOSize(256);   // Empfangspuffer: WLAN-Befehle bleiben erhalten, waehrend Kern 0 sendet
     Serial1.begin(125000);   // 8N1 - Gegenstelle: externes WLAN-Modul mit mbc_80_esp8266_1_05
     Serial.println("[Mbc80] WLAN-UART (Serial1) gestartet");
 
@@ -131,13 +138,27 @@ void setup()
 
     utils.waitFilled();
 
+    // Ab hier liest Kern 1 (loop1) beide MCP2515 in Empfangswarteschlangen; Kern 0 holt die
+    // Nachrichten ueber receive() in Eingangsreihenfolge ab. So geht auch waehrend eines langen
+    // CS2-Datenstroms, der langsamer ueber die WLAN-UART hinausgeht, keine Nachricht verloren.
+
+    canCs2.startRxQueue(2048);
+    canMbcan.startRxQueue(256);
+    core1Run = true;
+
     Serial.println("[Mbc80] Bereit");
 }
 
 void loop()
 {
-    utils.update();
-    utils.check();
+    // Waehrend eines CS2-Datenstroms (0x42) nur die Bruecke bedienen - Timer-Events, Messungen
+    // (1-Wire, ADC) usw. ruhen wie im Original (main.c: mbc_hw_check() nur bei !streaming)
+
+    if (!com.streaming())
+    {
+        utils.update();
+        utils.check();
+    }
 
     // Solange ein CAN-Kanal nicht initialisiert werden konnte, bleibt der Sketch lauffaehig -
     // aber ohne diese Erinnerung waere davon ausserhalb der Status-LED (MBC_LED_MCP_ERROR)
@@ -163,4 +184,22 @@ void loop()
     }
 
     com.bridge();
+}
+
+//------ Kern 1: beide MCP2515 auslesen -----------------------------------------------------------
+
+void setup1()
+{
+    while (!core1Run) { }
+}
+
+void loop1()
+{
+    bool any = canCs2.serviceRxQueue();
+    any = canMbcan.serviceRxQueue() || any;
+
+    // Nichts empfangen: kurz warten, damit Kern 0 den SPI-Bus bekommt. Ein CAN-Rahmen dauert bei
+    // 250 kBit/s mindestens rund 0,5 ms, der MCP2515 haelt zwei Rahmen.
+
+    if (!any) delayMicroseconds(100);
 }

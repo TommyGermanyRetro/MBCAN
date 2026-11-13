@@ -7,11 +7,27 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.2.0 - 13.11.2026 - RP2040: SPI-Transaktionen ueber beide Kerne gegeneinander gesperrt      *
 //*************************************************************************************************
 
 //###### Start Quellcode MbcSpiDevice.cpp #########################################################
 
 #include "MbcSpiDevice.h"
+
+#if defined(ARDUINO_ARCH_RP2040)
+    #include "pico/mutex.h"
+
+    // Gemeinsame Sperre aller SPI-Teilnehmer: Auf dem RP2040 kann Kern 1 die MCP2515 auslesen
+    // (MbcCan::serviceRxQueue), waehrend Kern 0 auf denselben SPI-Bus zugreift. Initialisiert vor
+    // setup()/setup1() durch einen statischen Konstruktor.
+
+    static recursive_mutex_t mbcSpiMutex;
+
+    static struct MbcSpiMutexInit
+    {
+        MbcSpiMutexInit() { recursive_mutex_init(&mbcSpiMutex); }
+    } mbcSpiMutexInit;
+#endif
 
 //------ Start Klasse MbcSpiDevice ----------------------------------------------------------------
 
@@ -49,6 +65,10 @@
 
     void MbcSpiDevice::beginTransaction()
     {
+        #if defined(ARDUINO_ARCH_RP2040)
+            recursive_mutex_enter_blocking(&mbcSpiMutex);
+        #endif
+
         _spi->beginTransaction(SPISettings(_clockHz, MSBFIRST, SPI_MODE0));
 
         #if defined(__AVR__)
@@ -71,6 +91,10 @@
         #endif
 
         _spi->endTransaction();
+
+        #if defined(ARDUINO_ARCH_RP2040)
+            recursive_mutex_exit(&mbcSpiMutex);
+        #endif
     }
 
     //*********************************************************************************************

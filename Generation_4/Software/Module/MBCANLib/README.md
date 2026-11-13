@@ -100,7 +100,7 @@ gebraucht) zeigen beide Enden dieses Spektrums.
 
 **Nachrichten-Brücken** (austauschbar über das `MbcMsgBridge`-Interface)
 - `MbcWlanBridge` — ASCII-Hex-Rahmenprotokoll über UART zu einem externen WLAN-Modul
-- `MbcWifiBridge` — natives WLAN/TCP auf ESP32 inkl. Setup-Webportal mit Access-Point-Fallback; ab V1.1.0 bis zu 3 gleichzeitige TCP-Clients (`MBC_WIFI_MAX_CLIENTS`, Default 3, per `#define` vor dem Include änderbar). Jede Nachricht geht an alle Clients, eine empfangene Nachricht wird zusätzlich an alle anderen Clients weitergereicht; ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen. Die Verbindungs-LED leuchtet, sobald mindestens ein Client verbunden ist. Ab V1.1.1 ist das WLAN-Modem-Sleep abgeschaltet (`WiFi.setSleep(false)`) und `TCP_NODELAY` für jeden Client gesetzt, damit Frames ohne Beacon-/Nagle-Verzögerung weitergereicht werden.
+- `MbcWifiBridge` — natives WLAN/TCP auf ESP32 inkl. Setup-Webportal mit Access-Point-Fallback; ab V1.1.0 bis zu 3 gleichzeitige TCP-Clients (`MBC_WIFI_MAX_CLIENTS`, Default 3, per `#define` vor dem Include änderbar). Jede Nachricht geht an alle Clients, eine empfangene Nachricht wird zusätzlich an alle anderen Clients weitergereicht; ist die Maximalzahl erreicht, ersetzt ein neuer Client den am längsten verbundenen. Die Verbindungs-LED leuchtet, sobald mindestens ein Client verbunden ist. Ab V1.1.1 ist das WLAN-Modem-Sleep abgeschaltet (`WiFi.setSleep(false)`). Ab V1.2.0 hängt `send()` die Nachricht nur an einen Sendepuffer je Client an (`MBC_WIFI_TX_BUFFER`, Default 32768 Byte); `check()` schreibt die Puffer ins WLAN.
 
 **Digitale Ein-/Ausgänge**
 - `MbcDigitalOut` / `MbcDigitalIn` — ein einzelner digitaler Aus-/Eingang, wahlweise natives GPIO
@@ -124,6 +124,22 @@ Nur Arduino-Core-Bibliotheken: `SPI`, `Wire`, `EEPROM`. Auf dem ESP32 zusätzlic
 enthaltenen Bibliotheken `WiFi`, `WebServer` und `Preferences` (für `MbcWifiBridge`).
 
 ## Änderungen
+
+**V1.2.0**
+- `MbcWifiBridge`: `send()` hängt jede Nachricht nur hinten an einen Sendepuffer je Client an
+  (`MBC_WIFI_TX_BUFFER`, Default 32768 Byte, per `#define` vor dem Include änderbar); ist er voll,
+  wird die Nachricht verworfen. `check()` schreibt die Puffer ins WLAN, soweit der Socket Platz hat;
+  ein Client, der länger als 2 s nichts annimmt, wird getrennt. `TCP_NODELAY` ist wieder entfernt.
+- `MbcMsgBridge`/`MbcWifiBridge`: neues `receivePending(msg)` holt nur eine eingegangene Nachricht
+  ab (ohne Senden und Webportal); Standard in `MbcMsgBridge`: keine Nachricht.
+- `MbcCan` (nur RP2040, MCP2515): optionale Empfangswarteschlange. `startRxQueue(depth)` in
+  `setup()`, danach liest `serviceRxQueue()` aus `loop1()` auf Kern 1 den MCP2515 aus, und
+  `receive()` holt die Nachrichten in Eingangsreihenfolge aus der Warteschlange.
+- `MbcSpiDevice` (nur RP2040): alle SPI-Transaktionen sind über beide Kerne gegeneinander gesperrt.
+- Nötig für Mbc80Lib 1.2.0 (vollständige CS2-Datenströme an die WLAN-Clients). Andere Module nutzen
+  die Brücken und die Warteschlange nicht; ohne `startRxQueue()` arbeitet `MbcCan` wie bisher.
+- `MbcMsgBridge`, `MbcWifiBridge` und `library.properties` sind zusammen zu kopieren; vor dem
+  Neukompilieren den Kompilier-Cache der Arduino-IDE löschen.
 
 **V1.1.2**
 - `MbcCom`: CAN-Hash nach Märklin-CS2-Protokoll 2.0, Abschnitt 1.2.4: UID-High XOR UID-Low,

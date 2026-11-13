@@ -55,7 +55,7 @@ Reiter Verbindung mit Status und Geräteeinstellungen sowie die eingebaute Anlei
 
 ## Fertige App installieren
 
-1. [Release/mbc89-APP-1.0.2.apk](Release/mbc89-APP-1.0.2.apk) auf das Gerät laden. Eine
+1. [Release/mbc89-APP-1.0.3.apk](Release/mbc89-APP-1.0.3.apk) auf das Gerät laden. Eine
    installierte ältere Fassung wird dabei aktualisiert, Einstellungen und Seriennummer bleiben erhalten.
 2. Die Installation aus dieser Quelle erlauben (Android fragt beim Öffnen der Datei nach).
 3. App starten, im Reiter **Verbindung** die IP-Adresse der mbc-80 und den Port 15731 eintragen und
@@ -109,6 +109,11 @@ an CS3 und Parametriercenter als neues Modul.
 | `Bilder` | Bildschirmansichten für dieses README |
 
 ## Version
+
+**1.0.3** (13.11.2026)
+
+- Wird die App aus der Liste der zuletzt benutzten Apps weggewischt, trennt sie die Verbindung zur
+  mbc-80 und beendet sich. Bisher lief die Verbindung im Hintergrund weiter. Hardwaregetestet.
 
 **1.0.2** (13.11.2026)
 

@@ -8,11 +8,16 @@
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
 //* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
+//* V1.2.0 - 13.11.2026 - Datenstrom nach 0x40 am Stueck (ESP32), Stopp/Go/Halt im Strom          *
 //*************************************************************************************************
 
 //###### Start Quellcode Mbc80Com.cpp #############################################################
 
 #include "Mbc80Com.h"
+
+#if defined(ESP32)
+    #include <esp_task_wdt.h>
+#endif
 
 //------ Start interne Konstanten -----------------------------------------------------------------
 
@@ -28,6 +33,12 @@
     static const uint8_t CAN_LOCID_MBCAN                = 0x18;
     static const uint8_t CAN_ID_STREAMING               = 0x42;
     static const uint8_t CAN_ID_STREAMING_REQUEST       = 0x40;
+
+    // Datenstrom am Stueck: Wartezeit auf den Stromkopf, Pause im Strom, Hoechstdauer (ms)
+
+    static const unsigned long STREAM_START_TIMEOUT_MS = 3000;
+    static const unsigned long STREAM_GAP_TIMEOUT_MS   = 500;
+    static const unsigned long STREAM_MAX_MS           = 4500;
 
     // Modulspezifischer EEPROM-Blockindex
 
@@ -354,9 +365,21 @@
     //* Schaltdecoder-Basisadress-Rueckmeldung und S88-Automatik-Kenner-Verwaltung.               *
     //*********************************************************************************************
 
+    // System Stopp/Go/Halt (0x00, DLC 5, Sub 0x00/0x01/0x02; cs2CAN 2.0 Kap. 2.1-2.3): geht auch waehrend
+    // eines Datenstroms sofort weiter (mbcNEO F1)
+
+    static bool isStopGoHalt(const uint8_t msg[MBC_CAN_MSG_LEN])
+    {
+        return (msg[MBC_CAN_ID] == 0x00) && (msg[MBC_CAN_DLC] == 5) && (msg[MBC_CAN_D4] <= 0x02);
+    }
+
     void Mbc80Com::bridge()
     {
         poll();
+
+        #if defined(ESP32)
+            if (!_streaming) drainDeferred();
+        #endif
 
         uint8_t msg[MBC_CAN_MSG_LEN];
 
@@ -382,78 +405,219 @@
 
             // MBCAN-Bus: Nachricht abrufen und an CS2 + WLAN weiterreichen
 
-            if (_canMbcan->receive(msg))
-            {
-                if (msg[MBC_CAN_ID] == CAN_ID_S88_EVENT_RESPONSE)
-                {
-                    msg[MBC_CAN_D0] = _utils->array()[MBC_S_KN + 2];   // Automatik-Kennung High
-                    msg[MBC_CAN_D1] = _utils->array()[MBC_S_KN + 3];   // Automatik-Kennung Low
-                }
-
-                _bridge->send(msg);
-
-                if ((msg[MBC_CAN_D2] == CAN_LOCID_MBCAN) && (msg[MBC_CAN_ID] == CAN_ID_ZUBEHOER_SCHALTEN))
-                {
-                    // Schaltbefehl aus dem Loc-ID-Bereich 0x18xx: nur weiterreichen, wenn eine
-                    // echte CS/MS2 verbunden ist (verhindert versehentlichen Not-Stopp)
-
-                    if (csMbcan()) _can->send(msg);
-                }
-                else
-                {
-                    _can->send(msg);
-                }
-            }
+            if (_canMbcan->receive(msg)) handleMbcan(msg);
         }
+        #if defined(ESP32)
+            else if (_canMbcan->receive(msg))
+            {
+                if (isStopGoHalt(msg)) handleMbcan(msg);
+                else                   defer(DEFER_MBCAN, msg);
+            }
+        #endif
 
         // CS2-Bus: Nachricht abrufen (immer, auch waehrend eines aktiven Streams)
 
-        if (_can->receive(msg))
-        {
-            _streaming = (msg[MBC_CAN_ID] == CAN_ID_STREAMING);
-
-            if ((msg[MBC_CAN_ID] == CAN_ID_ZUBEHOER_SCHALTEN) && (msg[MBC_CAN_D2] == CAN_LOCID_MBCAN))
-            {
-                setCsMbcan(true);
-            }
-
-            _bridge->send(msg);
-
-            if (!_streaming)
-            {
-                bool isS88Kommando = (msg[MBC_CAN_ID] == CAN_ID_S88_EVENT)
-                    || (((msg[MBC_CAN_ID] & 0xfe) == 0x00) && (msg[MBC_CAN_D4] == CAN_ID_SYSTEM_BEFEHLE_SUB_KN));
-
-                if (isS88Kommando) handleS88(msg);
-                else                _canMbcan->send(msg);
-
-                check(msg);
-            }
-        }
+        if (_can->receive(msg)) handleCs2(msg, true);
 
         // WLAN: Nachricht abrufen (immer, auch waehrend eines aktiven Streams)
 
-        if (_bridge->check(msg))
-        {
-            if (!_streaming || (msg[MBC_CAN_ID] == CAN_ID_STREAMING_REQUEST))
-            {
-                if (msg[MBC_CAN_ID] != CAN_ID_STREAMING_REQUEST)
-                {
-                    _canMbcan->send(msg);
-                    check(msg);
-                }
+        if (_bridge->check(msg)) handleWlan(msg);
+    }
 
-                if (!((msg[MBC_CAN_D2] == CAN_LOCID_MBCAN) && (msg[MBC_CAN_ID] == CAN_ID_ZUBEHOER_SCHALTEN)))
-                {
-                    _can->send(msg);
-                }
-                else
-                {
-                    setCsMbcan(false);
-                }
+    // MBCAN-Nachricht an CS2 + WLAN weiterreichen
+
+    void Mbc80Com::handleMbcan(uint8_t msg[MBC_CAN_MSG_LEN])
+    {
+        if (msg[MBC_CAN_ID] == CAN_ID_S88_EVENT_RESPONSE)
+        {
+            msg[MBC_CAN_D0] = _utils->array()[MBC_S_KN + 2];   // Automatik-Kennung High
+            msg[MBC_CAN_D1] = _utils->array()[MBC_S_KN + 3];   // Automatik-Kennung Low
+        }
+
+        _bridge->send(msg);
+
+        if ((msg[MBC_CAN_D2] == CAN_LOCID_MBCAN) && (msg[MBC_CAN_ID] == CAN_ID_ZUBEHOER_SCHALTEN))
+        {
+            // Schaltbefehl aus dem Loc-ID-Bereich 0x18xx: nur weiterreichen, wenn eine
+            // echte CS/MS2 verbunden ist (verhindert versehentlichen Not-Stopp)
+
+            if (csMbcan()) _can->send(msg);
+        }
+        else
+        {
+            _can->send(msg);
+        }
+    }
+
+    // CS2-Nachricht an WLAN (toBridge) und MBCAN weiterreichen
+
+    void Mbc80Com::handleCs2(uint8_t msg[MBC_CAN_MSG_LEN], bool toBridge)
+    {
+        _streaming = (msg[MBC_CAN_ID] == CAN_ID_STREAMING);
+
+        if ((msg[MBC_CAN_ID] == CAN_ID_ZUBEHOER_SCHALTEN) && (msg[MBC_CAN_D2] == CAN_LOCID_MBCAN))
+        {
+            setCsMbcan(true);
+        }
+
+        if (toBridge) _bridge->send(msg);
+
+        if (!_streaming)
+        {
+            bool isS88Kommando = (msg[MBC_CAN_ID] == CAN_ID_S88_EVENT)
+                || (((msg[MBC_CAN_ID] & 0xfe) == 0x00) && (msg[MBC_CAN_D4] == CAN_ID_SYSTEM_BEFEHLE_SUB_KN));
+
+            if (isS88Kommando) handleS88(msg);
+            else                _canMbcan->send(msg);
+
+            check(msg);
+        }
+    }
+
+    // WLAN-Nachricht an MBCAN + CS2 weiterreichen
+
+    void Mbc80Com::handleWlan(uint8_t msg[MBC_CAN_MSG_LEN])
+    {
+        if (!_streaming || (msg[MBC_CAN_ID] == CAN_ID_STREAMING_REQUEST) || isStopGoHalt(msg))
+        {
+            if (msg[MBC_CAN_ID] != CAN_ID_STREAMING_REQUEST)
+            {
+                _canMbcan->send(msg);
+                check(msg);
+            }
+
+            if (!((msg[MBC_CAN_D2] == CAN_LOCID_MBCAN) && (msg[MBC_CAN_ID] == CAN_ID_ZUBEHOER_SCHALTEN)))
+            {
+                _can->send(msg);
+
+                #if defined(ESP32)
+                    if (msg[MBC_CAN_ID] == CAN_ID_STREAMING_REQUEST) collectStreamBlock();
+                #endif
+            }
+            else
+            {
+                setCsMbcan(false);
             }
         }
     }
+
+    #if defined(ESP32)
+
+        //*****************************************************************************************
+        //* Nach einer Anfrage 0x40: Antwort (0x41) und Datenstrom (0x42) der CS2 am Stueck       *
+        //* einlesen und hinten an den WLAN-Sendepuffer haengen, bis der Strom vollstaendig ist.  *
+        //* MBCAN-Bus, WLAN-Empfang und alles andere ruhen solange; geschrieben wird der Puffer   *
+        //* danach parallel zum Normalbetrieb (MbcWifiBridge::check). Abbruch, wenn der           *
+        //* Stromkopf nicht kommt, der Strom stockt oder STREAM_MAX_MS ueberschritten sind.       *
+        //*****************************************************************************************
+
+        void Mbc80Com::collectStreamBlock()
+        {
+            uint8_t       msg[MBC_CAN_MSG_LEN];
+            unsigned long start     = millis();
+            unsigned long last      = start;
+            int32_t       remaining = -1;    // Datenpakete bis zum Stromende, -1 = Kopf noch offen
+
+            while (remaining != 0)
+            {
+                // loopTask-Watchdog bedienen: Block-Lesen und danach zurueckgestellte Anfragen koennen
+                // innerhalb eines loop()-Durchlaufs laenger als die Watchdog-Zeit dauern
+
+                esp_task_wdt_reset();
+
+                if (_can->receive(msg))
+                {
+                    last = millis();
+
+                    _bridge->send(msg);
+
+                    if ((msg[MBC_CAN_ID] != CAN_ID_STREAMING) && (msg[MBC_CAN_ID] != CAN_ID_STREAMING_REQUEST + 1))
+                    {
+                        defer(DEFER_CS2, msg);
+                    }
+
+                    if (msg[MBC_CAN_ID] == CAN_ID_STREAMING)
+                    {
+                        if ((msg[MBC_CAN_DLC] == 6) || (msg[MBC_CAN_DLC] == 7))
+                        {
+                            uint32_t length = ((uint32_t) msg[MBC_CAN_D0] << 24) | ((uint32_t) msg[MBC_CAN_D1] << 16)
+                                            | ((uint32_t) msg[MBC_CAN_D2] << 8)  |  (uint32_t) msg[MBC_CAN_D3];
+
+                            remaining = (int32_t) ((length + 7) / 8);
+                        }
+                        else if ((msg[MBC_CAN_DLC] == 8) && (remaining > 0))
+                        {
+                            remaining--;
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (_canMbcan->receive(msg))
+                {
+                    if (isStopGoHalt(msg)) handleMbcan(msg);
+                    else                   defer(DEFER_MBCAN, msg);
+                    continue;
+                }
+
+                if (_bridge->receivePending(msg))
+                {
+                    if (isStopGoHalt(msg)) handleWlan(msg);
+                    else                   defer(DEFER_WLAN, msg);
+                    continue;
+                }
+
+                unsigned long now = millis();
+
+                if (now - last  > ((remaining < 0) ? STREAM_START_TIMEOUT_MS : STREAM_GAP_TIMEOUT_MS)) break;
+                if (now - start > STREAM_MAX_MS) break;
+            }
+
+            _streaming = false;
+
+            drainDeferred();
+        }
+
+        // Waehrend eines Stroms zurueckgestellte Nachrichten in Eingangsreihenfolge bearbeiten
+
+        void Mbc80Com::drainDeferred()
+        {
+            uint8_t msg[MBC_CAN_MSG_LEN];
+            uint8_t source;
+
+            while (undefer(source, msg))
+            {
+                if      (source == DEFER_CS2)   handleCs2(msg, false);
+                else if (source == DEFER_MBCAN) handleMbcan(msg);
+                else                            handleWlan(msg);
+            }
+        }
+
+        void Mbc80Com::defer(uint8_t source, const uint8_t msg[MBC_CAN_MSG_LEN])
+        {
+            if (_deferCount >= DEFER_MAX) return;
+
+            uint8_t slot = (uint8_t) ((_deferHead + _deferCount) % DEFER_MAX);
+
+            memcpy(_deferMsg[slot], msg, MBC_CAN_MSG_LEN);
+            _deferSource[slot] = source;
+            _deferCount++;
+        }
+
+        bool Mbc80Com::undefer(uint8_t &source, uint8_t msg[MBC_CAN_MSG_LEN])
+        {
+            if (_deferCount == 0) return false;
+
+            memcpy(msg, _deferMsg[_deferHead], MBC_CAN_MSG_LEN);
+            source = _deferSource[_deferHead];
+            _deferHead = (uint8_t) ((_deferHead + 1) % DEFER_MAX);
+            _deferCount--;
+
+            return true;
+        }
+
+    #endif
 
     //*********************************************************************************************
     //* CS2-S88-Kommando auswerten: Automatik-Kenner-Vergabe/-Entzug uebernehmen und passende     *

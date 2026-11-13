@@ -49,6 +49,29 @@ wartet damit nicht mehr bis zu 10 ms je Frame, solange kein Busteilnehmer quitti
 CS3-Konfigwalk zu langsam und würde abbrechen. Ein volles Sendefach verwirft das Frame. Dafür ist
 MBCANLib 1.1.1 nötig, sonst kompiliert der Sketch nicht.
 
+Ab Mbc80Lib 1.2.0 / MBCANLib 1.2.0 (nur ESP32-C3): Nach einer Anfrage 0x40 aus dem WLAN liest die
+mbc-80 die Antwort (0x41) und den Datenstrom (0x42) der CS2/CS3/MS2 am Stück vom CS2-Bus und hängt
+alles hinten an den Sendepuffer der WLAN-Clients, bis der Strom vollständig ist (Abbruch nach 3 s
+ohne Stromkopf, 0,5 s Pause im Strom oder 4,5 s Gesamtdauer). Die übrigen Nachrichten vom CS2-Bus,
+vom MBCAN-Bus (TWAI) und aus dem WLAN werden solange zurückgestellt (bis 128) und danach in
+Eingangsreihenfolge bearbeitet. Bisher schrieb der ESP32-C3 jedes Paket einzeln per TCP (1,4–2,8 ms),
+während die CS3 alle ~1,7 ms ein Paket sendet; dabei gingen Pakete verloren.
+
+Ab Mbc80Lib 1.2.0 auf allen vier Boards: System Stopp/Go/Halt (0x00, DLC 5, Sub 0/1/2) gehen auch
+während eines Datenstroms sofort weiter. Während eines Stroms ruhen `utils.update()`/`utils.check()`
+wie im Original (`main.c`: `mbc_hw_check()` nur ohne Stream); dafür gibt es `Mbc80Com::streaming()`.
+Ab Mbc80Lib 1.2.0 auf RP2040 (Pico und Zero): Dual Core. Kern 1 liest beide MCP2515 ununterbrochen in
+Empfangswarteschlangen (CS2-Bus 2048, MBCAN-Bus 256 Nachrichten), Kern 0 bedient wie bisher die
+Weiterleitung und holt die Nachrichten in Eingangsreihenfolge ab. Die WLAN-UART (125000 Baud, rund
+2,2 ms je Rahmen) ist langsamer als ein CS3-Datenstrom (rund 1,7 ms je Rahmen); der Strom kommt so
+trotzdem vollständig an, nur später. Nur kompiliert, nicht auf Hardware getestet.
+
+**ATmega644P:** keine Lösung mehr für Apps und PC-Programme über WLAN. Über die UART zum ESP8266 ist
+er langsamer als der CS3-Datenstrom, und mit 4 KB RAM lässt sich der Strom nicht zwischenspeichern;
+große Konfigurationsdaten kommen nicht vollständig an. Der Sketch ist kompiliert (RAM 37 %), aber
+nicht auf Hardware getestet.
+Firmware-Versionen der Sketche damit: ESP32-C3 V1.0.3, ATmega644P V2.0.1, RP2040 Pico/Zero V1.0.1.
+
 **Wichtig:** Die exakten Pin-Zuordnungen und alle ANNAHME-Vermerke stehen im Kopfkommentar jedes
 Sketches — vor dem Verdrahten/Flashen dort nachsehen, nicht hier.
 
@@ -92,8 +115,10 @@ void setup() {
 }
 
 void loop() {
-    utils.update();
-    utils.check();
+    if (!com.streaming()) {
+        utils.update();
+        utils.check();
+    }
     com.bridge();   // uebernimmt die komplette MBCAN<->CS2<->WLAN-Weiterleitung
 }
 ```

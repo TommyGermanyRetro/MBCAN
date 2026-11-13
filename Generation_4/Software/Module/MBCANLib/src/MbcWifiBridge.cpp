@@ -10,6 +10,7 @@
 //* V1.1.0 - 03.11.2026 - Bis zu 3 gleichzeitige TCP-Clients, Setup-Webportal zentriert           *
 //* V1.1.1 - 04.11.2026 - WLAN-Modem-Sleep aus, TCP_NODELAY je Client                             *
 //* V1.1.2 - 07.11.2026 - Nicht blockierendes Senden, saeumige Clients nach 2 s getrennt          *
+//* V1.2.0 - 13.11.2026 - Sendepuffer je Client (32 KB), receivePending(), ohne TCP_NODELAY       *
 //*************************************************************************************************
 
 //###### Start Quellcode MbcWifiBridge.cpp ########################################################
@@ -191,12 +192,55 @@
 
             if ((i == exceptSlot) || !s.client.connected()) continue;
 
-            // Nur schreiben, wenn der Socket sofort Platz hat; sonst Nachricht fuer diesen
-            // Client verwerfen und ihn nach CLIENT_STALL_MS trennen
+            // Nur hinten an den Sendepuffer des Clients haengen; ins WLAN schreibt flushClients()
+            // (Aufruf aus check()). Ist der Puffer voll, wird die Nachricht verworfen.
 
-            if (socketWritable(s.client))
+            if (s.txLen + MBC_CAN_MSG_LEN > MBC_WIFI_TX_BUFFER) continue;
+
+            for (uint8_t b = 0; b < MBC_CAN_MSG_LEN; b++)
             {
-                s.client.write(msg, MBC_CAN_MSG_LEN);
+                s.txBuf[(s.txHead + s.txLen + b) % MBC_WIFI_TX_BUFFER] = msg[b];
+            }
+
+            s.txLen += MBC_CAN_MSG_LEN;
+        }
+    }
+
+    //*********************************************************************************************
+    //* Sendepuffer aller Clients ins WLAN schreiben, soweit der Socket sofort Platz hat. Nimmt   *
+    //* ein Client CLIENT_STALL_MS lang nichts an, wird er getrennt.                              *
+    //*********************************************************************************************
+
+    void MbcWifiBridge::flushClients()
+    {
+        for (int8_t i = 0; i < MBC_WIFI_MAX_CLIENTS; i++)
+        {
+            ClientSlot &s = _slots[i];
+
+            if (!s.client.connected())
+            {
+                s.txHead = 0;
+                s.txLen  = 0;
+                continue;
+            }
+
+            while ((s.txLen > 0) && socketWritable(s.client))
+            {
+                size_t chunk = MBC_WIFI_TX_BUFFER - s.txHead;
+
+                if (chunk > s.txLen) chunk = s.txLen;
+
+                size_t written = s.client.write(&s.txBuf[s.txHead], chunk);
+
+                if (written == 0) break;
+
+                s.txHead = (s.txHead + written) % MBC_WIFI_TX_BUFFER;
+                s.txLen -= written;
+                s.stalledSince = 0;
+            }
+
+            if (s.txLen == 0)
+            {
                 s.stalledSince = 0;
             }
             else if (s.stalledSince == 0)
@@ -211,6 +255,8 @@
 
                 s.client.stop();
                 s.stalledSince = 0;
+                s.txHead = 0;
+                s.txLen  = 0;
             }
         }
     }
@@ -272,10 +318,11 @@
             }
 
             _slots[target].client      = incoming;
-            _slots[target].client.setNoDelay(true);
             _slots[target].rxIndex      = 0;
             _slots[target].connectedAt  = millis();
             _slots[target].stalledSince = 0;
+            _slots[target].txHead       = 0;
+            _slots[target].txLen        = 0;
 
             Serial.print("[MbcWifiBridge] TCP-Client ");
             Serial.print(target);
@@ -301,6 +348,7 @@
         if (!_isStation) return false;
 
         acceptClients();
+        flushClients();
 
         bool anyConnected = false;
 
@@ -327,6 +375,13 @@
         {
             digitalWrite(_pinConnLed, anyConnected ? LOW : HIGH);
         }
+
+        return receivePending(msg);
+    }
+
+    bool MbcWifiBridge::receivePending(uint8_t msg[MBC_CAN_MSG_LEN])
+    {
+        if (!_isStation) return false;
 
         // Reihum pro Aufruf hoechstens eine Nachricht liefern; Restbytes bleiben im Socket-Puffer
 

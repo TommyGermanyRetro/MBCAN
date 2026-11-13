@@ -22,6 +22,7 @@
 //* V1.0.0 - 02.08.2026 - Nullversion                                                             *
 //* V1.1.1 - 04.11.2026 - TWAI: optionaler Parameter nonBlockingTx (Versand ohne Warten,          *
 //*                       Sendewarteschlange 32)                                                  *
+//* V1.2.0 - 13.11.2026 - RP2040: Empfangswarteschlange, MCP2515 auf Kern 1 auslesen              *
 //*************************************************************************************************
 
 #pragma once
@@ -29,7 +30,7 @@
 //###### Start Quellcode MbcCan.h #################################################################
 
 #ifndef _MBCCAN_H_
-#define _MBCCAN_H_     "V1.1.1 - 04.11.2026"
+#define _MBCCAN_H_     "V1.2.0 - 13.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -41,6 +42,10 @@
 #if defined(ESP32)
     #include "freertos/FreeRTOS.h"
     #include "driver/twai.h"
+#endif
+
+#if defined(ARDUINO_ARCH_RP2040)
+    #include "pico/util/queue.h"
 #endif
 
 //------ Start globale Deklarationen --------------------------------------------------------------
@@ -143,6 +148,30 @@
 
             bool receive(uint8_t msg[MBC_CAN_MSG_LEN]);
 
+            #if defined(ARDUINO_ARCH_RP2040)
+
+                //*********************************************************************************
+                //* Empfangswarteschlange einrichten (nur RP2040, MCP2515-Backend). Danach liest  *
+                //* serviceRxQueue() auf Kern 1 den MCP2515 aus, und receive() holt die           *
+                //* Nachrichten in Eingangsreihenfolge aus der Warteschlange. Aufruf in setup()   *
+                //* nach begin().                                                                 *
+                //*********************************************************************************
+                //* depth: Anzahl Nachrichten (je MBC_CAN_MSG_LEN Byte RAM)                       *
+                //*********************************************************************************
+
+                void startRxQueue(uint16_t depth);
+
+                //*********************************************************************************
+                //* MCP2515 auslesen und in die Empfangswarteschlange legen (Aufruf aus loop1()   *
+                //* auf Kern 1). Ist die Warteschlange voll, wird die Nachricht verworfen.        *
+                //*********************************************************************************
+                //* Return: true, wenn mindestens eine Nachricht gelesen wurde                    *
+                //*********************************************************************************
+
+                bool serviceRxQueue();
+
+            #endif
+
         private:
 
             enum MbcCanBackend { MBC_CAN_BACKEND_MCP2515 = 0, MBC_CAN_BACKEND_TWAI = 1 };
@@ -166,6 +195,11 @@
                 void    writeReg(uint8_t addr, uint8_t data);
                 uint8_t readReg(uint8_t addr);
                 uint8_t readStatus(uint8_t type);
+
+            #if defined(ARDUINO_ARCH_RP2040)
+                queue_t       _rxQueue;
+                volatile bool _rxQueueActive = false;
+            #endif
 
             #if defined(ESP32)
 

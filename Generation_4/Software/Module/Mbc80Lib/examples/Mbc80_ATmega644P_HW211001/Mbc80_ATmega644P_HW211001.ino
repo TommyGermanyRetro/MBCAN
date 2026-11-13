@@ -61,6 +61,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V2.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V2.0.1 - 13.11.2026 - Messungen ruhen im Datenstrom, Stopp/Go/Halt im Strom (Mbc80Lib 1.2.0)  *
 //*************************************************************************************************
 
 #include <SPI.h>
@@ -82,7 +83,7 @@
 //------ Modulidentitaet (ASCII-Ziffern) ----------------------------------------------------------
 
     const uint8_t ART_NR[4] = { '8', '0', '0', '2' };   // [2]=Prozessor: 0=ATmega644P/1=ESP32-C3/2=RP2040-Pico/3=RP2040-Zero
-    const uint8_t SW_VER[3] = { '2', '0', '0' };
+    const uint8_t SW_VER[3] = { '2', '0', '1' };
     const uint8_t HW_VER[6] = { '2', '1', '1', '0', '0', '1' };   // Hardware 21.10.01
 
 //------ Objekte ----------------------------------------------------------------------------------
@@ -124,8 +125,14 @@ void setup()
 
 void loop()
 {
-    utils.update();
-    utils.check();
+    // Waehrend eines CS2-Datenstroms (0x42) nur die Bruecke bedienen - Timer-Events, Messungen
+    // (1-Wire, ADC) usw. ruhen wie im Original (main.c: mbc_hw_check() nur bei !streaming)
+
+    if (!com.streaming())
+    {
+        utils.update();
+        utils.check();
+    }
 
     com.bridge();
 }

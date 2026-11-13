@@ -13,6 +13,7 @@
 //*************************************************************************************************
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
+//* V1.2.0 - 13.11.2026 - receivePending() (Standard: keine Nachricht)                            *
 //*************************************************************************************************
 
 #pragma once
@@ -20,7 +21,7 @@
 //###### Start Quellcode MbcMsgBridge.h ###########################################################
 
 #ifndef _MBCMSGBRIDGE_H_
-#define _MBCMSGBRIDGE_H_     "V1.0.0 - 05.08.2026"
+#define _MBCMSGBRIDGE_H_     "V1.2.0 - 13.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -56,6 +57,10 @@
             //*************************************************************************************
 
             virtual bool check(uint8_t msg[MBC_CAN_MSG_LEN]) = 0;
+
+            // Nur eingegangene Nachrichten abholen (ohne Senden/Webportal); Standard: keine
+
+            virtual bool receivePending(uint8_t msg[MBC_CAN_MSG_LEN]) { (void) msg; return false; }
     };
 
 //------ Ende Klassendefinition MbcMsgBridge ------------------------------------------------------

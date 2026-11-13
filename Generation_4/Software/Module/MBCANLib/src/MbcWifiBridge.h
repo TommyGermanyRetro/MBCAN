@@ -41,6 +41,7 @@
 //*                       Setup-Webportal zentriert                                               *
 //* V1.1.1 - 04.11.2026 - WLAN-Modem-Sleep aus, TCP_NODELAY je Client                             *
 //* V1.1.2 - 07.11.2026 - Nicht blockierendes Senden, saeumige Clients nach 2 s getrennt          *
+//* V1.2.0 - 13.11.2026 - Sendepuffer je Client (32 KB), receivePending(), ohne TCP_NODELAY       *
 //*************************************************************************************************
 
 #pragma once
@@ -50,7 +51,7 @@
 #if defined(ESP32)
 
 #ifndef _MBCWIFIBRIDGE_H_
-#define _MBCWIFIBRIDGE_H_     "V1.1.2 - 07.11.2026"
+#define _MBCWIFIBRIDGE_H_     "V1.2.0 - 13.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -73,6 +74,12 @@
 
     #ifndef MBC_WIFI_MAX_CLIENTS
     #define MBC_WIFI_MAX_CLIENTS   3
+    #endif
+
+    // Sendepuffer je TCP-Client in Byte: send() haengt nur an, check() schreibt ins WLAN
+
+    #ifndef MBC_WIFI_TX_BUFFER
+    #define MBC_WIFI_TX_BUFFER     32768
     #endif
 
 //------ Ende globale Deklarationen ---------------------------------------------------------------
@@ -137,6 +144,10 @@
 
             bool check(uint8_t msg[MBC_CAN_MSG_LEN]) override;
 
+            // Nur eingegangene Bytes der Clients lesen (kein Webportal, kein Schreiben)
+
+            bool receivePending(uint8_t msg[MBC_CAN_MSG_LEN]) override;
+
         private:
 
             struct Settings
@@ -156,6 +167,9 @@
                 uint8_t       rxIndex = 0;
                 unsigned long connectedAt = 0;
                 unsigned long stalledSince = 0;
+                uint8_t       txBuf[MBC_WIFI_TX_BUFFER];
+                size_t        txHead = 0;
+                size_t        txLen = 0;
             };
 
             uint16_t   _port;
@@ -169,6 +183,7 @@
 
             void acceptClients();
             void sendToAll(const uint8_t msg[MBC_CAN_MSG_LEN], int8_t exceptSlot);
+            void flushClients();
             static bool socketWritable(WiFiClient &client);
 
             void loadSettings(Settings &settings);

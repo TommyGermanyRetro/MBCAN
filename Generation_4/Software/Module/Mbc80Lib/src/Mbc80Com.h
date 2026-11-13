@@ -19,6 +19,7 @@
 //* Aenderungen:                                                                                  *
 //* V1.0.0 - 05.08.2026 - Nullversion                                                             *
 //* V1.0.1 - 29.08.2026 - RAM-Optimierung                                                         *
+//* V1.2.0 - 13.11.2026 - Datenstrom nach 0x40 am Stueck (ESP32), Stopp/Go/Halt im Strom          *
 //*************************************************************************************************
 
 #pragma once
@@ -26,7 +27,7 @@
 //###### Start Quellcode Mbc80Com.h ###############################################################
 
 #ifndef _MBC80COM_H_
-#define _MBC80COM_H_     "V1.0.1 - 29.08.2026"
+#define _MBC80COM_H_     "V1.2.0 - 13.11.2026"
 
 //------ Einbindung Bibliotheken ------------------------------------------------------------------
 
@@ -79,6 +80,13 @@
             //*************************************************************************************
 
             void bridge();
+
+            //*************************************************************************************
+            //* true, solange vom CS2-Bus ein Datenstrom (0x42) laeuft - dann ruhen im Sketch die *
+            //* Timer-Events und Messungen (Original main.c: mbc_hw_check() nur bei !streaming)   *
+            //*************************************************************************************
+
+            bool streaming() const { return _streaming; }
 
         protected:
 
@@ -218,6 +226,29 @@
             uint16_t _baseAddr;    // Basisadresse der Schaltdecoder (0x6000...0x6fff), zyklisch an die CS2 gemeldet
             uint16_t _autoCnt;
             bool     _streaming;
+
+            void handleMbcan(uint8_t msg[MBC_CAN_MSG_LEN]);
+            void handleCs2(uint8_t msg[MBC_CAN_MSG_LEN], bool toBridge);
+            void handleWlan(uint8_t msg[MBC_CAN_MSG_LEN]);
+
+            #if defined(ESP32)
+                // Waehrend eines Datenstroms zurueckgestellte Nachrichten (Quelle + Nachricht)
+
+                static const uint8_t DEFER_CS2   = 0;
+                static const uint8_t DEFER_MBCAN = 1;
+                static const uint8_t DEFER_WLAN  = 2;
+                static const uint8_t DEFER_MAX   = 128;
+
+                uint8_t _deferMsg[DEFER_MAX][MBC_CAN_MSG_LEN];
+                uint8_t _deferSource[DEFER_MAX];
+                uint8_t _deferHead  = 0;
+                uint8_t _deferCount = 0;
+
+                void collectStreamBlock();
+                void defer(uint8_t source, const uint8_t msg[MBC_CAN_MSG_LEN]);
+                void drainDeferred();
+                bool undefer(uint8_t &source, uint8_t msg[MBC_CAN_MSG_LEN]);
+            #endif
 
             void handleS88(const uint8_t msg[MBC_CAN_MSG_LEN]);
             void requestAutoKenner();

@@ -50,6 +50,7 @@
 //* V1.0.0 - 02.08.2026 - Nullversion                                                             *
 //* V1.1.1 - 04.11.2026 - TWAI: optionaler Parameter nonBlockingTx (Versand ohne Warten,          *
 //*                       Sendewarteschlange 32)                                                  *
+//* V1.2.0 - 13.11.2026 - RP2040: Empfangswarteschlange, MCP2515 auf Kern 1 auslesen              *
 //*************************************************************************************************
 
 //###### Start Quellcode MbcCan.cpp ###############################################################
@@ -246,8 +247,52 @@
             if (_backend == MBC_CAN_BACKEND_TWAI) return receiveTwai(msg);
         #endif
 
+        #if defined(ARDUINO_ARCH_RP2040)
+            if (_rxQueueActive) return queue_try_remove(&_rxQueue, msg);
+        #endif
+
         return receiveMcp2515(msg);
     }
+
+    #if defined(ARDUINO_ARCH_RP2040)
+
+        //*****************************************************************************************
+        //* Empfangswarteschlange einrichten (nur RP2040, MCP2515-Backend)                        *
+        //*****************************************************************************************
+        //* depth: Anzahl Nachrichten                                                             *
+        //*****************************************************************************************
+
+        void MbcCan::startRxQueue(uint16_t depth)
+        {
+            if (_rxQueueActive) return;
+
+            queue_init(&_rxQueue, MBC_CAN_MSG_LEN, depth);
+            _rxQueueActive = true;
+        }
+
+        //*****************************************************************************************
+        //* MCP2515 auslesen und in die Empfangswarteschlange legen (Kern 1)                      *
+        //*****************************************************************************************
+        //* Return: true, wenn mindestens eine Nachricht gelesen wurde                            *
+        //*****************************************************************************************
+
+        bool MbcCan::serviceRxQueue()
+        {
+            if (!_rxQueueActive) return false;
+
+            uint8_t msg[MBC_CAN_MSG_LEN];
+            bool    any = false;
+
+            while (receiveMcp2515(msg))
+            {
+                queue_try_add(&_rxQueue, msg);
+                any = true;
+            }
+
+            return any;
+        }
+
+    #endif
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //+ MCP2515-Backend (SPI)                                                                     +
